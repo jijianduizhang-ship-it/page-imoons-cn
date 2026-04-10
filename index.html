@@ -3,522 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="og:title" content="AI 副业实验室 | 我的 AI 赚钱实验">
-<meta property="og:description" content="每天用 AI 做副业，记录：用了什么工具、赚了多少钱、踩了哪些坑。">
-<meta property="og:image" content="images/cover.jpg">
-<title>AI 副业实验室 - 用 AI 每天赚钱</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+<title>工具导航 · cloud.imoons.cn</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ========== 变量定义 ========== */
-:root {
-  --bg-dark: #0a0a0f;
-  --bg-card: #12121a;
-  --gold: #ffd700;
-  --gold-dark: #b8860b;
-  --green: #00ff88;
-  --blue: #00d4ff;
-  --purple: #a855f7;
-  --red: #ff4757;
-  --text: #e8e8e8;
-  --text-dim: #888;
-  --border: #2a2a3a;
-  --radius: 16px;
-  --font-main: 'Noto Sans SC', sans-serif;
-  --font-title: 'ZCOOL KuaiLe', 'Noto Sans SC', sans-serif;
-}
-
-/* ========== Reset ========== */
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font-main);background:var(--bg-dark);color:var(--text);font-size:16px;line-height:1.6}
-a{text-decoration:none;color:inherit}
-img{max-width:100%;display:block}
-
-/* ========== 进度条 ========== */
-.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--green));width:0%;z-index:200;transition:width .1s}
-
-/* ========== 导航栏 ========== */
-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(10,10,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-family:var(--font-title);font-size:22px;color:var(--gold);display:flex;align-items:center;gap:8px;font-weight:700}
-.nav-links{display:flex;gap:24px}
-.nav-links a{font-size:15px;font-weight:600;opacity:.7;transition:.2s;padding:6px 4px}
-.nav-links a:hover{opacity:1;color:var(--gold)}
-.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text);padding:6px}
-
-/* ========== Hero 区域 ========== */
-.hero{max-width:1000px;margin:0 auto;padding:76px 20px 32px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center}
-.hero-text h1{font-family:var(--font-title);font-size:clamp(28px,5vw,42px);line-height:1.3;margin-bottom:12px}
-.hero-text h1 .gold{color:var(--gold)}
-.hero-text h1 .green{color:var(--green)}
-.subtitle{font-size:14px;color:var(--text-dim);line-height:1.8;margin-bottom:16px}
-.subtitle strong{color:var(--text)}
-
-/* 吉祥物区域 */
-.hero-scene{position:relative;width:100%;aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.mascot{font-size:80px;line-height:1;margin-bottom:12px;animation:bounce 2s ease-in-out infinite}
-.mascot-label{font-size:14px;color:var(--text-dim);text-align:center}
-.energy-bar{width:80%;height:8px;background:var(--border);border-radius:4px;margin-top:16px;overflow:hidden}
-.energy-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:4px;width:75%;transition:width .5s}
-.money-float{position:absolute;animation:floatup 3s ease-in-out infinite;font-size:28px}
-.money-float:nth-child(1){top:10%;left:10%;animation-delay:0s}
-.money-float:nth-child(2){top:15%;right:12%;animation-delay:1s}
-.money-float:nth-child(3){bottom:20%;left:15%;animation-delay:2s}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes floatup{0%,100%{transform:translateY(0) scale(1);opacity:.6}50%{transform:translateY(-10px) scale(1.1);opacity:1}}
-
-/* 统计数据面板 */
-.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
-.stat-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
-.stat-panel-title{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
-.stat-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;color:var(--text-dim)}
-.stat-item .icon{font-size:16px}
-.stat-item strong{color:var(--text)}
-
-/* 按钮 */
-.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
-.btn-gold{padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,215,0,0.3)}
-.btn-outline{padding:12px 24px;border-radius:12px;border:1.5px solid var(--green);color:var(--green);font-size:14px;font-weight:700;cursor:pointer;background:transparent;transition:.2s}
-.btn-outline:hover{background:var(--green);color:#000}
-
-/* ========== 轮播卡片 ========== */
-.caro-section{max-width:1000px;margin:0 auto;padding:0 20px 32px}
-.caro-root{position:relative;display:flex;align-items:center;gap:8px}
-.caro-outer{flex:1;overflow:hidden;border-radius:14px}
-.caro-track{display:flex;gap:14px;transition:transform .44s cubic-bezier(.25,.46,.45,.94)}
-.c-card{flex:0 0 auto;border-radius:12px;overflow:hidden;cursor:pointer;background:var(--bg-card);border:1px solid var(--border);transition:transform .44s,box-shadow .44s}
-.c-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,215,0,0.15)}
-.c-card img{width:280px;aspect-ratio:3/2;object-fit:cover}
-.c-card-cap{padding:12px 14px}
-.c-day{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;display:block;margin-bottom:4px}
-.c-title{font-size:14px;font-weight:700;line-height:1.4;margin-bottom:4px}
-.c-money{font-size:13px;color:var(--gold);font-weight:700}
-.caro-arrow{flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg-card);font-size:20px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;transition:.2s;padding:0}
-.caro-arrow:hover{border-color:var(--gold);color:var(--gold)}
-.caro-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}
-.cdot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .25s;border:none;padding:0}
-.cdot.active{background:var(--gold);width:18px;border-radius:3px}
-
-/* ========== 通用区块 ========== */
-.section{padding:32px 20px;max-width:1000px;margin:0 auto}
-.section-label{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
-.section-title{font-family:var(--font-title);font-size:28px;font-weight:900;margin-bottom:8px}
-.section-desc{font-size:14px;color:var(--text-dim);margin-bottom:20px}
-
-/* 项目卡片网格 */
-.project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.project-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.2s;text-decoration:none;display:block}
-.project-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 8px 30px rgba(255,215,0,0.1)}
-.project-card img{width:100%;aspect-ratio:16/9;object-fit:cover}
-.project-card .info{padding:14px 16px}
-.project-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(255,215,0,0.15);color:var(--gold);margin-bottom:6px}
-.project-card h3{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.4}
-.project-card p{font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:8px}
-.project-meta{display:flex;justify-content:space-between;font-size:12px}
-.project-money{color:var(--green);font-weight:700}
-.project-difficulty{color:var(--text-dim)}
-
-/* ========== 故事区 ========== */
-.story-card{display:grid;grid-template-columns:auto 1fr;gap:24px;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px}
-.story-avatar{font-size:64px;text-align:center}
-.story-avatar .label{font-size:12px;color:var(--text-dim);margin-top:8px}
-.story-text h3{font-size:18px;font-weight:700;margin-bottom:8px}
-.story-text h3 .gold{color:var(--gold)}
-.story-text p{font-size:14px;color:var(--text-dim);line-height:1.7;margin-bottom:8px}
-.story-quote{font-size:16px;color:var(--green);font-style:italic;padding-left:16px;border-left:3px solid var(--green)}
-
-/* ========== 技能展示条 ========== */
-.skill-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px}
-.skill-scroll::-webkit-scrollbar{height:4px}
-.skill-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.skill-card{min-width:180px;flex-shrink:0;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px;transition:.2s}
-.skill-card:hover{border-color:var(--blue);transform:translateY(-2px)}
-.skill-icon{font-size:28px;margin-bottom:8px}
-.skill-card h4{font-size:14px;font-weight:700;margin-bottom:4px}
-.skill-card p{font-size:12px;color:var(--text-dim)}
-.skill-card .tag{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(0,212,255,0.15);color:var(--blue);display:inline-block;margin-bottom:6px}
-
-/* ========== CTA ========== */
-.cta-section{text-align:center;padding:40px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-width:1000px;margin:0 auto 32px}
-.cta-section h2{font-family:var(--font-title);font-size:28px;margin-bottom:8px}
-.cta-section h2 .gold{color:var(--gold)}
-.cta-section p{font-size:14px;color:var(--text-dim);margin-bottom:20px}
-
-/* ========== 页脚 ========== */
-footer{text-align:center;padding:24px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--border);margin-top:40px}
-footer a{color:var(--text-dim);margin:0 8px}
-
-/* ========== 浮动吉祥物 ========== */
-.float-mascot{position:fixed;bottom:20px;right:16px;z-index:99;display:flex;flex-direction:column;align-items:center;animation:mascot-float 3s ease-in-out infinite}
-.float-icon{font-size:48px;cursor:pointer;transition:transform .2s;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3))}
-.float-icon:hover{transform:scale(1.15) rotate(-5deg)}
-.float-label{font-size:11px;color:var(--gold);margin-top:4px;font-weight:700}
-
-/* ========== 响应式 ========== */
-@media(max-width:860px){
-  .hero{grid-template-columns:1fr;gap:24px}
-  .hero-scene{max-width:300px;margin:0 auto}
-  .project-grid{grid-template-columns:repeat(2,1fr)}
-  .story-card{grid-template-columns:1fr;text-align:center}
-  .story-avatar{font-size:48px}
-  .nav-links{display:none}
-  .hamburger{display:block}
-  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:56px;left:0;right:0;background:var(--bg-dark);border-bottom:1px solid var(--border);padding:16px;gap:12px}
-}
-@media(max-width:600px){
-  .project-grid{grid-template-columns:1fr}
-  .hero-stats{grid-template-columns:1fr}
-}
-
-/* ========== 模态框 ========== */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center;padding:20px}
-.modal.open{display:flex}
-.modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);max-width:680px;width:100%;max-height:88vh;overflow-y:auto;padding:24px;position:relative}
-.modal-close{position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:var(--text-dim);background:none;border:none;line-height:1}
-.modal-close:hover{color:var(--gold)}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+  }
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 14px;
+    padding-left: 10px;
+    border-left: 3px solid #ffd700;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: #1a1a2e;
+    border: 1px solid #2a2a40;
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: #e0e0e0;
+    transition: border-color 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card:hover {
+    border-color: #ffd700;
+    transform: translateY(-2px);
+  }
+  .card-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+  .card-url {
+    font-size: 0.78rem;
+    color: #666;
+    word-break: break-all;
+  }
+  .card-desc {
+    font-size: 0.82rem;
+    color: #999;
+    margin-top: 2px;
+  }
+  .footer {
+    text-align: center;
+    color: #555;
+    font-size: 0.8rem;
+    margin-top: 50px;
+  }
 </style>
 </head>
 <body>
+<div class="container">
 
-<!-- 进度条 -->
-<div class="progress-bar" id="progressBar"></div>
+<h1>🧭 工具导航</h1>
+<p class="subtitle">cloud.imoons.cn · 静态资源集合</p>
 
-<!-- 导航栏 -->
-<nav>
-  <a href="#" class="nav-logo">🤖 AI 副业实验室</a>
-  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
-  <div class="nav-links">
-    <a href="#projects">项目</a>
-    <a href="#tools">工具</a>
-    <a href="#story">我的故事</a>
-    <a href="#articles">文章</a>
-  </div>
-</nav>
-
-<!-- Hero 区域 -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>我的 <span class="gold">AI 副业</span> 实验日志</h1>
-    <p class="subtitle">
-      每天用 AI 工具做副业赚钱，记录：<br>
-      <strong>用了什么工具 ✦ 赚了多少钱 ✦ 踩了哪些坑</strong>
-    </p>
-    
-    <!-- 统计数据 -->
-    <div class="hero-stats">
-      <div class="stat-panel">
-        <div class="stat-panel-title">💰 累计收益</div>
-        <div class="stat-item"><span class="icon">📈</span><strong>¥5,280</strong> 本月</div>
-        <div class="stat-item"><span class="icon">🏆</span><strong>¥680</strong> 最高单日</div>
-      </div>
-      <div class="stat-panel">
-        <div class="stat-panel-title">🤖 AI 工具</div>
-        <div class="stat-item"><span class="icon">🔧</span><strong>12</strong> 个工具测试</div>
-        <div class="stat-item"><span class="icon">✅</span><strong>5</strong> 个有效项目</div>
-      </div>
-    </div>
-    
-    <div class="hero-cta">
-      <button class="btn-gold" onclick="openModal('join')">🚀 开始实验</button>
-      <button class="btn-outline" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">📋 查看项目</button>
-    </div>
-  </div>
-  
-  <!-- 吉祥物区域 -->
-  <div class="hero-scene">
-    <div class="money-float">💵</div>
-    <div class="money-float">💎</div>
-    <div class="money-float">🪙</div>
-    <div class="mascot">🤖</div>
-    <div class="mascot-label">AI 副业机器人<br>能量等级</div>
-    <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
-  </div>
-</section>
-
-<!-- 轮播项目 -->
-<section class="caro-section">
-  <div class="section-label">🔥 最新实验</div>
-  <div class="section-title>">近期副业成果</div>
-  
-  <div class="caro-root">
-    <button class="caro-arrow" onclick="slideCarousel(-1)">‹</button>
-    <div class="caro-outer">
-      <div class="caro-track" id="carouselTrack">
-        <!-- 动态渲染 -->
-      </div>
-    </div>
-    <button class="caro-arrow" onclick="slideCarousel(1)">›</button>
-  </div>
-  <div class="caro-dots" id="carouselDots"></div>
-</section>
-
-<!-- 项目网格 -->
-<section class="section" id="projects">
-  <div class="section-label">📋 副业项目库</div>
-  <div class="section-title">所有实验项目</div>
-  <div class="section-desc">已测试的项目，记录成功与失败的经验</div>
-  
-  <div class="project-grid" id="projectGrid">
-    <!-- 动态渲染 -->
-  </div>
-</section>
-
-<!-- 我的故事 -->
-<section class="section" id="story">
-  <div class="section-label">📖 背景故事</div>
-  <div class="section-title">为什么做这个实验</div>
-  
-  <div class="story-card">
-    <div class="story-avatar">
-      🧑‍💻
-      <div class="label">鹏飞</div>
-    </div>
-    <div class="story-text">
-      <h3>我是<span class="gold">鹏飞</span>，一名操作系统测试工程师</h3>
-      <p>白天测试系统和驱动，晚上研究怎么用 AI 副业赚钱。</p>
-      <p>这个网站记录我的 AI 副业实验：用了什么 AI 工具、赚了多少钱、踩了哪些坑。</p>
-      <div class="story-quote">
-        "用 AI 放大个人能力，一个人就是一支队伍"
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- AI 工具展示 -->
-<section class="section" id="tools">
-  <div class="section-label">🧰 AI 工具箱</div>
-  <div class="section-title">我用过的 AI 工具</div>
-  <div class="section-desc">实测有效的 AI 副业工具推荐</div>
-  
-  <div class="skill-scroll" id="toolScroll">
-    <div class="skill-card">
-      <div class="skill-icon">🤖</div>
-      <span class="tag">AI 对话</span>
-      <h4>OpenClaw</h4>
-      <p>我的 AI 助手，负责内容生成和数据分析</p>
-    </div>
-    <div class="skill-card">
-      <div class="skill-icon">🎨</div>
-      <span class="tag">AI 绘图</span>
-      <h4>Midjourney</h4>
-      <p>生成配图和营销素材</p>
-    </div>
-    <div class="skill-card">
-      <div class="skill-icon">✍️</div>
-      <span class="tag">AI 写作</span>
-      <h4>ChatGPT</h4>
-      <p>文章撰写和文案创作</p>
-    </div>
-    <div class="skill-card">
-      <div class="skill-icon">🎬</div>
-      <span class="tag">AI 视频</span>
-      <h4>HeyGen</h4>
-      <p>AI 数字人视频制作</p>
-    </div>
-    <div class="skill-card">
-      <div class="skill-icon">📊</div>
-      <span class="tag">AI 数据</span>
-      <h4>GPT Excel</h4>
-      <p>数据分析自动化</p>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <h2>🤝 加入我的 <span class="gold">AI 副业实验</span></h2>
-  <p>关注我的实验过程，学习如何用 AI 工具副业赚钱</p>
-  <div class="hero-cta" style="justify-content:center">
-    <button class="btn-gold">📬 订阅更新</button>
-    <button class="btn-outline">💬 留言交流</button>
-  </div>
-</section>
-
-<!-- 页脚 -->
-<footer>
-  <p>🤖 AI 副业实验室 | 用 AI 每天赚钱</p>
-  <p style="margin-top:8px">
-    <a href="#">关于</a> · 
-    <a href="#">RSS</a> · 
-    <a href="#">联系</a>
-  </p>
-</footer>
-
-<!-- 浮动吉祥物 -->
-<div class="float-mascot">
-  <div class="float-icon">🤖</div>
-  <div class="float-label">进化官</div>
-</div>
-
-<!-- 模态框 -->
-<div class="modal" id="joinModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('join')">×</button>
-    <h2 style="font-family:var(--font-title);margin-bottom:16px">🚀 加入 AI 副业实验</h2>
-    <p style="color:var(--text-dim);margin-bottom:20px">关注公众号或加我微信，获取最新实验动态</p>
-    <div style="background:var(--bg-dark);padding:20px;border-radius:12px;text-align:center">
-      <p style="margin-bottom:12px">微信：pf_already</p>
-      <p style="color:var(--text-dim);font-size:14px">（备注：AI副业）</p>
-    </div>
-  </div>
-</div>
-
-<script>
-// ========== 数据 ==========
-const projects = [
-  {
-    id: 1,
-    title: 'AI 生成小红书笔记',
-    tag: '内容创作',
-    desc: '用 AI 生成小红书文案，单篇耗时 10 分钟',
-    money: '¥200/天',
-    difficulty: '★★★☆☆',
-    image: 'images/project1.jpg',
-    days: 7,
-    status: '进行中'
-  },
-  {
-    id: 2,
-    title: 'AI 生成 Midjourney 提示词',
-    tag: '工具变现',
-    desc: '帮别人生成 MJ 提示词，每单 9.9-49 元',
-    money: '¥500/天',
-    difficulty: '★★☆☆☆',
-    image: 'images/project2.jpg',
-    days: 14,
-    status: '稳定'
-  },
-  {
-    id: 3,
-    title: 'AI 数字人短视频带货',
-    tag: '短视频',
-    desc: '用 HeyGen 生成数字人，带货cps佣金',
-    money: '¥80/天',
-    difficulty: '★★★★☆',
-    image: 'images/project3.jpg',
-    days: 3,
-    status: '测试中'
-  },
-  {
-    id: 4,
-    title: 'AI 写作接单（公众号代写）',
-    tag: '服务变现',
-    desc: '用 ChatGPT 帮别人写公众号文章',
-    money: '¥300/篇',
-    difficulty: '★★☆☆☆',
-    image: 'images/project4.jpg',
-    days: 21,
-    status: '稳定'
-  },
-  {
-    id: 5,
-    title: 'AI 生成儿童绘本',
-    tag: '内容创作',
-    desc: '用 AI 生成儿童绘本，闲鱼卖电子版',
-    money: '¥150/天',
-    difficulty: '★★★☆☆',
-    image: 'images/project5.jpg',
-    days: 5,
-    status: '进行中'
-  },
-  {
-    id: 6,
-    title: 'AI 制作简历服务',
-    tag: '服务变现',
-    desc: '帮求职者用 AI 优化简历，39-99 元/份',
-    money: '¥400/天',
-    difficulty: '★☆☆☆☆',
-    image: 'images/project6.jpg',
-    days: 30,
-    status: '稳定'
-  }
-];
-
-// ========== 轮播 ==========
-let currentSlide = 0;
-const track = document.getElementById('carouselTrack');
-const dots = document.getElementById('carouselDots');
-
-function renderCarousel() {
-  const visibleCount = window.innerWidth > 860 ? 3 : window.innerWidth > 600 ? 2 : 1;
-  const visible = projects.slice(currentSlide, currentSlide + visibleCount);
-  
-  track.innerHTML = visible.map(p => `
-    <div class="c-card" onclick="showProject(${p.id})">
-      <div style="background:linear-gradient(135deg,var(--bg-card),var(--border));width:280px;height:187px;display:flex;align-items:center;justify-content:center;font-size:48px">${p.tag.includes('内容')?'📝':p.tag.includes('工具')?'🛠️':p.tag.includes('视频')?'🎬':'💼'}</div>
-      <div class="c-card-cap">
-        <span class="c-day">Day ${p.days} · ${p.status}</span>
-        <div class="c-title">${p.title}</div>
-        <div class="c-money">${p.money}</div>
-      </div>
-    </div>
-  `).join('');
-  
-  dots.innerHTML = projects.map((_, i) => 
-    `<button class="cdot ${i === currentSlide ? 'active' : ''}" onclick="goToSlide(${i})"></button>`
-  ).join('');
-}
-
-function slideCarousel(dir) {
-  const max = projects.length - (window.innerWidth > 860 ? 3 : window.innerWidth > 600 ? 2 : 1);
-  currentSlide = Math.max(0, Math.min(max, currentSlide + dir));
-  renderCarousel();
-}
-
-function goToSlide(i) {
-  currentSlide = i;
-  renderCarousel();
-}
-
-// ========== 项目网格 ==========
-function renderProjects() {
-  const grid = document.getElementById('projectGrid');
-  grid.innerHTML = projects.map(p => `
-    <a href="#" class="project-card" onclick="showProject(${p.id});return false">
-      <div style="background:linear-gradient(135deg,var(--bg-card),var(--border));height:140px;display:flex;align-items:center;justify-content:center;font-size:40px">${p.tag.includes('内容')?'📝':p.tag.includes('工具')?'🛠️':p.tag.includes('视频')?'🎬':'💼'}</div>
-      <div class="info">
-        <span class="project-tag">${p.tag}</span>
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
-        <div class="project-meta">
-          <span class="project-money">${p.money}</span>
-          <span class="project-difficulty">${p.difficulty}</span>
-        </div>
-      </div>
+<div class="section">
+  <div class="section-title">📁 原有项目</div>
+  <div class="grid">
+    <a class="card" href="/about/">
+      <span class="card-name">关于本站</span>
+      <span class="card-url">/about/</span>
+      <span class="card-desc">站长介绍与联系方式</span>
     </a>
-  `).join('');
-}
+    <a class="card" href="/clothes/">
+      <span class="card-name">旧衣回收</span>
+      <span class="card-url">/clothes/</span>
+      <span class="card-desc">旧衣服上门回收服务</span>
+    </a>
+    <a class="card" href="/clothesdb/">
+      <span class="card-name">旧衣数据库</span>
+      <span class="card-url">/clothesdb/</span>
+      <span class="card-desc">旧衣回收数据管理</span>
+    </a>
+    <a class="card" href="/clothesjiaoyou/">
+      <span class="card-name">旧衣交易</span>
+      <span class="card-url">/clothesjiaoyou/</span>
+      <span class="card-desc">旧衣物买卖信息平台</span>
+    </a>
+    <a class="card" href="/dungeon/">
+      <span class="card-name">地牢游戏</span>
+      <span class="card-url">/dungeon/</span>
+      <span class="card-desc">网页版地牢探险游戏</span>
+    </a>
+    <a class="card" href="/user/">
+      <span class="card-name">用户中心</span>
+      <span class="card-url">/user/</span>
+      <span class="card-desc">用户信息与二维码</span>
+    </a>
+  </div>
+</div>
 
-// ========== 模态框 ==========
-function openModal(id) {
-  document.getElementById(id + 'Modal').classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id + 'Modal').classList.remove('open');
-}
+<div class="section">
+  <div class="section-title">🛠️ 工具集合</div>
+  <div class="grid">
+    <a class="card" href="/tools/aii/">
+      <span class="card-name">AI 助手</span>
+      <span class="card-url">/tools/aii/</span>
+      <span class="card-desc">智能 AI 对话助手</span>
+    </a>
+    <a class="card" href="/tools/aidt/">
+      <span class="card-name">AI 工具集</span>
+      <span class="card-url">/tools/aidt/</span>
+      <span class="card-desc">AI 工具聚合平台</span>
+    </a>
+    <a class="card" href="/tools/express/">
+      <span class="card-name">快递查询</span>
+      <span class="card-url">/tools/express/</span>
+      <span class="card-desc">快递单号查询工具</span>
+    </a>
+    <a class="card" href="/tools/family-tree/">
+      <span class="card-name">家谱生成</span>
+      <span class="card-url">/tools/family-tree/</span>
+      <span class="card-desc">家族谱系图生成</span>
+    </a>
+    <a class="card" href="/tools/hua/">
+      <span class="card-name">画图工具</span>
+      <span class="card-url">/tools/hua/</span>
+      <span class="card-desc">在线绘画工具</span>
+    </a>
+    <a class="card" href="/tools/imge/">
+      <span class="card-name">图片工具</span>
+      <span class="card-url">/tools/imge/</span>
+      <span class="card-desc">图片处理与转换</span>
+    </a>
+    <a class="card" href="/tools/tool/xcx/">
+      <span class="card-name">小程序工具</span>
+      <span class="card-url">/tools/tool/xcx/</span>
+      <span class="card-desc">各类小程序集合</span>
+    </a>
+    <a class="card" href="/tools/tool/ewm/">
+      <span class="card-name">二维码</span>
+      <span class="card-url">/tools/tool/ewm/</span>
+      <span class="card-desc">二维码生成与扫描</span>
+    </a>
+    <a class="card" href="/tools/tsc/">
+      <span class="card-name">台词导出</span>
+      <span class="card-url">/tools/tsc/</span>
+      <span class="card-desc">视频字幕台词提取</span>
+    </a>
+  </div>
+</div>
 
-// ========== 能量条动画 ==========
-let energy = 75;
-setInterval(() => {
-  energy = 60 + Math.random() * 30;
-  document.getElementById('energyFill').style.width = energy + '%';
-}, 2000);
+<div class="footer">
+  cloud.imoons.cn · 持续更新中
+</div>
 
-// ========== 进度条 ==========
-window.addEventListener('scroll', () => {
-  const scrollTop = document.documentElement.scrollTop;
-  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = (scrollTop / scrollHeight) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
-});
-
-// ========== 初始化 ==========
-renderCarousel();
-renderProjects();
-window.addEventListener('resize', renderCarousel);
-</script>
-
+</div>
 </body>
 </html>
