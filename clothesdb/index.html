@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旧衣回收 - 最优平台查询</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans SC', -apple-system, sans-serif; min-height: 100vh; background: #0a0a1a; overflow-x: hidden; }
+
+  .hero-gradient {
+    position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(245,101,101,0.08) 0%, transparent 60%);
+    z-index: 0;
+    animation: gradientShift 12s ease-in-out infinite alternate;
+  }
+  @keyframes gradientShift {
+    0% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-3%,2%) scale(1.05); }
+    100% { transform: translate(3%,-2%) scale(1); }
+  }
+
+  .bg-particles { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .particle { position: absolute; border-radius: 50%; animation: floatUp linear infinite; }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  .container { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 40px 20px 60px; }
+
+  .hero { text-align: center; padding: 50px 0 36px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px;
+    background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 50px; font-size: 12px; color: #a78bfa; margin-bottom: 20px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; animation: pulse 2s ease infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .hero h1 {
+    font-size: clamp(26px,6vw,42px); font-weight: 900;
+    background: linear-gradient(135deg,#e2e8f0 0%,#a78bfa 40%,#34d399 80%,#60a5fa 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: -0.5px; margin-bottom: 10px;
+  }
+  .hero p { color: rgba(255,255,255,0.4); font-size: 14px; font-weight: 300; }
+
+  /* Platform Tabs */
+  .platform-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+  .tab-btn {
+    padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.08); cursor: pointer;
+    transition: all 0.3s; user-select: none; display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); }
+  .tab-btn.active { color: #fff; }
+  .tab-btn[data-tab="all"].active { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+  .tab-btn[data-tab="chucheng"].active { background: linear-gradient(135deg,rgba(99,102,241,0.35),rgba(139,92,246,0.25)); border-color: rgba(139,92,246,0.5); box-shadow: 0 0 20px rgba(139,92,246,0.2); }
+  .tab-btn[data-tab="wotan"].active { background: linear-gradient(135deg,rgba(52,211,153,0.35),rgba(16,185,129,0.25)); border-color: rgba(52,211,153,0.5); box-shadow: 0 0 20px rgba(52,211,153,0.2); }
+  .tab-btn[data-tab="jiuyibao"].active { background: linear-gradient(135deg,rgba(245,158,11,0.35),rgba(249,115,22,0.25)); border-color: rgba(245,158,11,0.5); box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+
+  /* Search */
+  .search-box { position: relative; margin-bottom: 28px; }
+  .search-box input {
+    width: 100%; padding: 16px 24px 16px 52px;
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 14px; font-size: 16px; color: #fff; outline: none;
+    transition: all 0.3s; font-family: inherit;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.28); }
+  .search-box input:focus {
+    border-color: rgba(139,92,246,0.6); background: rgba(139,92,246,0.08);
+    box-shadow: 0 0 30px rgba(139,92,246,0.15), 0 0 0 4px rgba(139,92,246,0.08);
+  }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); opacity: 0.35; }
+  .search-btn {
+    position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+    padding: 9px 18px; background: linear-gradient(135deg,#6366f1,#8b5cf6);
+    border: none; border-radius: 10px; color: #fff;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: inherit;
+  }
+  .search-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+
+  .error-msg {
+    display: none; text-align: center; padding: 16px;
+    color: rgba(255,100,100,0.85); font-size: 13px; border-radius: 12px;
+    background: rgba(255,100,100,0.08); border: 1px solid rgba(255,100,100,0.2);
+    margin-bottom: 20px;
+  }
+  .error-msg.show { display: block; }
+
+  /* Result Card */
+  .result-card { display: none; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 28px; margin-bottom: 24px; }
+  .result-card.show { display: block; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .result-province { font-size: 20px; font-weight: 700; color: #e2e8f0; }
+  .result-province span { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 400; margin-left: 6px; }
+  .result-badge { padding: 4px 12px; background: linear-gradient(135deg,rgba(52,211,153,0.2),rgba(16,185,129,0.15)); border: 1px solid rgba(52,211,153,0.25); border-radius: 50px; font-size: 11px; color: #34d399; font-weight: 600; }
+  .result-main { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .result-main-item { background: rgba(255,255,255,0.04); border-radius: 14px; padding: 18px 14px; text-align: center; border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; }
+  .result-main-item:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); }
+  .result-main-item.best { background: linear-gradient(135deg,rgba(99,102,241,0.22),rgba(139,92,246,0.15)); border-color: rgba(139,92,246,0.3); }
+  .result-main-item .label { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 500; margin-bottom: 6px; }
+  .result-main-item .price { font-size: 26px; font-weight: 900; background: linear-gradient(135deg,#e2e8f0,#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .result-main-item.best .price { background: linear-gradient(135deg,#a78bfa,#34d399); -webkit-background-clip: text; background-clip: text; }
+  .result-main-item .unit { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 2px; }
+  .result-main-item .tag { display: inline-block; margin-top: 8px; padding: 2px 8px; background: rgba(52,211,153,0.12); border-radius: 4px; font-size: 10px; color: #34d399; font-weight: 600; }
+
+  .result-table { background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+  .result-table-header { display: grid; grid-template-columns: 1fr 1fr 80px; padding: 11px 16px; background: rgba(255,255,255,0.03); font-size: 11px; color: rgba(255,255,255,0.28); font-weight: 600; }
+  .result-table-row { display: grid; grid-template-columns: 1fr 1fr 80px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: rgba(255,255,255,0.6); transition: background 0.2s; }
+  .result-table-row:hover { background: rgba(255,255,255,0.04); }
+  .result-table-row .platform { font-weight: 500; }
+  .result-table-row .price-cell { font-weight: 700; color: #e2e8f0; text-align: right; }
+  .result-table-row.best-row { color: #a78bfa; }
+  .result-table-row .rank { text-align: right; font-size: 11px; color: rgba(255,255,255,0.2); }
+  .result-table-row.best-row .rank { color: #34d399; }
+
+  /* Platform Section */
+  .section-wrap { margin-bottom: 28px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .section-header .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .section-header.all .dot { background: linear-gradient(135deg,#6366f1,#8b5cf6,#34d399); }
+  .section-header.chucheng .dot { background: linear-gradient(135deg,#6366f1,#8b5cf6); }
+  .section-header.wotan .dot { background: linear-gradient(135deg,#34d399,#16a34a); }
+  .section-header.jiuyibao .dot { background: linear-gradient(135deg,#f59e0b,#f97316); }
+
+  .section-title { font-size: 14px; font-weight: 700; }
+  .section-title.all { color: #e2e8f0; }
+  .section-title.chucheng { color: #a78bfa; }
+  .section-title.wotan { color: #34d399; }
+  .section-title.jiuyibao { color: #fbbf24; }
+
+  .section-count { margin-left: auto; padding: 2px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+  .section-header.all .section-count { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+  .section-header.chucheng .section-count { background: rgba(139,92,246,0.2); color: #a78bfa; }
+  .section-header.wotan .section-count { background: rgba(52,211,153,0.2); color: #34d399; }
+  .section-header.jiuyibao .section-count { background: rgba(251,191,36,0.2); color: #fbbf24; }
+
+  /* Province Grid */
+  .province-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px,1fr)); gap: 8px; }
+  .province-chip {
+    padding: 12px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; text-align: center; font-size: 13px; color: rgba(255,255,255,0.6);
+    cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .province-chip:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .province-chip .pname { font-weight: 500; display: block; }
+  .province-chip .pprice { display: block; font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .province-chip.chucheng:hover { border-color: rgba(139,92,246,0.4); color: #a78bfa; }
+  .province-chip.chucheng:hover .pprice { color: rgba(167,139,250,0.6); }
+  .province-chip.wotan:hover { border-color: rgba(52,211,153,0.4); color: #34d399; }
+  .province-chip.wotan:hover .pprice { color: rgba(52,211,153,0.6); }
+  .province-chip.jiuyibao:hover { border-color: rgba(251,191,36,0.4); color: #fbbf24; }
+  .province-chip.jiuyibao:hover .pprice { color: rgba(251,191,36,0.6); }
+
+  /* Info Cards */
+  .info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .info-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 18px; }
+  .info-card-icon { font-size: 22px; margin-bottom: 8px; }
+  .info-card h3 { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+  .info-card p { font-size: 12px; color: rgba(255,255,255,0.38); line-height: 1.65; }
+  .footer { text-align: center; margin-top: 40px; padding: 20px; font-size: 11px; color: rgba(255,255,255,0.18); }
+
+  @media (max-width: 480px) {
+    .container { padding: 20px 16px 40px; }
+    .hero { padding: 30px 0 24px; }
+    .result-card { padding: 18px; }
+    .result-main-item .price { font-size: 20px; }
+    .info-cards { grid-template-columns: 1fr; }
+    .province-grid { grid-template-columns: repeat(auto-fill,minmax(80px,1fr)); }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="hero-gradient"></div>
+<div class="bg-particles" id="particles"></div>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span>30 省价格实时更新</div>
+    <h1>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path></svg>
+      旧衣回收最优平台
+    </h1>
+    <p>一键查询三大平台最优回收方案</p>
+  </div>
+
+  <!-- Platform Tabs -->
+  <div class="platform-tabs">
+    <button class="tab-btn active" data-tab="all" onclick="showSection('all')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
+      全部省份
+    </button>
+    <button class="tab-btn" data-tab="chucheng" onclick="showSection('chucheng')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path></svg>
+      队长旧衣服回收
+    </button>
+    <button class="tab-btn" data-tab="wotan" onclick="showSection('wotan')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+      旧衣回收助手
+    </button>
+    <button class="tab-btn" data-tab="jiuyibao" onclick="showSection('jiuyibao')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+      旧衣宝小程序
+    </button>
+  </div>
+
+  <div class="search-box">
+    <span class="search-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </span>
+    <input type="text" id="provinceInput" placeholder="输入省份，如：浙江、上海、湖北…" onkeyup="handleEnter(event)">
+    <button class="search-btn" onclick="doSearch()">查询</button>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-province" id="resultProvince">—<span>最优平台推荐</span></div>
+      <div class="result-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:3px"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
+        最高价
+      </div>
+    </div>
+    <div class="result-main">
+      <div class="result-main-item" id="bestPriceItem">
+        <div class="label">最优价格</div>
+        <div class="price" id="bestPrice">—</div>
+        <div class="unit">元 / kg</div>
+        <div class="tag">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 000-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 1012 0V2z"></path></svg>
+          推荐选择
+        </div>
+      </div>
+      <div class="result-main-item">
+        <div class="label">最优平台</div>
+        <div class="price" id="bestPlatformName" style="font-size:18px">—</div>
+        <div class="unit">平台名称</div>
+      </div>
+    </div>
+    <div class="result-table">
+      <div class="result-table-header">
+        <span>平台</span><span>价格 (元/kg)</span><span>排名</span>
+      </div>
+      <div id="tableBody"></div>
+    </div>
+  </div>
+
+  <!-- Section: All -->
+  <div class="section-wrap" id="section-all">
+    <div class="section-header all">
+      <div class="dot"></div>
+      <div class="section-title all">各省最优平台分布</div>
+      <div class="section-count">30 省</div>
+    </div>
+    <div class="province-grid" id="grid-all"></div>
+  </div>
+
+  <!-- Section: 队长旧衣服回收 -->
+  <div class="section-wrap" id="section-chucheng" style="display:none">
+    <div class="section-header chucheng">
+      <div class="dot"></div>
+      <div class="section-title chucheng">队长旧衣服回收</div>
+      <div class="section-count" id="count-chucheng">0 个省</div>
+    </div>
+    <div class="province-grid" id="grid-chucheng"></div>
+  </div>
+
+  <!-- Section: 旧衣回收助手 -->
+  <div class="section-wrap" id="section-wotan" style="display:none">
+    <div class="section-header wotan">
+      <div class="dot"></div>
+      <div class="section-title wotan">旧衣回收助手</div>
+      <div class="section-count" id="count-wotan">0 个省</div>
+    </div>
+    <div class="province-grid" id="grid-wotan"></div>
+  </div>
+
+  <!-- Section: 旧衣宝小程序 -->
+  <div class="section-wrap" id="section-jiuyibao" style="display:none">
+    <div class="section-header jiuyibao">
+      <div class="dot"></div>
+      <div class="section-title jiuyibao">旧衣宝小程序</div>
+      <div class="section-count" id="count-jiuyibao">0 个省</div>
+    </div>
+    <div class="province-grid" id="grid-jiuyibao"></div>
+  </div>
+
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="info-card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 019 14"></path></svg>
+      </div>
+      <h3>如何选择最优平台</h3>
+      <p>系统自动对比三个平台的回收价格，优先推荐收价最高的平台，确保您获得最大收益。</p>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      </div>
+      <h3>价格实时更新</h3>
+      <p>数据来源于各平台公开价格表，实际价格可能因季节、品质、重量等因素有所浮动，仅供参考。</p>
+    </div>
+  </div>
+
+  <div class="footer">数据来源：价格表 · 旧衣宝为原始数据 · 仅供参攷</div>
+</div>
+
+<script>
+// ========== 数据 ==========
+var DATA = [
+  { province: '上海',     chucheng:   1.162, wotan:    1.4,  jiuyibao: 1.5 },
+  { province: '江苏',     chucheng:   1.162, wotan:    1.4,  jiuyibao: 1.2 },
+  { province: '浙江',     chucheng:   1.162, wotan:    1.4,  jiuyibao: 1.2 },
+  { province: '北京',     chucheng:    1.12, wotan:    1.4,  jiuyibao: 1.2 },
+  { province: '广东',     chucheng:    1.12, wotan:    1.4,  jiuyibao: 1.2 },
+  { province: '天津',     chucheng:   1.079, wotan:    1.1,  jiuyibao: 1.2 },
+  { province: '安徽',     chucheng:   1.146, wotan:    1.4,  jiuyibao: 1.2 },
+  { province: '四川',     chucheng:   0.996, wotan:    1.1,  jiuyibao: 1.2 },
+  { province: '重庆',     chucheng:   0.996, wotan:    1.1,  jiuyibao: 1.2 },
+  { province: '湖北',     chucheng:    0.83, wotan:    0.6,  jiuyibao: 1.2 },
+  { province: '福建',     chucheng:    0.83, wotan:    1.0,  jiuyibao: 1.2 },
+  { province: '海南',     chucheng:    0.83, wotan:    0.8,  jiuyibao: 0.75 },
+  { province: '广西',     chucheng:   0.747, wotan:    0.7,  jiuyibao: 0.75 },
+  { province: '贵州',     chucheng:   0.747, wotan:    0.7,  jiuyibao: 0.75 },
+  { province: '山东',     chucheng:   0.747, wotan:    0.7,  jiuyibao: 0.75 },
+  { province: '新疆',     chucheng:   0.747, wotan:   null,  jiuyibao: null },
+  { province: '河南',     chucheng:   0.747, wotan:   0.75,  jiuyibao: 0.75 },
+  { province: '湖南',     chucheng:   0.897, wotan:   0.95,  jiuyibao: 1.2 },
+  { province: '云南',     chucheng:   0.747, wotan:    0.7,  jiuyibao: 0.75 },
+  { province: '河北',     chucheng:   0.814, wotan:   0.75,  jiuyibao: 0.3 },
+  { province: '江西',     chucheng:   0.814, wotan:   0.85,  jiuyibao: 0.75 },
+  { province: '辽宁',     chucheng:   0.814, wotan:   0.85,  jiuyibao: 0.45 },
+  { province: '内蒙古',     chucheng:   0.814, wotan:    0.5,  jiuyibao: 0.75 },
+  { province: '山西',     chucheng:   0.814, wotan:   0.75,  jiuyibao: 0.75 },
+  { province: '陕西',     chucheng:   0.814, wotan:   0.75,  jiuyibao: 0.75 },
+  { province: '青海',     chucheng:   0.731, wotan:    0.5,  jiuyibao: null },
+  { province: '宁夏',     chucheng:  0.6895, wotan:   0.75,  jiuyibao: 0.75 },
+  { province: '吉林',     chucheng:  0.6895, wotan:   0.75,  jiuyibao: 0.45 },
+  { province: '甘肃',     chucheng:   0.648, wotan:   0.65,  jiuyibao: 0.75 },
+  { province: '黑龙江',     chucheng:  0.6148, wotan:   0.85,  jiuyibao: 0.45 },
+];
+
+var PLATFORM_NAMES = {
+  chucheng: '队长旧衣服回收',
+  wotan: '旧衣回收助手',
+  jiuyibao: '旧衣宝小程序'
+};
+
+// 粒子背景
+(function() {
+  var container = document.getElementById('particles');
+  var colors = ['rgba(139,92,246,0.6)', 'rgba(52,211,153,0.5)', 'rgba(99,102,241,0.5)', 'rgba(251,191,36,0.4)'];
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    var sz = 2 + Math.random() * 4;
+    p.style.width = sz + 'px';
+    p.style.height = sz + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(p);
+  }
+})();
+
+// Tab 切换
+function showSection(name) {
+  // 更新按钮状态
+  var btns = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  document.querySelector('[data-tab="' + name + '"]').classList.add('active');
+
+  // 显示对应区块
+  var sections = ['all', 'chucheng', 'wotan', 'jiuyibao'];
+  for (var j = 0; j < sections.length; j++) {
+    var el = document.getElementById('section-' + sections[j]);
+    if (el) el.style.display = (sections[j] === name) ? 'block' : 'none';
+  }
+}
+
+// 获取省份最优平台
+function getBest(key) {
+  var c = [];
+  if (key === 'chucheng') return 'chucheng';
+  if (key === 'wotan') return 'wotan';
+  if (key === 'jiuyibao') return 'jiuyibao';
+  if (key === 'all') {
+    var all = [];
+    DATA.forEach(function(d) { all.push(d); });
+    return all;
+  }
+  var bestKey = null, bestPrice = -1;
+  if (d.chucheng !== null && d.chucheng > bestPrice) { bestPrice = d.chucheng; bestKey = 'chucheng'; }
+  if (d.wotan !== null && d.wotan > bestPrice) { bestPrice = d.wotan; bestKey = 'wotan'; }
+  if (d.jiuyibao !== null && d.jiuyibao > bestPrice) { bestPrice = d.jiuyibao; bestKey = 'jiuyibao'; }
+  return bestKey;
+}
+
+function getBestForProvince(d) {
+  var bestKey = null, bestPrice = -1;
+  if (d.chucheng !== null && d.chucheng > bestPrice) { bestPrice = d.chucheng; bestKey = 'chucheng'; }
+  if (d.wotan !== null && d.wotan > bestPrice) { bestPrice = d.wotan; bestKey = 'wotan'; }
+  if (d.jiuyibao !== null && d.jiuyibao > bestPrice) { bestPrice = d.jiuyibao; bestKey = 'jiuyibao'; }
+  return bestKey;
+}
+
+// 搜索
+function doSearch() {
+  var input = document.getElementById('provinceInput').value.trim();
+  var err = document.getElementById('errorMsg');
+  var card = document.getElementById('resultCard');
+  err.classList.remove('show');
+  card.classList.remove('show');
+  if (!input) return;
+
+  var matched = DATA.filter(function(d) {
+    return d.province === input || d.province.indexOf(input) === 0;
+  });
+
+  if (matched.length === 0) {
+    err.textContent = '未找到"' + input + '"，请输入完整省份名称，如：上海、北京、湖北';
+    err.classList.add('show');
+    return;
+  }
+
+  var d = matched[0];
+  var candidates = [];
+  if (d.chucheng !== null) candidates.push({ key: 'chucheng', platform: PLATFORM_NAMES.chucheng, price: d.chucheng });
+  if (d.wotan !== null) candidates.push({ key: 'wotan', platform: PLATFORM_NAMES.wotan, price: d.wotan });
+  if (d.jiuyibao !== null) candidates.push({ key: 'jiuyibao', platform: PLATFORM_NAMES.jiuyibao, price: d.jiuyibao });
+  candidates.sort(function(a, b) { return b.price - a.price; });
+
+  var best = candidates[0];
+
+  document.getElementById('resultProvince').innerHTML = d.province + '<span>最优平台推荐</span>';
+  document.getElementById('bestPrice').textContent = best.price.toFixed(3) + ' 元/kg';
+  document.getElementById('bestPlatformName').textContent = best.platform;
+  document.getElementById('bestPriceItem').classList.add('best');
+
+  var medals = ['🥇', '🥈', '🥉'];
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  for (var i = 0; i < candidates.length; i++) {
+    var c = candidates[i];
+    var row = document.createElement('div');
+    row.className = 'result-table-row' + (i === 0 ? ' best-row' : '');
+    row.innerHTML =
+      '<span class="platform">' + c.platform + '</span>' +
+      '<span class="price-cell">' + c.price.toFixed(3) + '</span>' +
+      '<span class="rank">' + (medals[i] || '') + ' 第' + (i+1) + '名</span>';
+    tbody.appendChild(row);
+  }
+
+  card.classList.add('show');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function handleEnter(e) { if (e.key === 'Enter') doSearch(); }
+
+// 渲染所有网格
+function renderAll() {
+  var groups = { chucheng: [], wotan: [], jiuyibao: [] };
+  var allSorted = []; // [{d, bestKey}]
+
+  DATA.forEach(function(d) {
+    var bestKey = getBestForProvince(d);
+    allSorted.push({ d: d, bestKey: bestKey });
+    if (bestKey) groups[bestKey].push(d);
+  });
+
+  // All 网格 - 按 bestKey 分组展示
+  var gridAll = document.getElementById('grid-all');
+  gridAll.innerHTML = '';
+  allSorted.forEach(function(item) {
+    var d = item.d;
+    var bestKey = item.bestKey;
+    var chip = document.createElement('div');
+    chip.className = 'province-chip ' + (bestKey || '');
+    var price = bestKey ? d[bestKey] : null;
+    chip.innerHTML =
+      '<span class="pname">' + d.province + '</span>' +
+      '<span class="pprice">' + (price !== null ? price.toFixed(3) + ' 元/kg' : '—') + '</span>';
+    chip.onclick = function() {
+      document.getElementById('provinceInput').value = d.province;
+      doSearch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    gridAll.appendChild(chip);
+  });
+
+  // 各平台网格
+  ['chucheng', 'wotan', 'jiuyibao'].forEach(function(key) {
+    var grid = document.getElementById('grid-' + key);
+    var count = document.getElementById('count-' + key);
+    if (!grid || !count) return;
+    count.textContent = groups[key].length + ' 个省';
+    grid.innerHTML = '';
+    groups[key].forEach(function(d) {
+      var chip = document.createElement('div');
+      chip.className = 'province-chip ' + key;
+      chip.innerHTML =
+        '<span class="pname">' + d.province + '</span>' +
+        '<span class="pprice">' + d[key].toFixed(3) + ' 元/kg</span>';
+      chip.onclick = function() {
+        document.getElementById('provinceInput').value = d.province;
+        doSearch();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+      grid.appendChild(chip);
+    });
+  });
+}
+
+renderAll();
+</script>
+</body>
+</html>

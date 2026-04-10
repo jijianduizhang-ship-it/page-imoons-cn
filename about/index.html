@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不二 - 个人介绍</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070f;--card:#0e0e1c;--border:#1a1a30;
+  --purple:#8b7cf6;--gold:#f5c842;--green:#34d399;--blue:#38bdf8;
+  --text:#e0e0f0;--muted:#8888aa;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;line-height:1.7;overflow-x:hidden}
+
+/* 滚动进度条 */
+#scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue));z-index:1000;width:0%;transition:width .1s}
+
+/* 浮动 emoji */
+.floating-emojis{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.fe{position:absolute;font-size:1.4rem;opacity:.15;animation:fe-float linear infinite}
+@keyframes fe-float{
+  0%{transform:translateY(110vh) rotate(0deg)}
+  100%{transform:translateY(-10vh) rotate(360deg)}
+}
+
+/* 导航 */
+nav{position:fixed;top:0;width:100%;z-index:999;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);background:rgba(7,7,15,.7);border-bottom:1px solid var(--border)}
+nav .logo{font-family:'ZCOOL KuaiLe',cursive;font-size:1.3rem;color:var(--purple)}
+nav .nav-links{display:flex;gap:1.5rem}
+nav .nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s}
+nav .nav-links a:hover{color:var(--purple)}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;z-index:1}
+.hero-avatar{position:relative;width:140px;height:140px;margin-bottom:1.5rem}
+.hero-avatar .ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--purple);animation:spin 6s linear infinite}
+.hero-avatar .ring2{position:absolute;inset:-16px;border-radius:50%;border:2px dashed var(--blue);animation:spin 12s linear infinite reverse}
+.hero-avatar .ring3{position:absolute;inset:-24px;border-radius:50%;border:1px solid rgba(139,124,246,.3);animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-avatar .avatar-img{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-family:'ZCOOL KuaiLe',cursive;color:#fff;position:relative;z-index:1;overflow:hidden}
+.hero h1{font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+.hero .tagline{font-size:1.1rem;color:var(--muted);margin-bottom:1.5rem}
+.hero-tags{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+.tag{padding:.35rem 1rem;border-radius:2rem;border:1px solid var(--border);font-size:.85rem;transition:all .3s;cursor:default;background:var(--card)}
+.tag:hover{border-color:var(--purple);color:var(--purple);transform:translateY(-3px);box-shadow:0 4px 20px rgba(139,124,246,.2)}
+.tag.active{border-color:var(--gold);color:var(--gold)}
+.tag.green{border-color:var(--green);color:var(--green)}
+.tag.blue{border-color:var(--blue);color:var(--blue)}
+
+.hero-stats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--purple)}
+.stat .label{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+
+/* 关于 */
+.section{padding:5rem 2rem;position:relative;z-index:1}
+.section-title{font-size:1.8rem;font-weight:700;margin-bottom:2.5rem;text-align:center}
+.section-title span{color:var(--purple)}
+.container{max-width:900px;margin:0 auto}
+
+.about-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:2rem}
+.about-left{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem}
+.about-left h3{color:var(--purple);margin-bottom:1rem;font-size:1.1rem}
+.about-left p{color:var(--text);margin-bottom:1rem;font-size:.95rem}
+.about-left p:last-child{margin-bottom:0}
+.about-right{display:flex;flex-direction:column;gap:1rem}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;transition:all .3s}
+.info-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.4);border-color:var(--purple)}
+.info-card .label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+.info-card .value{font-size:1rem;font-weight:500}
+.info-card .value.purple{color:var(--purple)}
+.info-card .value.green{color:var(--green)}
+.info-card .value.blue{color:var(--blue)}
+
+/* 技能 */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.skill-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem 1.5rem;transition:all .3s;opacity:0;transform:translateY(30px);position:relative;overflow:hidden}
+.skill-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;width:0;transition:width .5s}
+.skill-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.skill-card:hover::before{width:100%}
+.skill-card.show{opacity:1;transform:translateY(0)}
+.skill-card:nth-child(1)::before{background:var(--purple)}
+.skill-card:nth-child(2)::before{background:var(--gold)}
+.skill-card:nth-child(3)::before{background:var(--green)}
+.skill-card:nth-child(4)::before{background:var(--blue)}
+.skill-card:nth-child(5)::before{background:var(--purple)}
+.skill-card:nth-child(6)::before{background:var(--gold)}
+.skill-icon{font-size:2.2rem;margin-bottom:1rem}
+.skill-card h4{font-size:1.05rem;margin-bottom:.6rem;color:var(--text)}
+.skill-card p{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+.skill-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.skill-fill{height:100%;border-radius:3px;width:0;transition:width 1.2s ease}
+.skill-card:nth-child(1) .skill-fill{background:var(--purple)}
+.skill-card:nth-child(2) .skill-fill{background:var(--gold)}
+.skill-card:nth-child(3) .skill-fill{background:var(--green)}
+.skill-card:nth-child(4) .skill-fill{background:var(--blue)}
+.skill-card:nth-child(5) .skill-fill{background:var(--purple)}
+.skill-card:nth-child(6) .skill-fill{background:var(--gold)}
+.skill-percent{font-size:.75rem;color:var(--muted);text-align:right;margin-top:.3rem;font-family:'JetBrains Mono',monospace}
+
+/* 项目 */
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.project-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:all .3s;opacity:0;transform:translateY(30px);position:relative}
+.project-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.project-card.show{opacity:1;transform:translateY(0)}
+.project-status{position:absolute;top:1rem;right:1rem;font-size:.7rem;padding:.2rem .7rem;border-radius:2rem;font-weight:500}
+.status-exploring{background:rgba(139,124,246,.15);color:var(--purple);border:1px solid rgba(139,124,246,.3)}
+.status-planning{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3)}
+.status-progress{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.project-card h4{font-size:1.1rem;margin-bottom:.6rem;padding-right:4rem}
+.project-card p{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+.project-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.ptag{padding:.15rem .6rem;border-radius:1rem;font-size:.72rem;background:rgba(139,124,246,.1);color:var(--purple);border:1px solid rgba(139,124,246,.2)}
+
+/* 副业原则 */
+.principles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.principle-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1.2rem;text-align:center;transition:all .3s;opacity:0;transform:translateY(20px)}
+.principle-card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.principle-card.show{opacity:1;transform:translateY(0)}
+.principle-card .num{font-family:'JetBrains Mono',monospace;font-size:2.5rem;color:rgba(139,124,246,.2);font-weight:700;margin-bottom:.5rem}
+.principle-card h4{font-size:1rem;margin-bottom:.5rem;color:var(--text)}
+.principle-card p{font-size:.8rem;color:var(--muted)}
+
+/* 联系我 */
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;transition:all .3s;opacity:0;transform:translateY(20px);text-decoration:none;color:var(--text);display:block}
+.contact-card:hover{transform:translateY(-6px);box-shadow:0 12px 35px rgba(0,0,0,.5);border-color:var(--purple);color:var(--text)}
+.contact-card.show{opacity:1;transform:translateY(0)}
+.contact-card .icon{font-size:2.5rem;margin-bottom:1rem}
+.contact-card h4{font-size:1.05rem;margin-bottom:.4rem}
+.contact-card p{font-size:.85rem;color:var(--muted)}
+
+/* CTA */
+.cta-section{text-align:center;padding:5rem 2rem;position:relative;z-index:1}
+.cta-box{background:linear-gradient(135deg,rgba(139,124,246,.1),rgba(56,189,248,.1));border:1px solid rgba(139,124,246,.3);border-radius:24px;padding:4rem 2rem;max-width:700px;margin:0 auto}
+.cta-box h2{font-size:2rem;margin-bottom:1rem}
+.cta-box p{color:var(--muted);margin-bottom:2rem;font-size:1rem}
+.cta-btn{display:inline-block;padding:.8rem 2.5rem;background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;text-decoration:none;border-radius:3rem;font-weight:600;font-size:1rem;transition:all .3s}
+.cta-btn:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(139,124,246,.4)}
+
+/* 页脚 */
+footer{text-align:center;padding:2rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border);position:relative;z-index:1}
+footer span{color:var(--purple)}
+
+/* 滚动显示 */
+.reveal{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.22,1,.36,1)}
+.reveal.show{opacity:1;transform:translateY(0)}
+
+/* 响应式 */
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr}
+  .skills-grid{grid-template-columns:repeat(2,1fr)}
+  .projects-grid{grid-template-columns:repeat(2,1fr)}
+  .principles-grid{grid-template-columns:repeat(2,1fr)}
+  .contact-grid{grid-template-columns:repeat(2,1fr)}
+  nav .nav-links{gap:1rem}
+}
+@media(max-width:600px){
+  .hero h1{font-size:2rem}
+  .hero-stats{gap:1rem}
+  .section{padding:3rem 1rem}
+  .skills-grid,.projects-grid,.principles-grid,.contact-grid{grid-template-columns:1fr}
+  nav .nav-links{display:none}
+  .about-right{gap:.8rem}
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<!-- 浮动 Emoji -->
+<div class="floating-emojis" id="floating-emojis"></div>
+
+<!-- 导航 -->
+<nav>
+  <div class="logo">不二.</div>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#skills">技能</a>
+    <a href="#projects">项目</a>
+    <a href="#principles">原则</a>
+    <a href="#contact">联系</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-avatar">
+    <div class="ring"></div>
+    <div class="ring2"></div>
+    <div class="ring3"></div>
+    <div class="avatar-img"><img src="images/avatar.jpg" alt="不二" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+  </div>
+  <h1>不二</h1>
+  <p class="tagline">操作系统测试工程师 × 互联网副业探索者</p>
+  <div class="hero-tags">
+    <span class="tag active">🤖 AI 副业</span>
+    <span class="tag green">📍 长沙</span>
+    <span class="tag blue">🛠️ 测试自动化</span>
+    <span class="tag">📚 精益创业</span>
+    <span class="tag green">⚡ 轻项目</span>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="num">6+</div><div class="label">年系统测试</div></div>
+    <div class="stat"><div class="num">10+</div><div class="label">副业项目探索</div></div>
+    <div class="stat"><div class="num">50+</div><div class="label">自动化脚本</div></div>
+  </div>
+</section>
+
+<!-- 关于 -->
+<section class="section" id="about">
+  <div class="container">
+    <h2 class="section-title reveal">关于 <span>我</span></h2>
+    <div class="about-grid">
+      <div class="about-left reveal">
+        <h3>👋 你好，我是不二</h3>
+        <p>我是一名操作系统测试工程师，在系统测试领域深耕 3 年+，专注于硬件兼容性、驱动稳定性与软件适配性验证。每一次发现隐藏 bug、每一次推动问题解决，都让我感受到技术探索的乐趣。</p>
+        <p>与此同时，我也在积极探索互联网副业边界。2020 年至今，已尝试过 10+ 个不同方向的副业项目，从内容创作到工具开发，从信息差生意到 AI 应用，踩过坑也挖到过金。</p>
+        <p>我目前正在读 <strong>《精益创业》</strong>（Eric Ries），学习如何用最小成本验证商业假设。副业方向锁定在 <strong>AI 副业</strong> 与 <strong>轻项目</strong>，追求轻量启动、快速迭代、真实记录。</p>
+        <p>我相信：好产品是迭代出来的，好项目是测出来的。测试工程师的严谨 + 创业者的直觉，是我正在打磨的核心竞争力。</p>
+      </div>
+      <div class="about-right">
+        <div class="info-card reveal">
+          <div class="label">📍 所在地</div>
+          <div class="value">长沙</div>
+        </div>
+        <div class="info-card reveal">
+          <div class="label">🎯 副业方向</div>
+          <div class="value purple">AI 副业 · 轻项目</div>
+        </div>
+        <div class="info-card reveal">
+          <div class="label">📅 探索时间</div>
+          <div class="value green">2020 年至今</div>
+        </div>
+        <div class="info-card reveal">
+          <div class="label">📖 正在读</div>
+          <div class="value blue">精益创业 / Eric Ries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 技能 -->
+<section class="section" id="skills">
+  <div class="container">
+    <h2 class="section-title reveal">我的 <span>技能栈</span></h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">🧪</div>
+        <h4>系统测试</h4>
+        <p>硬件兼容性 / 驱动验证 / 软件适配性 / 压力测试</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+        <div class="skill-percent">92%</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">⚡</div>
+        <h4>测试自动化</h4>
+        <p>Python / Shell / 自动化框架 / CI/CD 集成</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+        <div class="skill-percent">88%</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🤖</div>
+        <h4>AI 应用</h4>
+        <p>LLM 集成 / Prompt 工程 / AI 工具链搭建</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+        <div class="skill-percent">75%</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🌐</div>
+        <h4>Web 开发</h4>
+        <p>前端基础 / API 对接 / 部署与运维</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+        <div class="skill-percent">70%</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📊</div>
+        <h4>数据分析</h4>
+        <p>测试报告 / 趋势分析 / 问题归因</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+        <div class="skill-percent">82%</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">💡</div>
+        <h4>项目探索</h4>
+        <p>轻创业 / 需求验证 / MVP 快速搭建</p>
+        <div class="skill-bar"><div class="skill-fill" data-width="78"></div></div>
+        <div class="skill-percent">78%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 项目 -->
+<section class="section" id="projects">
+  <div class="container">
+    <h2 class="section-title reveal">正在做的 <span>项目</span></h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <span class="project-status status-exploring">🔬 探索中</span>
+        <h4>AI 副业实验室</h4>
+        <p>探索 AI 与轻项目的结合点，测试各类 AI 工具的变现可能性，用测试思维做副业验证。</p>
+        <div class="project-tags">
+          <span class="ptag">AI</span>
+          <span class="ptag">副业</span>
+          <span class="ptag">探索</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <span class="project-status status-planning">📋 规划中</span>
+        <h4>轻项目情报站</h4>
+        <p>搜集整理互联网轻创业项目情报，搭建可检索的情报库，帮助快速找到低门槛可执行项目。</p>
+        <div class="project-tags">
+          <span class="ptag">情报</span>
+          <span class="ptag">轻项目</span>
+          <span class="ptag">整理</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <span class="project-status status-progress">⚡ 进行中</span>
+        <h4>测试自动化工具</h4>
+        <p>将日常测试工作中重复的工作流封装成自动化脚本，提升测试效率，专注更有价值的问题。</p>
+        <div class="project-tags">
+          <span class="ptag">自动化</span>
+          <span class="ptag">效率</span>
+          <span class="ptag">工具</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 副业原则 -->
+<section class="section" id="principles">
+  <div class="container">
+    <h2 class="section-title reveal">副业 <span>原则</span></h2>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="num">01</div>
+        <h4>轻量优先</h4>
+        <p>小步快跑，用最小成本验证假设，不梭哈</p>
+      </div>
+      <div class="principle-card">
+        <div class="num">02</div>
+        <h4>成本可控</h4>
+        <p>控制沉没成本，留得青山在不怕没柴烧</p>
+      </div>
+      <div class="principle-card">
+        <div class="num">03</div>
+        <h4>真实记录</h4>
+        <p>每一步都真实记录，不粉饰，成长来自复盘</p>
+      </div>
+      <div class="principle-card">
+        <div class="num">04</div>
+        <h4>可执行为王</h4>
+        <p>再好的点子不如一次执行，执行力是一切</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 联系我 -->
+<section class="section" id="contact">
+  <div class="container">
+    <h2 class="section-title reveal">找到 <span>我</span></h2>
+    <div class="contact-grid">
+      <a href="mailto:1139646881@qq.com" class="contact-card">
+        <div class="icon">📧</div>
+        <h4>电子邮件</h4>
+        <p>1139646881@qq.com</p>
+      </a>
+      <a href="#" class="contact-card" onclick="return false;">
+        <div class="icon">💬</div>
+        <h4>飞书</h4>
+        <p>搜索：不二</p>
+      </a>
+      <a href="https://page.imoons.cn" target="_blank" class="contact-card">
+        <div class="icon">🌐</div>
+        <h4>个人网站</h4>
+        <p>page.imoons.cn</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-box reveal">
+    <h2>🚀 一起探索副业边界</h2>
+    <p>如果你也在探索副业，或者对 AI + 轻项目感兴趣，欢迎连接。我们可以交流经验、共享情报、一起成长。</p>
+    <a href="mailto:1139646881@qq.com" class="cta-btn">给我发邮件 ✉️</a>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+  <p>© 2026 不二 · page.imoons.cn · 用 ❤️ 和 ⌨️ 构建</p>
+</footer>
+
+<script>
+// 滚动进度条
+window.addEventListener('scroll',()=>{
+  const scrollTop=document.documentElement.scrollTop;
+  const scrollHeight=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  const progress=(scrollTop/scrollHeight)*100;
+  document.getElementById('scroll-progress').style.width=progress+'%';
+});
+
+// 浮动 Emoji
+(function(){
+  const emojis=['🚀','💡','⚡','🔧','📊','🎯','💰','🤖','📚','✨','🔥','💎','🌙','⭐','🛠️'];
+  const container=document.getElementById('floating-emojis');
+  for(let i=0;i<15;i++){
+    const el=document.createElement('div');
+    el.className='fe';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left=Math.random()*100+'%';
+    el.style.animationDuration=(12+Math.random()*18)+'s';
+    el.style.animationDelay=Math.random()*20+'s';
+    el.style.fontSize=(1+Math.random()*1.2)+'rem';
+    container.appendChild(el);
+  }
+})();
+
+// IntersectionObserver 滚动动画
+const revealObserver=new IntersectionObserver((entries)=>{
+  entries.forEach((entry,i)=>{
+    if(entry.isIntersecting){
+      setTimeout(()=>{entry.target.classList.add('show')},i*80);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
+
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+// 技能卡滚动动画
+const skillObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('show');
+      const fill=entry.target.querySelector('.skill-fill');
+      if(fill){
+        const width=fill.getAttribute('data-width');
+        setTimeout(()=>{fill.style.width=width+'%'},300);
+      }
+      skillObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:0.2});
+
+document.querySelectorAll('.skill-card').forEach(el=>skillObserver.observe(el));
+document.querySelectorAll('.project-card').forEach(el=>skillObserver.observe(el));
+document.querySelectorAll('.principle-card').forEach(el=>skillObserver.observe(el));
+document.querySelectorAll('.contact-card').forEach(el=>skillObserver.observe(el));
+</script>
+
+</body>
+</html>
