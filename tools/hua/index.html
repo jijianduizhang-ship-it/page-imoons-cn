@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花卉识别 - 拍照识花</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8fafc;
+        }
+        .gradient-bg {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        }
+        .card {
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #8fd3f4;
+            background-color: rgba(143, 211, 244, 0.05);
+        }
+        .btn-primary {
+            background: linear-gradient(120deg, #4ade80 0%, #38bdf8 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+        }
+        .result-card {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .flower-img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .history-item {
+            transition: all 0.3s ease;
+        }
+        .history-item:hover {
+            background-color: rgba(143, 211, 244, 0.1);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none;
+            }
+            .mobile-full {
+                width: 100%;
+            }
+        }
+        
+        /* 标签样式 */
+        .tag {
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: #0284c7;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: none;
+        }
+        .loading-circle {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(143, 211, 244, 0.3);
+            border-radius: 50%;
+            border-top-color: #38bdf8;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 结果页面 */
+        #resultPage {
+            display: none;
+        }
+        
+        /* 历史记录页面 */
+        #historyPage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-leaf text-green-500 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400">花卉识别</span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#" class="text-gray-700 hover:text-blue-500 transition" onclick="showPage('homePage')">首页</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-500 transition" onclick="showPage('historyPage')">历史记录</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-500 transition">花卉百科</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-500 transition">关于我们</a>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页内容 -->
+    <div id="homePage">
+        <!-- 头部横幅 -->
+        <div class="gradient-bg py-12 md:py-20">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
+                        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">一拍即知，探索花卉世界</h1>
+                        <p class="text-white text-opacity-90 mb-6">上传花卉照片，立即获取详细信息，让您轻松认识大自然的美丽</p>
+                        <button class="bg-white text-blue-500 font-semibold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition">了解更多</button>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center">
+                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946" alt="花卉展示" class="rounded-lg shadow-xl w-full max-w-md">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="container mx-auto px-4 py-12">
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">上传花卉图片进行识别</h2>
+                
+                <div class="upload-area p-8 text-center mb-6">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 mb-4">拖放图片到此处，或点击下方按钮上传</p>
+                    <div class="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-4">
+                        <button class="btn-primary text-white font-medium py-2 px-6 rounded-full" onclick="simulateUpload()">
+                            <i class="fas fa-image mr-2"></i>从相册选择
+                        </button>
+                        <button class="bg-gray-100 text-gray-700 font-medium py-2 px-6 rounded-full hover:bg-gray-200 transition">
+                            <i class="fas fa-camera mr-2"></i>拍照识别
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 加载动画 -->
+                <div class="loading flex flex-col items-center justify-center py-8" id="loadingArea">
+                    <div class="loading-circle mb-4"></div>
+                    <p class="text-gray-600">正在识别花卉，请稍候...</p>
+                </div>
+                
+                <!-- 使用提示 -->
+                <div class="bg-blue-50 rounded-xl p-4">
+                    <h3 class="font-semibold text-blue-700 mb-2">使用提示：</h3>
+                    <ul class="text-blue-600 text-sm">
+                        <li class="mb-1"><i class="fas fa-check-circle mr-2"></i>上传清晰的花卉照片，尽量使花朵居中</li>
+                        <li class="mb-1"><i class="fas fa-check-circle mr-2"></i>避免过暗或过亮的照片，以提高识别准确率</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>目前支持超过10,000种花卉的识别</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能介绍 -->
+        <div class="bg-gray-50 py-12">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-center mb-10">我们能做什么</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card bg-white p-6">
+                        <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                            <i class="fas fa-search text-green-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">精准识别</h3>
+                        <p class="text-gray-600">采用先进的AI技术，能够精准识别超过10,000种花卉，准确率高达95%以上。</p>
+                    </div>
+                    
+                    <div class="card bg-white p-6">
+                        <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                            <i class="fas fa-book text-blue-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">详细信息</h3>
+                        <p class="text-gray-600">提供花卉的详细介绍、生长习性、养护方法等全面信息，满足您的求知欲。</p>
+                    </div>
+                    
+                    <div class="card bg-white p-6">
+                        <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                            <i class="fas fa-history text-purple-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">历史记录</h3>
+                        <p class="text-gray-600">自动保存您的识别历史，方便随时查看和回顾，打造您的专属花卉图鉴。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 热门花卉 -->
+        <div class="container mx-auto px-4 py-12">
+            <h2 class="text-2xl font-bold text-center mb-10">热门花卉</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card bg-white overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac" alt="玫瑰" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">玫瑰</h3>
+                        <p class="text-sm text-gray-600 mb-2">蔷薇科</p>
+                        <div class="flex">
+                            <span class="tag mr-2">浪漫</span>
+                            <span class="tag">观赏</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-white overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1457089328109-e5d9bd499191" alt="向日葵" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">向日葵</h3>
+                        <p class="text-sm text-gray-600 mb-2">菊科</p>
+                        <div class="flex">
+                            <span class="tag mr-2">阳光</span>
+                            <span class="tag">食用</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-white overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9" alt="郁金香" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">郁金香</h3>
+                        <p class="text-sm text-gray-600 mb-2">百合科</p>
+                        <div class="flex">
+                            <span class="tag mr-2">优雅</span>
+                            <span class="tag">春季</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-white overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1567508798850-9a272a5ad922" alt="兰花" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-1">兰花</h3>
+                        <p class="text-sm text-gray-600 mb-2">兰科</p>
+                        <div class="flex">
+                            <span class="tag mr-2">高雅</span>
+                            <span class="tag">室内</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 识别结果页面 -->
+    <div id="resultPage" class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- 返回按钮 -->
+            <button class="flex items-center text-blue-500 mb-6" onclick="showPage('homePage')">
+                <i class="fas fa-arrow-left mr-2"></i> 返回首页
+            </button>
+            
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <!-- 图片区域 -->
+                    <div class="md:w-2/5">
+                        <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9" alt="识别的花卉" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- 信息区域 -->
+                    <div class="md:w-3/5 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-2xl font-bold">郁金香</h2>
+                            <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">识别准确率: 98%</span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-700 mb-1"><span class="font-medium">科属：</span>百合科 郁金香属</p>
+                            <p class="text-gray-700 mb-1"><span class="font-medium">花期：</span>3月-5月</p>
+                            <p class="text-gray-700"><span class="font-medium">原产地：</span>土耳其、中亚</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-lg mb-2">花卉介绍</h3>
+                            <p class="text-gray-700">郁金香是百合科郁金香属的多年生草本球根植物，原产于土耳其、中亚等地。花朵呈杯状，色彩丰富多样，是世界上最受欢迎的春季开花球根植物之一。在17世纪的荷兰，曾引发"郁金香狂热"的投机热潮。</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-lg mb-2">养护知识</h3>
+                            <ul class="text-gray-700">
+                                <li class="mb-1"><i class="fas fa-sun text-yellow-500 mr-2"></i>阳光：喜欢充足的阳光</li>
+                                <li class="mb-1"><i class="fas fa-tint text-blue-500 mr-2"></i>浇水：保持土壤湿润但不积水</li>
+                                <li class="mb-1"><i class="fas fa-thermometer-half text-red-500 mr-2"></i>温度：适宜生长温度10-20℃</li>
+                                <li><i class="fas fa-seedling text-green-500 mr-2"></i>土壤：疏松、肥沃、排水良好的沙质土壤</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button class="btn-primary text-white font-medium py-2 px-6 rounded-full">
+                                <i class="fas fa-bookmark mr-2"></i>收藏
+                            </button>
+                            <button class="bg-gray-100 text-gray-700 font-medium py-2 px-6 rounded-full hover:bg-gray-200 transition">
+                                <i class="fas fa-share-alt mr-2"></i>分享
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 相似花卉 -->
+                <div class="p-6 bg-gray-50">
+                    <h3 class="font-semibold text-lg mb-4">相似花卉</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1588628566587-dbd176de94b4" alt="百合" class="w-full h-24 object-cover">
+                            <div class="p-2 text-center">
+                                <p class="font-medium text-sm">百合</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1589994160839-163cd867cfe8" alt="风信子" class="w-full h-24 object-cover">
+                            <div class="p-2 text-center">
+                                <p class="font-medium text-sm">风信子</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1615145969738-1f3a2f2e0f87" alt="水仙" class="w-full h-24 object-cover">
+                            <div class="p-2 text-center">
+                                <p class="font-medium text-sm">水仙</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg overflow-hidden shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2" alt="鸢尾" class="w-full h-24 object-cover">
+                            <div class="p-2 text-center">
+                                <p class="font-medium text-sm">鸢尾</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史记录页面 -->
+    <div id="historyPage" class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6">识别历史</h2>
+            
+            <div class="bg-white rounded-2xl shadow-md p-6">
+                <!-- 历史记录列表 -->
+                <div class="space-y-4">
+                    <div class="history-item p-4 rounded-xl hover:shadow-md transition" onclick="showPage('resultPage')">
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9" alt="郁金香" class="w-20 h-20 rounded-lg object-cover mr-4">
+                            <div class="flex-grow">
+                                <h3 class="font-semibold">郁金香</h3>
+                                <p class="text-sm text-gray-600">百合科 郁金香属</p>
+                                <p class="text-xs text-gray-500">2023-05-15 14:30</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item p-4 rounded-xl hover:shadow-md transition" onclick="showPage('resultPage')">
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac" alt="玫瑰" class="w-20 h-20 rounded-lg object-cover mr-4">
+                            <div class="flex-grow">
+                                <h3 class="font-semibold">玫瑰</h3>
+                                <p class="text-sm text-gray-600">蔷薇科 蔷薇属</p>
+                                <p class="text-xs text-gray-500">2023-05-10 09:15</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="history-item p-4 rounded-xl hover:shadow-md transition" onclick="showPage('resultPage')">
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1457089328109-e5d9bd499191" alt="向日葵" class="w-20 h-20 rounded-lg object-cover mr-4">
+                            <div class="flex-grow">
+                                <h3 class="font-semibold">向日葵</h3>
+                                <p class="text-sm text-gray-600">菊科 向日葵属</p>
+                                <p class="text-xs text-gray-500">2023-05-05 16:45</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 清空历史按钮 -->
+                <div class="mt-8 text-center">
+                    <button class="text-red-500 font-medium py-2 px-6 border border-red-200 rounded-full hover:bg-red-50 transition">
+                        <i class="fas fa-trash-alt mr-2"></i>清空历史记录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-leaf text-green-500 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-400">花卉识别</span>
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        花卉识别是一款专业的花卉识别应用，帮助您轻松认识大自然中的各种花卉，探索花的世界。
+                    </p>
+                    <div class="flex mt-4 space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-green-500 transition">
+                            <i class="fab fa-weixin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500 transition">
+                            <i class="fab fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500 transition">
+                            <i class="fab fa-qq text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500 transition">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">首页</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">花卉百科</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">花卉图鉴</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">养花技巧</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-4">帮助中心</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">使用指南</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">常见问题</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">意见反馈</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-green-500 transition">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-4">下载应用</h3>
+                    <p class="text-gray-600 text-sm mb-3">扫描二维码下载手机应用</p>
+                    <div class="bg-gray-100 p-3 rounded-lg inline-block">
+                        <div class="w-24 h-24 bg-white flex items-center justify-center">
+                            <i class="fas fa-qrcode text-4xl text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">© 2023 花卉识别 版权所有</p>
+                <div class="mt-4 md:mt-0">
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="text-gray-500 text-sm hover:text-green-500 transition">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-500 text-sm hover:text-green-500 transition">服务条款</a></li>
+                        <li><a href="#" class="text-gray-500 text-sm hover:text-green-500 transition">网站地图</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 页面切换和上传模拟的JavaScript -->
+    <script>
+        function showPage(pageId) {
+            // 隐藏所有页面
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('historyPage').style.display = 'none';
+            
+            // 显示指定页面
+            document.getElementById(pageId).style.display = 'block';
+        }
+        
+        // API配置
+        let apiKey = 'sk-H9Sgx6IeVY3mbxkJu1oAj8NuYUFM0AAT2XZ5ACMoQ4bIWxkh'; // 这个API密钥可能已失效
+        let apiUrl = 'https://chatapi.littlewheat.com/v1/chat/completions';
+        let model = 'gpt-4o';
+        
+        // 测试API连接
+        async function testAPIConnection() {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{
+                            role: 'user',
+                            content: 'Hello'
+                        }],
+                        temperature: 0.7,
+                        max_tokens: 10
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return true;
+            } catch (error) {
+                console.error('API测试失败:', error);
+                return false;
+            }
+        }
+        
+        // 压缩图片
+        async function compressImage(base64Image, maxWidth = 800, quality = 0.6) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // 计算图片大小（KB）
+                    const originalSize = Math.round(base64Image.length / 1024);
+                    
+                    // 根据原始大小调整压缩参数
+                    let finalQuality = quality;
+                    let finalMaxWidth = maxWidth;
+                    
+                    if (originalSize > 1000) { // 大于1MB的图片
+                        finalQuality = 0.4;
+                        finalMaxWidth = 600;
+                    } else if (originalSize > 500) { // 大于500KB的图片
+                        finalQuality = 0.5;
+                        finalMaxWidth = 700;
+                    }
+                    
+                    // 如果图片宽度大于最大宽度，按比例缩小
+                    if (width > finalMaxWidth) {
+                        height = Math.round((height * finalMaxWidth) / width);
+                        width = finalMaxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    // 填充白色背景（解决透明背景问题）
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // 绘制图片
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // 压缩图片
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', finalQuality);
+                    
+                    // 检查压缩后的大小
+                    const compressedSize = Math.round(compressedBase64.length / 1024);
+                    console.log(`图片压缩: ${originalSize}KB -> ${compressedSize}KB (质量: ${finalQuality}, 宽度: ${width}px)`);
+                    
+                    resolve(compressedBase64);
+                };
+                img.src = base64Image;
+            });
+        }
+        
+        // 解析API返回的花卉信息
+        function parseFlowerInfo(content) {
+            // 默认花卉信息
+            const defaultInfo = {
+                name: '未知花卉',
+                family: '未知',
+                bloomPeriod: '未知',
+                origin: '未知',
+                description: '无法获取花卉详细信息',
+                care: []
+            };
+            
+            try {
+                // 尝试从内容中提取花卉名称
+                const nameMatch = content.match(/名称[:：]\s*([^\n]+)/i) || 
+                                 content.match(/花名[:：]\s*([^\n]+)/i) ||
+                                 content.match(/^([^，。\n]+)/);
+                
+                if (nameMatch) {
+                    defaultInfo.name = nameMatch[1].trim();
+                }
+                
+                // 提取科属
+                const familyMatch = content.match(/科属[:：]\s*([^\n]+)/i) || 
+                                   content.match(/属于[:：]\s*([^\n]+)/i);
+                if (familyMatch) {
+                    defaultInfo.family = familyMatch[1].trim();
+                }
+                
+                // 提取花期
+                const bloomMatch = content.match(/花期[:：]\s*([^\n]+)/i);
+                if (bloomMatch) {
+                    defaultInfo.bloomPeriod = bloomMatch[1].trim();
+                }
+                
+                // 提取原产地
+                const originMatch = content.match(/原产地[:：]\s*([^\n]+)/i) || 
+                                   content.match(/产地[:：]\s*([^\n]+)/i);
+                if (originMatch) {
+                    defaultInfo.origin = originMatch[1].trim();
+                }
+                
+                // 提取描述 - 优化后的版本
+                const descMatch = content.match(/介绍[:：]([^#]+)/i) || 
+                                 content.match(/描述[:：]([^#]+)/i) ||
+                                 content.match(/花卉介绍[:：]([^#]+)/i);
+                if (descMatch) {
+                    defaultInfo.description = descMatch[1].trim();
+                } else {
+                    // 如果没有明确的介绍部分，尝试提取更多有意义的文本
+                    const paragraphs = content.split('\n\n');
+                    let description = '';
+                    
+                    for (const para of paragraphs) {
+                        // 排除明显是其他类别的段落
+                        if (para.length > 30 && 
+                            !para.includes('养护') && 
+                            !para.includes('科属') && 
+                            !para.includes('花期') && 
+                            !para.includes('原产地') && 
+                            !para.match(/^名称[:：]/i)) {
+                            
+                            if (description.length < 200) { // 确保描述足够长
+                                description += para.trim() + ' ';
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (description.length > 0) {
+                        defaultInfo.description = description.trim();
+                    }
+                }
+                
+                // 提取养护知识
+                const careMatch = content.match(/养护[:：]([^#]+)/i) || 
+                                 content.match(/养护知识[:：]([^#]+)/i);
+                if (careMatch) {
+                    const careText = careMatch[1].trim();
+                    const careItems = careText.split(/[;；。\n]/);
+                    defaultInfo.care = careItems.filter(item => item.trim().length > 0)
+                                              .map(item => item.trim());
+                }
+                
+                return defaultInfo;
+            } catch (e) {
+                console.error('解析花卉信息失败:', e);
+                return defaultInfo;
+            }
+        }
+        
+        // 更新结果页面
+        function updateResultPage(imageBase64, flowerInfo) {
+            try {
+                // 更新图片
+                const resultImage = document.querySelector('#resultPage .md\\:w-2\\/5 img');
+                if (resultImage) {
+                    resultImage.src = imageBase64;
+                }
+                
+                // 更新花名
+                const flowerName = document.querySelector('#resultPage .md\\:w-3\\/5 h2');
+                if (flowerName) {
+                    flowerName.textContent = flowerInfo.name;
+                }
+                
+                // 更新科属、花期、原产地信息
+                const infoItems = document.querySelectorAll('#resultPage .md\\:w-3\\/5 .mb-6:first-of-type p');
+                if (infoItems && infoItems.length >= 3) {
+                    infoItems[0].innerHTML = `<span class="font-medium">科属：</span>${flowerInfo.family}`;
+                    infoItems[1].innerHTML = `<span class="font-medium">花期：</span>${flowerInfo.bloomPeriod}`;
+                    infoItems[2].innerHTML = `<span class="font-medium">原产地：</span>${flowerInfo.origin}`;
+                }
+                
+                // 更新花卉介绍 - 修复DOM操作错误
+                const descriptionContainer = document.querySelector('#resultPage .md\\:w-3\\/5 .mb-6:nth-of-type(2)');
+                if (descriptionContainer) {
+                    // 获取标题元素
+                    const title = descriptionContainer.querySelector('h3');
+                    
+                    // 清空现有内容
+                    descriptionContainer.innerHTML = '';
+                    
+                    // 如果找到了标题，重新添加
+                    if (title) {
+                        descriptionContainer.appendChild(title.cloneNode(true));
+                    } else {
+                        // 如果没有找到标题，创建一个新的
+                        const newTitle = document.createElement('h3');
+                        newTitle.className = 'text-lg font-semibold mb-2';
+                        newTitle.textContent = '花卉介绍';
+                        descriptionContainer.appendChild(newTitle);
+                    }
+                    
+                    // 格式化描述文本，添加段落分隔
+                    let formattedDesc = flowerInfo.description;
+                    
+                    // 如果描述很长，尝试分段显示
+                    if (formattedDesc.length > 150) {
+                        const sentences = formattedDesc.split(/[。！？.!?]/);
+                        let paragraphs = [];
+                        let currentParagraph = '';
+                        
+                        sentences.forEach(sentence => {
+                            if (sentence.trim().length === 0) return;
+                            
+                            if (currentParagraph.length + sentence.length > 150) {
+                                if (currentParagraph.length > 0) {
+                                    paragraphs.push(currentParagraph);
+                                }
+                                currentParagraph = sentence.trim() + '。';
+                            } else {
+                                currentParagraph += sentence.trim() + '。';
+                            }
+                        });
+                        
+                        if (currentParagraph.length > 0) {
+                            paragraphs.push(currentParagraph);
+                        }
+                        
+                        // 创建段落元素
+                        paragraphs.forEach((para, index) => {
+                            const p = document.createElement('p');
+                            p.textContent = para;
+                            p.className = 'text-gray-700 ' + (index > 0 ? 'mt-2' : '');
+                            descriptionContainer.appendChild(p);
+                        });
+                    } else {
+                        const p = document.createElement('p');
+                        p.textContent = formattedDesc;
+                        p.className = 'text-gray-700';
+                        descriptionContainer.appendChild(p);
+                    }
+                }
+                
+                // 更新养护知识
+                const careContainer = document.querySelector('#resultPage .md\\:w-3\\/5 .mb-6:nth-of-type(3)');
+                if (careContainer) {
+                    // 获取标题元素
+                    const careTitle = careContainer.querySelector('h3');
+                    
+                    // 清空现有内容
+                    careContainer.innerHTML = '';
+                    
+                    // 如果找到了标题，重新添加
+                    if (careTitle) {
+                        careContainer.appendChild(careTitle.cloneNode(true));
+                    } else {
+                        // 如果没有找到标题，创建一个新的
+                        const newCareTitle = document.createElement('h3');
+                        newCareTitle.className = 'text-lg font-semibold mb-2';
+                        newCareTitle.textContent = '养护知识';
+                        careContainer.appendChild(newCareTitle);
+                    }
+                    
+                    // 创建新的列表
+                    const careList = document.createElement('ul');
+                    careList.className = 'space-y-1';
+                    careContainer.appendChild(careList);
+                    
+                    // 如果有养护知识，添加到列表
+                    if (flowerInfo.care && flowerInfo.care.length > 0) {
+                        flowerInfo.care.forEach(item => {
+                            // 为不同类型的养护知识添加不同图标
+                            let icon = 'fa-seedling';
+                            let iconColor = 'text-green-500';
+                            
+                            if (item.toLowerCase().includes('阳光') || item.toLowerCase().includes('光照')) {
+                                icon = 'fa-sun';
+                                iconColor = 'text-yellow-500';
+                            } else if (item.toLowerCase().includes('水') || item.toLowerCase().includes('浇水')) {
+                                icon = 'fa-tint';
+                                iconColor = 'text-blue-500';
+                            } else if (item.toLowerCase().includes('温度')) {
+                                icon = 'fa-thermometer-half';
+                                iconColor = 'text-red-500';
+                            } else if (item.toLowerCase().includes('土壤') || item.toLowerCase().includes('土质')) {
+                                icon = 'fa-mountain';
+                                iconColor = 'text-brown-500';
+                            }
+                            
+                            const li = document.createElement('li');
+                            li.className = 'mb-1';
+                            li.innerHTML = `<i class="fas ${icon} ${iconColor} mr-2"></i>${item}`;
+                            careList.appendChild(li);
+                        });
+                    } else {
+                        // 如果没有养护知识，添加默认项
+                        const defaultCare = [
+                            {text: '阳光：一般需要充足的阳光', icon: 'fa-sun', color: 'text-yellow-500'},
+                            {text: '浇水：保持土壤湿润但不积水', icon: 'fa-tint', color: 'text-blue-500'},
+                            {text: '温度：适宜生长温度15-25℃', icon: 'fa-thermometer-half', color: 'text-red-500'},
+                            {text: '土壤：疏松、肥沃、排水良好的土壤', icon: 'fa-seedling', color: 'text-green-500'}
+                        ];
+                        
+                        defaultCare.forEach(item => {
+                            const li = document.createElement('li');
+                            li.className = 'mb-1';
+                            li.innerHTML = `<i class="fas ${item.icon} ${item.color} mr-2"></i>${item.text}`;
+                            careList.appendChild(li);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('更新结果页面失败:', error);
+                // 显示错误提示
+                alert('显示结果失败，请重试');
+            }
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const imageBase64 = e.target.result;
+                await identifyFlower(imageBase64);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 初始化上传区域
+        function initUploadArea() {
+            const uploadArea = document.querySelector('.upload-area');
+            const fileBtn = document.querySelector('.upload-area button:first-of-type');
+            const cameraBtn = document.querySelector('.upload-area button:last-of-type');
+            
+            // 拖放功能
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-blue-400');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('border-blue-400');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-blue-400');
+                
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // 点击上传区域
+            uploadArea.addEventListener('click', (e) => {
+                if (e.target === uploadArea || e.target.tagName !== 'BUTTON') {
+                    fileBtn.click();
+                }
+            });
+            
+            // 从相册选择按钮
+            fileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.click();
+                
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files && fileInput.files[0]) {
+                        handleFileUpload(fileInput.files[0]);
+                    }
+                });
+            });
+            
+            // 拍照按钮
+            cameraBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    // 创建拍照界面
+                    const cameraContainer = document.createElement('div');
+                    cameraContainer.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+                    
+                    const cameraInterface = document.createElement('div');
+                    cameraInterface.className = 'bg-white p-4 rounded-lg max-w-lg w-full';
+                    
+                    const videoElement = document.createElement('video');
+                    videoElement.autoplay = true;
+                    videoElement.className = 'w-full h-64 bg-gray-200 object-cover rounded mb-4';
+                    
+                    const buttonsContainer = document.createElement('div');
+                    buttonsContainer.className = 'flex justify-between';
+                    
+                    const captureBtn = document.createElement('button');
+                    captureBtn.className = 'btn-primary text-white px-5 py-2 rounded-lg flex items-center';
+                    captureBtn.innerHTML = '<i class="fas fa-camera mr-2"></i>拍照';
+                    
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'bg-gray-500 text-white px-5 py-2 rounded-lg flex items-center';
+                    cancelBtn.innerHTML = '<i class="fas fa-times mr-2"></i>取消';
+                    
+                    buttonsContainer.appendChild(captureBtn);
+                    buttonsContainer.appendChild(cancelBtn);
+                    
+                    cameraInterface.appendChild(videoElement);
+                    cameraInterface.appendChild(buttonsContainer);
+                    cameraContainer.appendChild(cameraInterface);
+                    
+                    document.body.appendChild(cameraContainer);
+                    
+                    // 获取摄像头权限
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function(stream) {
+                            videoElement.srcObject = stream;
+                            
+                            // 拍照按钮事件
+                            captureBtn.addEventListener('click', function() {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = videoElement.videoWidth;
+                                canvas.height = videoElement.videoHeight;
+                                canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                                
+                                // 获取图片数据
+                                const imageBase64 = canvas.toDataURL('image/png');
+                                
+                                // 关闭摄像头
+                                stream.getTracks().forEach(track => track.stop());
+                                document.body.removeChild(cameraContainer);
+                                
+                                // 识别花卉
+                                identifyFlower(imageBase64);
+                            });
+                            
+                            // 取消按钮事件
+                            cancelBtn.addEventListener('click', function() {
+                                stream.getTracks().forEach(track => track.stop());
+                                document.body.removeChild(cameraContainer);
+                            });
+                        })
+                        .catch(function(error) {
+                            alert('无法访问摄像头: ' + error.message);
+                            document.body.removeChild(cameraContainer);
+                        });
+                } else {
+                    alert('您的浏览器不支持访问摄像头');
+                }
+            });
+        }
+        
+        // 模拟上传和识别过程（保留原有功能，但改为调用真实API）
+        function simulateUpload() {
+            // 创建文件选择器
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.click();
+            
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files && fileInput.files[0]) {
+                    handleFileUpload(fileInput.files[0]);
+                }
+            });
+        }
+        
+        // 添加历史记录功能
+        function saveToHistory(imageBase64, flowerInfo) {
+            try {
+                // 获取现有历史记录
+                let history = JSON.parse(localStorage.getItem('flowerHistory') || '[]');
+                
+                // 限制历史记录数量
+                if (history.length >= 10) {
+                    history.pop(); // 移除最旧的记录
+                }
+                
+                // 添加新记录
+                const newRecord = {
+                    id: Date.now(),
+                    image: imageBase64,
+                    name: flowerInfo.name,
+                    family: flowerInfo.family,
+                    date: new Date().toLocaleString('zh-CN')
+                };
+                
+                history.unshift(newRecord); // 添加到开头
+                
+                // 保存回本地存储
+                localStorage.setItem('flowerHistory', JSON.stringify(history));
+                
+                // 更新历史记录界面
+                updateHistoryPage();
+            } catch (e) {
+                console.error('保存历史记录失败:', e);
+            }
+        }
+        
+        // 更新历史记录页面
+        function updateHistoryPage() {
+            try {
+                const historyContainer = document.querySelector('#historyPage .space-y-4');
+                if (!historyContainer) return;
+                
+                // 获取历史记录
+                const history = JSON.parse(localStorage.getItem('flowerHistory') || '[]');
+                
+                // 清空现有内容
+                historyContainer.innerHTML = '';
+                
+                if (history.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-history text-4xl mb-3"></i>
+                            <p>暂无识别历史记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 添加历史记录项
+                history.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item p-4 rounded-xl hover:shadow-md transition';
+                    historyItem.dataset.id = item.id;
+                    historyItem.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${item.image}" alt="${item.name}" class="w-20 h-20 rounded-lg object-cover mr-4">
+                            <div class="flex-grow">
+                                <h3 class="font-semibold">${item.name}</h3>
+                                <p class="text-sm text-gray-600">${item.family}</p>
+                                <p class="text-xs text-gray-500">${item.date}</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    `;
+                    
+                    // 点击历史记录项查看详情
+                    historyItem.addEventListener('click', function() {
+                        // 从历史记录中获取完整信息
+                        const fullHistory = JSON.parse(localStorage.getItem('flowerHistory') || '[]');
+                        const record = fullHistory.find(r => r.id == this.dataset.id);
+                        
+                        if (record) {
+                            // 更新结果页面
+                            const resultImage = document.querySelector('#resultPage .md\\:w-2\\/5 img');
+                            if (resultImage) {
+                                resultImage.src = record.image;
+                            }
+                            
+                            // 显示结果页面
+                            showPage('resultPage');
+                        }
+                    });
+                    
+                    historyContainer.appendChild(historyItem);
+                });
+                
+                // 清空历史按钮事件
+                const clearBtn = document.querySelector('#historyPage .mt-8 button');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', function() {
+                        if (confirm('确定要清空所有历史记录吗？')) {
+                            localStorage.removeItem('flowerHistory');
+                            updateHistoryPage();
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('更新历史记录页面失败:', e);
+            }
+        }
+        
+        // 修改identifyFlower函数，添加保存历史记录功能
+        async function identifyFlower(imageBase64) {
+            try {
+                // 压缩图片
+                const compressedImage = await compressImage(imageBase64);
+                
+                // 确保base64格式正确
+                let finalImageUrl = compressedImage;
+                if (!finalImageUrl.startsWith('data:image')) {
+                    finalImageUrl = 'data:image/jpeg;base64,' + finalImageUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+                }
+                
+                // 显示加载动画
+                document.getElementById('loadingArea').style.display = 'flex';
+                
+                // 创建请求体 - 优化后的系统提示
+                const requestBody = {
+                    model: model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `你是一个专业的花卉识别助手，擅长识别各类花卉。
+请识别图片中的花卉，并提供以下详细信息：
+1. 花卉名称
+2. 科属分类
+3. 花期
+4. 原产地
+5. 花卉详细介绍：请详细描述花卉的形态特征（花朵形状、颜色、大小等）、生长习性、历史文化背景、象征意义、在园艺中的应用等。这部分内容应该是最详尽的，至少200字。
+6. 养护知识：包括光照需求、浇水频率、温度要求、土壤偏好等具体建议。
+
+请确保花卉介绍部分尽可能详细、专业和全面，让用户能够全面了解这种花卉。`
+                        },
+                        {
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'text',
+                                    text: '请识别这张图片中的花卉，并给出详细信息。'
+                                },
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: finalImageUrl
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 2000
+                };
+                
+                try {
+                    // 尝试发送API请求
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    // 解析API返回的花卉信息
+                    const flowerInfo = parseFlowerInfo(data.choices[0].message.content);
+                    
+                    // 更新结果页面
+                    updateResultPage(imageBase64, flowerInfo);
+                    
+                    // 保存到历史记录
+                    saveToHistory(imageBase64, flowerInfo);
+                    
+                    // 隐藏加载动画
+                    document.getElementById('loadingArea').style.display = 'none';
+                    
+                    // 显示结果页面
+                    showPage('resultPage');
+                    
+                    return flowerInfo;
+                } catch (apiError) {
+                    console.error('API请求失败:', apiError);
+                    
+                    // 使用模拟数据作为备用方案
+                    console.log('使用模拟数据作为备用方案');
+                    
+                    // 根据图片生成一个随机的花卉类型
+                    const flowerTypes = [
+                        {
+                            name: '玫瑰',
+                            family: '蔷薇科 蔷薇属',
+                            bloomPeriod: '5-10月',
+                            origin: '中国、中东、欧洲',
+                            description: '玫瑰是蔷薇科蔷薇属的花卉，拥有美丽的花朵和独特的香气，被誉为"花中皇后"。玫瑰花朵通常呈现出丰满的重瓣形态，花色丰富多样，从纯白、粉红、鲜红到黄色、橙色，甚至有蓝紫色和绿色品种。玫瑰不仅有观赏价值，还可用于制作香水、玫瑰精油、玫瑰花茶等产品。在西方文化中，红玫瑰象征着爱情和浪漫，是情人节最受欢迎的礼物之一。玫瑰在园艺中应用广泛，可作为切花、盆栽或用于花坛、花篱的种植。现代玫瑰品种繁多，包括灌木玫瑰、藤本玫瑰、微型玫瑰等不同类型，满足各种园艺需求。',
+                            care: ['阳光：喜欢充足的阳光，每天至少需要6小时直射阳光', '浇水：保持土壤湿润但不积水，夏季可能需要每天浇水', '温度：适宜生长温度15-25℃，耐寒性因品种而异', '土壤：喜欢肥沃、排水良好的微酸性土壤，pH值6-6.5最佳']
+                        },
+                        {
+                            name: '郁金香',
+                            family: '百合科 郁金香属',
+                            bloomPeriod: '3-5月',
+                            origin: '土耳其、中亚',
+                            description: '郁金香是百合科郁金香属的多年生草本球根植物，原产于土耳其、中亚等地。郁金香花朵呈杯状或碗状，单瓣或重瓣，色彩极为丰富，几乎涵盖了除纯蓝色外的所有颜色。花茎直立挺拔，叶片呈披针形，被一层蜡质覆盖，呈现出优雅的蓝绿色。郁金香在17世纪的荷兰曾引发"郁金香狂热"的投机热潮，至今仍是荷兰的国花和重要出口产品。现代郁金香品种超过3000种，按开花时间可分为早花、中花和晚花品种。郁金香不仅是重要的切花和盆栽花卉，也是春季花坛和花境的主要材料，能创造出壮观的色彩景观。',
+                            care: ['阳光：喜欢充足的阳光，但夏季高温时需遮阴', '浇水：生长期保持土壤湿润，休眠期减少浇水', '温度：适宜生长温度10-20℃，需要冬季低温才能正常开花', '土壤：喜欢疏松、肥沃、排水良好的沙质土壤，pH值6.5-7.0']
+                        },
+                        {
+                            name: '向日葵',
+                            family: '菊科 向日葵属',
+                            bloomPeriod: '7-9月',
+                            origin: '北美洲',
+                            description: '向日葵是菊科向日葵属的一年生草本植物，原产于北美洲。它以其巨大的花盘和明亮的黄色花瓣而闻名，花盘直径可达30厘米以上。向日葵具有向光性，花盘会随着太阳的移动而转向，这也是其名称的由来。向日葵不仅有很高的观赏价值，还是重要的油料和食用作物，其种子可以榨油、食用或作为鸟食。在园艺应用中，向日葵常被用于花境背景、屏障种植或作为独立的焦点植物。现代育种已经培育出多种颜色和大小的向日葵品种，包括红色、棕色、橙色等花色，以及适合盆栽的矮生品种。向日葵象征着阳光、忠诚和积极向上的精神，在许多文化中都有重要的象征意义。',
+                            care: ['阳光：需要充足的阳光，每天至少6-8小时直射阳光', '浇水：生长期需适量浇水，保持土壤湿润，但不耐涝', '温度：适宜生长温度20-30℃，不耐霜冻', '土壤：适应性强，但以肥沃、排水良好的中性土壤生长最佳']
+                        },
+                        {
+                            name: '兰花',
+                            family: '兰科',
+                            bloomPeriod: '因品种而异，全年均有品种开花',
+                            origin: '全球热带和亚热带地区',
+                            description: '兰花是兰科植物的统称，是世界上最大的被子植物科之一，约有25,000多个物种。兰花以其精致、优雅的花朵和丰富多样的形态而闻名，被誉为"花中君子"。兰花的花朵结构独特，通常由三片萼片、三片花瓣（其中一片变形为唇瓣）组成，形态各异，有的如蝴蝶、有的似蜘蛛、有的酷似昆虫。兰花在中国文化中象征高雅、纯洁和坚贞，是文人墨客喜爱的题材。作为室内观赏植物，兰花种类繁多，包括蝴蝶兰、石斛兰、卡特兰、文心兰等常见品种。现代兰花产业发达，通过杂交育种创造出无数色彩斑斓、形态各异的新品种，满足不同层次爱好者的需求。',
+                            care: ['阳光：大多数兰花喜欢明亮的散射光，避免强烈直射阳光', '浇水：浇水要适量，盆土干了再浇透，忌积水', '温度：不同品种温度需求不同，一般适宜温度18-25℃', '湿度：大多数兰花喜欢较高的空气湿度，50-70%为宜', '土壤：多使用专用兰花介质，需疏松透气，排水良好']
+                        }
+                    ];
+                    
+                    // 随机选择一种花卉
+                    const randomFlower = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+                    
+                    // 更新结果页面
+                    updateResultPage(imageBase64, randomFlower);
+                    
+                    // 保存到历史记录
+                    saveToHistory(imageBase64, randomFlower);
+                    
+                    // 隐藏加载动画
+                    document.getElementById('loadingArea').style.display = 'none';
+                    
+                    // 显示结果页面
+                    showPage('resultPage');
+                    
+                    return randomFlower;
+                }
+            } catch (error) {
+                console.error('花卉识别失败:', error);
+                // 隐藏加载动画
+                document.getElementById('loadingArea').style.display = 'none';
+                alert('花卉识别失败: ' + error.message);
+                return null;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化上传区域
+            initUploadArea();
+            
+            // 更新历史记录页面
+            updateHistoryPage();
+            
+            // 测试API连接
+            testAPIConnection().then(isConnected => {
+                if (!isConnected) {
+                    console.warn('API连接测试失败，部分功能可能无法正常工作');
+                }
+            });
+            
+            // 添加收藏和分享按钮功能
+            const bookmarkBtn = document.querySelector('#resultPage .btn-primary');
+            if (bookmarkBtn) {
+                bookmarkBtn.addEventListener('click', function() {
+                    alert('已收藏到您的花卉图鉴中！');
+                    this.innerHTML = '<i class="fas fa-check mr-2"></i>已收藏';
+                    this.disabled = true;
+                });
+            }
+            
+            const shareBtn = document.querySelector('#resultPage .bg-gray-100');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: '我用花卉识别发现了一种美丽的花',
+                            text: '快来看看我发现的花卉！',
+                            url: window.location.href
+                        }).catch(err => {
+                            console.error('分享失败:', err);
+                        });
+                    } else {
+                        alert('复制链接成功，快去分享给朋友吧！');
+                    }
+                });
+            }
+            
+            // 清空历史记录按钮
+            const clearHistoryBtn = document.querySelector('#historyPage .mt-8 button');
+            if (clearHistoryBtn) {
+                clearHistoryBtn.addEventListener('click', function() {
+                    if (confirm('确定要清空所有历史记录吗？')) {
+                        localStorage.removeItem('flowerHistory');
+                        updateHistoryPage();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

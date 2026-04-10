@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midjourney 提示生成器</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Midjourney 提示生成器</h1>
+        </header>
+        <main>
+            <section class="instructions">
+                <h2>使用说明</h2>
+                <p>在输入框中输入关键词，然后点击"生成提示"按钮以生成 Midjourney 提示词。</p>
+                <p>您可以通过设置按钮自定义 API 地址、密钥和输出格式。</p>
+            </section>
+            <div class="input-group">
+                <label for="keyword" class="input-label">请输入关键词以生成提示：</label>
+                <input type="text" id="keyword" placeholder="输入关键词">
+                <div class="button-group">
+                    <button id="generate">生成提示</button>
+                    <button id="settingsButton">设置</button>
+                </div>
+            </div>
+            <div id="settingsPanel" class="settings-panel" style="display:none;">
+                <label for="customContent" class="input-label">自定义内容文本：</label>
+                <textarea id="customContent" placeholder="输入自定义内容" rows="4"></textarea>
+                <label for="customKeywordText" class="input-label">自定义输出相关内容：</label>
+                <input type="text" id="customKeywordText" placeholder="请输入自定义输出相关文本">
+                <label for="apiUrl" class="input-label">API 地址：</label>
+                <input type="text" id="apiUrl" placeholder="输入API地址">
+                <label for="apiKey" class="input-label">API 密钥：</label>
+                <input type="password" id="apiKey" placeholder="输入API密钥">
+                <div class="button-group">
+                    <button id="saveSettings">保存设置</button>
+                    <button id="resetSettings">复原</button>
+                </div>
+            </div>
+            <div id="result" class="result"></div>
+            <div class="button-group">
+                <button id="copyButton" class="copy-btn" style="display:none;">复制内容</button>
+                <button id="exportButton" class="export-btn" style="display:none;">导出内容</button>
+            </div>
+        </main>
+    </div>
+    <script src="scripts/app.js"></script>
+</body>
+</html> 

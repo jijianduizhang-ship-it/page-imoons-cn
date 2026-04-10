@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能AI助手</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 添加图标字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 添加遮罩层 -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <button id="new-chat-btn" class="new-chat-btn">
+                <i class="fas fa-plus"></i>
+                新建对话
+            </button>
+            <div class="chat-list" id="chat-list">
+                <!-- 对话列表将通过 JavaScript 动态添加 -->
+            </div>
+        </div>
+
+        <!-- 主聊天区域 -->
+        <div class="chat-container">
+            <div id="chat-history"></div>
+            <div class="input-container">
+                <textarea id="user-input" placeholder="请输入您的问题..." rows="1"></textarea>
+                <div class="button-container">
+                    <button id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        发送
+                    </button>
+                    <button id="export-btn">
+                        <i class="fas fa-download"></i>
+                        导出
+                    </button>
+                    <button id="settings-btn">
+                        <i class="fas fa-cog"></i>
+                        设置
+                    </button>
+                    <button id="clear-btn">
+                        <i class="fas fa-trash"></i>
+                        清空
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>设置</h2>
+                <button class="close-btn" id="close-settings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-item">
+                    <label for="api-url">API地址</label>
+                    <input type="text" id="api-url" placeholder="请输入API地址">
+                </div>
+                <div class="settings-item">
+                    <label for="api-key">API密钥</label>
+                    <input type="password" id="api-key" placeholder="请输入API密钥">
+                </div>
+                <div class="settings-item">
+                    <label for="model">模型选择</label>
+                    <select id="model">
+                        <option value="deepseek-chat">Deepseek Chat</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5</option>
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-4o">gpt-4o</option>
+                        <option value="gpt-4o-mini">gpt-4o-mini</option>
+                        <option value="gpt-4-turbo">gpt-4-turbo</option>
+                        <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet-20241022</option>
+                        <option value="claude-3-7-sonnet-20250219">claude-3-7-sonnet-20250219</option>
+                        <option value="claude-3-7-sonnet-thinking">claude-3-7-sonnet-thinking</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button id="save-settings" class="primary-btn">保存设置</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

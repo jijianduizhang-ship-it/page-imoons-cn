@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>杨氏天衢公支系族谱</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif}
+body{background:#f3f1e8;padding:30px 15px;overflow:hidden;}
+.title{text-align:center;font-size:22px;margin-bottom:30px;color:#553a27;}
+
+/* 缩放容器 */
+.zoom-container{
+  width:100%;
+  height:calc(100vh - 100px);
+  overflow:auto;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+}
+.zoomable{
+  transform-origin:center top;
+  transition:transform 0.2s ease;
+  transform:scale(var(--zoom-level, 1));
+}
+
+/* 缩放控制按钮 */
+.zoom-controls{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  z-index:1000;
+}
+.zoom-btn{
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:50%;
+  background:#5a3817;
+  color:#fff;
+  font-size:24px;
+  cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.2s;
+}
+.zoom-btn:hover{background:#7a5837}
+.zoom-btn:active{transform:scale(0.95)}
+.zoom-level{
+  text-align:center;
+  font-size:12px;
+  color:#666;
+  background:#fff;
+  padding:4px 8px;
+  border-radius:12px;
+  box-shadow:0 1px 5px rgba(0,0,0,0.1);
+}
+.reset-btn{background:#888;font-size:14px}
+
+/* 整体居中 */
+.tree{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-bottom:50px;
+}
+
+/* 夫妻卡片 */
+.couple{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  position:relative;
+}
+
+.card{
+  width:90px;
+  height:110px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.avatar{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:22px;
+  margin-bottom:6px;
+}
+.male{background:#7aa4d6;}
+.female{background:#e6a4b5;}
+.name{font-size:14px;}
+.info{font-size:12px;color:#666;}
+
+/* 垂直主线 */
+.line-main{
+  width:2px;
+  height:40px;
+  background:#888;
+  margin:0 auto;
+}
+
+/* 子女横向排列 */
+.children{
+  display:flex;
+  justify-content:center;
+  gap:60px;
+  position:relative;
+}
+.children::before{
+  content:'';
+  position:absolute;
+  top:-20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:2px;
+  height:20px;
+  background:#888;
+}
+
+/* 兄弟姐妹横线 */
+.siblings{
+  display:flex;
+  gap:60px;
+  position:relative;
+}
+.siblings::before{
+  content:'';
+  position:absolute;
+  top:-20px;
+  left:0;
+  right:0;
+  height:2px;
+  background:#888;
+}
+
+/* 单个子女节点 */
+.child{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+</style>
+</head>
+
+<body>
+<div class="title">杨氏天衢公（173派）支系族谱</div>
+
+<div class="zoom-container" id="zoomContainer">
+<div class="zoomable" id="zoomable">
+
+<div class="tree">
+
+  <!-- 1世 -->
+  <div class="couple">
+    <div class="card">
+      <div class="avatar male">杨</div>
+      <div class="name">天衢</div>
+      <div class="info">一世</div>
+    </div>
+    <div class="card">
+      <div class="avatar female">吴</div>
+      <div class="name">吴氏</div>
+      <div class="info">配偶</div>
+    </div>
+  </div>
+  <div class="line-main"></div>
+
+  <!-- 2世 -->
+  <div class="couple">
+    <div class="card">
+      <div class="avatar male">杨</div>
+      <div class="name">锡仁</div>
+      <div class="info">二世</div>
+    </div>
+    <div class="card">
+      <div class="avatar female">李</div>
+      <div class="name">李氏</div>
+      <div class="info">配偶</div>
+    </div>
+  </div>
+  <div class="line-main"></div>
+
+  <!-- 3世 -->
+  <div class="couple">
+    <div class="card">
+      <div class="avatar male">杨</div>
+      <div class="name">其炳</div>
+      <div class="info">三世</div>
+    </div>
+    <div class="card">
+      <div class="avatar female">占</div>
+      <div class="name">占万银</div>
+      <div class="info">配偶</div>
+    </div>
+  </div>
+  <div class="line-main"></div>
+
+  <!-- 4世 -->
+  <div class="children">
+    <div class="siblings">
+      <!-- 昌真 -->
+      <div class="child">
+        <div class="couple">
+          <div class="card">
+            <div class="avatar male">杨</div>
+            <div class="name">昌真</div>
+            <div class="info">四世</div>
+          </div>
+          <div class="card">
+            <div class="avatar female">叶</div>
+            <div class="name">叶腊秀</div>
+            <div class="info">配偶</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 昌银 -->
+      <div class="child">
+        <div class="couple">
+          <div class="card">
+            <div class="avatar male">杨</div>
+            <div class="name">昌银</div>
+            <div class="info">四世</div>
+          </div>
+          <div class="card">
+            <div class="avatar female">唐</div>
+            <div class="name">唐汇平</div>
+            <div class="info">配偶</div>
+          </div>
+        </div>
+        <div class="line-main"></div>
+
+        <!-- 5世：多美、多福、多辉、珍香（平级） -->
+        <div class="siblings">
+          <!-- 多美 -->
+          <div class="child">
+            <div class="couple">
+              <div class="card">
+                <div class="avatar male">杨</div>
+                <div class="name">多美</div>
+                <div class="info">五世</div>
+              </div>
+              <div class="card">
+                <div class="avatar female">金</div>
+                <div class="name">金月娥</div>
+                <div class="info">配偶</div>
+              </div>
+            </div>
+            <div class="line-main"></div>
+
+            <!-- 6世：生琼 -->
+            <div class="child">
+              <div class="couple">
+                <div class="card">
+                  <div class="avatar female">杨</div>
+                  <div class="name">生琼</div>
+                  <div class="info">六世</div>
+                </div>
+                <div class="card">
+                  <div class="avatar male">王</div>
+                  <div class="name">王振国</div>
+                  <div class="info">丈夫</div>
+                </div>
+              </div>
+              <div class="line-main"></div>
+
+              <!-- 7世：王金龙、王玉 -->
+              <div class="siblings">
+                <div class="card">
+                  <div class="avatar male">王</div>
+                  <div class="name">王金龙</div>
+                  <div class="info">七世·子</div>
+                </div>
+                <div class="card">
+                  <div class="avatar female">王</div>
+                  <div class="name">王玉</div>
+                  <div class="info">七世·女</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 多福 -->
+          <div class="child">
+            <div class="couple">
+              <div class="card">
+                <div class="avatar male">杨</div>
+                <div class="name">多福</div>
+                <div class="info">五世</div>
+              </div>
+              <div class="card">
+                <div class="avatar female">雷</div>
+                <div class="name">雷元香</div>
+                <div class="info">配偶</div>
+              </div>
+            </div>
+            <div class="line-main"></div>
+
+            <!-- 6世：生亮 -->
+            <div class="child">
+              <div class="couple">
+                <div class="card">
+                  <div class="avatar male">杨</div>
+                  <div class="name">生亮</div>
+                  <div class="info">六世</div>
+                </div>
+                <div class="card">
+                  <div class="avatar female">肖</div>
+                  <div class="name">肖明星</div>
+                  <div class="info">配偶</div>
+                </div>
+              </div>
+              <div class="line-main"></div>
+
+              <!-- 7世：杨乐乐 -->
+              <div class="card">
+                <div class="avatar male">杨</div>
+                <div class="name">杨乐乐</div>
+                <div class="info">七世</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 多辉 -->
+          <div class="child">
+            <div class="couple">
+              <div class="card">
+                <div class="avatar male">杨</div>
+                <div class="name">多辉</div>
+                <div class="info">五世</div>
+              </div>
+              <div class="card">
+                <div class="avatar female">贺</div>
+                <div class="name">贺群英</div>
+                <div class="info">配偶</div>
+              </div>
+            </div>
+            <div class="line-main"></div>
+
+            <!-- 6世：杨爽 -->
+            <div class="card">
+              <div class="avatar male">杨</div>
+              <div class="name">杨爽</div>
+              <div class="info">六世</div>
+            </div>
+          </div>
+
+          <!-- 珍香 -->
+          <div class="child">
+            <div class="couple">
+              <div class="card">
+                <div class="avatar female">杨</div>
+                <div class="name">珍香</div>
+                <div class="info">五世</div>
+              </div>
+              <div class="card">
+                <div class="avatar male">严</div>
+                <div class="name">严有斌</div>
+                <div class="info">丈夫</div>
+              </div>
+            </div>
+            <div class="line-main"></div>
+
+            <!-- 6世：严泽华 -->
+            <div class="child">
+              <div class="couple">
+                <div class="card">
+                  <div class="avatar male">严</div>
+                  <div class="name">严泽华</div>
+                  <div class="info">六世</div>
+                </div>
+                <div class="card">
+                  <div class="avatar female">魔</div>
+                  <div class="name">魔老师</div>
+                  <div class="info">配偶</div>
+                </div>
+              </div>
+              <div class="line-main"></div>
+
+              <!-- 7世：严瑞奇 -->
+              <div class="card">
+                <div class="avatar male">严</div>
+                <div class="name">严瑞奇</div>
+                <div class="info">七世</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 梅英 -->
+      <div class="child">
+        <div class="couple">
+          <div class="card">
+            <div class="avatar female">杨</div>
+            <div class="name">梅英</div>
+            <div class="info">四世</div>
+          </div>
+          <div class="card">
+            <div class="avatar male">刘</div>
+            <div class="name">刘光西</div>
+            <div class="info">配偶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</div>
+
+<!-- 缩放控制 -->
+<div class="zoom-controls">
+  <button class="zoom-btn" onclick="zoomIn()">+</button>
+  <div class="zoom-level" id="zoomLevel">100%</div>
+  <button class="zoom-btn" onclick="zoomOut()">−</button>
+  <button class="zoom-btn reset-btn" onclick="resetZoom()">⟲</button>
+</div>
+
+<script>
+let zoomLevel = 1;
+const minZoom = 0.3;
+const maxZoom = 3;
+const step = 0.1;
+
+function updateZoom(){
+  document.getElementById('zoomable').style.transform = `scale(${zoomLevel})`;
+  document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+function zoomIn(){
+  zoomLevel = Math.min(maxZoom, zoomLevel + step);
+  updateZoom();
+}
+
+function zoomOut(){
+  zoomLevel = Math.max(minZoom, zoomLevel - step);
+  updateZoom();
+}
+
+function resetZoom(){
+  zoomLevel = 1;
+  updateZoom();
+}
+
+// Ctrl + 滚轮缩放
+document.getElementById('zoomContainer').addEventListener('wheel', function(e){
+  if(e.ctrlKey || e.metaKey){
+    e.preventDefault();
+    if(e.deltaY < 0) zoomIn();
+    else zoomOut();
+  }
+}, {passive: false});
+
+// 双指捏合缩放（移动端）
+let lastTouchEnd = 0;
+document.getElementById('zoomContainer').addEventListener('touchend', function(e){
+  const now = Date.now();
+  if(now - lastTouchEnd <= 300){
+    zoomLevel = zoomLevel === 1 ? 1.5 : 1;
+    updateZoom();
+  }
+  lastTouchEnd = now;
+}, false);
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e){
+  if(e.key === '+' || e.key === '=') zoomIn();
+  else if(e.key === '-') zoomOut();
+  else if(e.key === '0') resetZoom();
+});
+</script>
+
+</body>
+</html>

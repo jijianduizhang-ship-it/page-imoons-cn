@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能拍照答题助手</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .gradient-bg {
+            background: linear-gradient(120deg, #4f46e5, #7c3aed);
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #7c3aed;
+            background-color: rgba(124, 58, 237, 0.05);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        }
+        .result-card {
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.15);
+        }
+        .history-item {
+            transition: all 0.2s ease;
+        }
+        .history-item:hover {
+            background-color: #f1f5f9;
+        }
+        .tab-active {
+            color: #7c3aed;
+            border-bottom: 2px solid #7c3aed;
+        }
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-camera text-indigo-600 text-2xl mr-2"></i>
+                <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">智能拍照答题</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition">首页</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition">使用说明</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition">常见问题</a>
+                <a href="#" class="text-gray-700 hover:text-indigo-600 transition">联系我们</a>
+            </div>
+            <div class="flex items-center">
+                <button class="hidden md:block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full text-sm font-medium transition">登录/注册</button>
+                <button class="md:hidden text-gray-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 标签页 -->
+        <div class="flex border-b border-gray-200 mb-8">
+            <button id="tab-upload" class="px-4 py-2 font-medium tab-active">拍照上传</button>
+            <button id="tab-history" class="px-4 py-2 font-medium text-gray-500">历史记录</button>
+        </div>
+
+        <!-- 上传区域 -->
+        <div id="upload-section" class="mb-12">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">拍照上传，<span class="text-indigo-600">秒解难题</span></h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">只需拍照上传您的题目，AI智能分析立即给出详细解答，让学习变得更加轻松高效。</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
+                <div class="upload-area p-8 rounded-lg text-center cursor-pointer mb-6">
+                    <i class="fas fa-cloud-upload-alt text-5xl text-indigo-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">点击或拖拽上传图片</h3>
+                    <p class="text-gray-500 mb-4">支持 JPG、PNG、HEIC 格式，最大 10MB</p>
+                    <button class="btn-primary text-white px-6 py-3 rounded-full font-medium">
+                        <i class="fas fa-camera mr-2"></i>选择图片
+                    </button>
+                    <input type="file" class="hidden" accept="image/*">
+                </div>
+
+                <div class="flex flex-wrap -mx-2">
+                    <div class="w-full md:w-1/3 px-2 mb-4">
+                        <div class="bg-indigo-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-bolt text-2xl text-indigo-500 mb-2"></i>
+                            <h4 class="font-medium mb-1">快速解答</h4>
+                            <p class="text-sm text-gray-600">平均3秒内给出答案</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 px-2 mb-4">
+                        <div class="bg-indigo-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-check-circle text-2xl text-indigo-500 mb-2"></i>
+                            <h4 class="font-medium mb-1">准确可靠</h4>
+                            <p class="text-sm text-gray-600">AI智能分析，精准解题</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 px-2 mb-4">
+                        <div class="bg-indigo-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-lock text-2xl text-indigo-500 mb-2"></i>
+                            <h4 class="font-medium mb-1">安全私密</h4>
+                            <p class="text-sm text-gray-600">数据加密，保障隐私</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结果展示区域 -->
+            <div class="max-w-4xl mx-auto mt-12">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    解题结果
+                </h2>
+
+                <div class="result-card bg-white p-6 mb-8">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/3">
+                            <div class="rounded-lg overflow-hidden border border-gray-200">
+                                <img src="https://images.unsplash.com/photo-1621944190310-e3cca1564bd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="题目图片" class="w-full">
+                            </div>
+                        </div>
+                        <div class="md:w-2/3">
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold mb-2">题目识别</h3>
+                                <p class="text-gray-700 bg-gray-50 p-3 rounded-lg">已识别：求解方程 3x² + 5x - 2 = 0</p>
+                            </div>
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold mb-2">解题步骤</h3>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="mb-2">1. 使用求根公式 x = (-b ± √(b² - 4ac)) / 2a</p>
+                                    <p class="mb-2">2. 代入 a=3, b=5, c=-2</p>
+                                    <p class="mb-2">3. x = (-5 ± √(25 + 24)) / 6</p>
+                                    <p class="mb-2">4. x = (-5 ± √49) / 6</p>
+                                    <p class="mb-2">5. x = (-5 ± 7) / 6</p>
+                                    <p>6. x₁ = 1/3, x₂ = -2</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">最终答案</h3>
+                                <p class="text-indigo-700 font-medium bg-indigo-50 p-3 rounded-lg">x₁ = 1/3, x₂ = -2</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button class="text-indigo-600 hover:text-indigo-800 mr-4">
+                            <i class="far fa-copy mr-1"></i> 复制答案
+                        </button>
+                        <button class="text-indigo-600 hover:text-indigo-800">
+                            <i class="far fa-save mr-1"></i> 保存到历史
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录区域 -->
+        <div id="history-section" class="hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-history text-indigo-500 mr-2"></i>
+                    历史记录
+                </h2>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-medium">最近解题记录</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-sm text-gray-600 hover:text-indigo-600">
+                                    <i class="fas fa-filter mr-1"></i> 筛选
+                                </button>
+                                <button class="text-sm text-gray-600 hover:text-indigo-600">
+                                    <i class="fas fa-search mr-1"></i> 搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divide-y divide-gray-200">
+                        <div class="history-item p-4 hover:bg-gray-50">
+                            <div class="flex flex-col md:flex-row md:items-center">
+                                <div class="md:w-1/5 mb-3 md:mb-0">
+                                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="历史题目" class="w-20 h-20 object-cover rounded-lg">
+                                </div>
+                                <div class="md:w-3/5 md:px-4">
+                                    <h4 class="font-medium mb-1">求解方程 3x² + 5x - 2 = 0</h4>
+                                    <p class="text-sm text-gray-600 mb-2">解得：x₁ = 1/3, x₂ = -2</p>
+                                    <p class="text-xs text-gray-500">2023-05-15 14:30</p>
+                                </div>
+                                <div class="md:w-1/5 flex md:justify-end mt-3 md:mt-0">
+                                    <button class="text-indigo-600 hover:text-indigo-800 mr-3">
+                                        <i class="far fa-eye"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="history-item p-4 hover:bg-gray-50">
+                            <div class="flex flex-col md:flex-row md:items-center">
+                                <div class="md:w-1/5 mb-3 md:mb-0">
+                                    <img src="https://images.unsplash.com/photo-1633613286991-611fe299c4be?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="历史题目" class="w-20 h-20 object-cover rounded-lg">
+                                </div>
+                                <div class="md:w-3/5 md:px-4">
+                                    <h4 class="font-medium mb-1">计算积分 ∫(x²+1)dx</h4>
+                                    <p class="text-sm text-gray-600 mb-2">解得：(x³/3)+x+C</p>
+                                    <p class="text-xs text-gray-500">2023-05-14 09:15</p>
+                                </div>
+                                <div class="md:w-1/5 flex md:justify-end mt-3 md:mt-0">
+                                    <button class="text-indigo-600 hover:text-indigo-800 mr-3">
+                                        <i class="far fa-eye"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="history-item p-4 hover:bg-gray-50">
+                            <div class="flex flex-col md:flex-row md:items-center">
+                                <div class="md:w-1/5 mb-3 md:mb-0">
+                                    <img src="https://images.unsplash.com/photo-1629752187687-3d3c7ea3a21b?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="历史题目" class="w-20 h-20 object-cover rounded-lg">
+                                </div>
+                                <div class="md:w-3/5 md:px-4">
+                                    <h4 class="font-medium mb-1">物理题：自由落体运动计算</h4>
+                                    <p class="text-sm text-gray-600 mb-2">解得：t = 2.83s，v = 27.7m/s</p>
+                                    <p class="text-xs text-gray-500">2023-05-12 16:45</p>
+                                </div>
+                                <div class="md:w-1/5 flex md:justify-end mt-3 md:mt-0">
+                                    <button class="text-indigo-600 hover:text-indigo-800 mr-3">
+                                        <i class="far fa-eye"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-gray-200 flex justify-between items-center">
+                        <button class="text-sm text-gray-600 hover:text-indigo-600 disabled:opacity-50" disabled>
+                            <i class="fas fa-chevron-left mr-1"></i> 上一页
+                        </button>
+                        <span class="text-sm text-gray-600">第 1 页，共 1 页</span>
+                        <button class="text-sm text-gray-600 hover:text-indigo-600 disabled:opacity-50" disabled>
+                            下一页 <i class="fas fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部区域 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-camera text-indigo-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold">智能拍照答题</span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">让学习变得更加轻松高效，随时随地拍照上传，AI智能解答各类学科难题。</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-lg font-medium mb-4">关于我们</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">公司简介</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">团队介绍</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">技术优势</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-medium mb-4">帮助中心</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">使用指南</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">常见问题</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white transition">意见反馈</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-medium mb-4">联系我们</h4>
+                        <ul class="space-y-2">
+                            <li class="flex items-center text-gray-400">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span>support@example.com</span>
+                            </li>
+                            <li class="flex items-center text-gray-400">
+                                <i class="fas fa-phone-alt mr-2"></i>
+                                <span>400-123-4567</span>
+                            </li>
+                            <li class="flex items-center text-gray-400">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span>北京市海淀区</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2023 智能拍照答题. 保留所有权利</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-weixin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-weibo text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-qq text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 标签页切换功能
+        const tabUpload = document.getElementById('tab-upload');
+        const tabHistory = document.getElementById('tab-history');
+        const uploadSection = document.getElementById('upload-section');
+        const historySection = document.getElementById('history-section');
+
+        tabUpload.addEventListener('click', function() {
+            uploadSection.classList.remove('hidden');
+            historySection.classList.add('hidden');
+            tabUpload.classList.add('tab-active');
+            tabUpload.classList.remove('text-gray-500');
+            tabHistory.classList.remove('tab-active');
+            tabHistory.classList.add('text-gray-500');
+        });
+
+        tabHistory.addEventListener('click', function() {
+            uploadSection.classList.add('hidden');
+            historySection.classList.remove('hidden');
+            tabHistory.classList.add('tab-active');
+            tabHistory.classList.remove('text-gray-500');
+            tabUpload.classList.remove('tab-active');
+            tabUpload.classList.add('text-gray-500');
+        });
+
+        // 上传区域交互
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.querySelector('input[type="file"]');
+        const resultCard = document.querySelector('.result-card');
+        
+        // 初始隐藏结果卡片
+        resultCard.style.display = 'none';
+
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('border-indigo-500');
+            uploadArea.classList.add('bg-indigo-50');
+        });
+
+        uploadArea.addEventListener('dragleave', function() {
+            uploadArea.classList.remove('border-indigo-500');
+            uploadArea.classList.remove('bg-indigo-50');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('border-indigo-500');
+            uploadArea.classList.remove('bg-indigo-50');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleImageUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // 监听文件选择
+        fileInput.addEventListener('change', function(e) {
+            if (fileInput.files.length) {
+                handleImageUpload(fileInput.files[0]);
+            }
+        });
+        
+        // API配置
+        const API_KEY = 'sk-cp-Dd8mH48rcY41eRTdb76GnPGVlSNBq0if7lNlSHekKvHcrISaA_GhU66DZmTeqOZr919o5PCVH5OtYG0PF8wiys0EprxX_eQVsTK_nfQLjxeyeifauUvo0bo';
+        const API_URL = 'http://tools.imoons.cn/api/aidt/chat';
+        const MODEL = 'MiniMax-M2.7';
+        
+        // 测试API连接
+        async function testAPIConnection(apiUrl, apiKey, model) {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiKey
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{
+                            role: 'user',
+                            content: 'Hello'
+                        }],
+                        max_tokens: 10
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return true;
+            } catch (error) {
+                console.error('API测试失败:', error);
+                return false;
+            }
+        }
+        
+        // 处理图片上传
+        async function handleImageUpload(file) {
+            // 显示加载状态
+            showLoading(true);
+            
+            try {
+                // 将图片转换为base64
+                const base64Image = await convertToBase64(file);
+                
+                // 测试API连接
+                const isConnected = await testAPIConnection(API_URL, API_KEY, MODEL);
+                if (!isConnected) {
+                    throw new Error('API连接失败，请检查网络或API密钥');
+                }
+                
+                // 显示题目类型选择对话框
+                showTypeSelectionModal(file, base64Image);
+                
+            } catch (error) {
+                console.error('处理图片失败:', error);
+                showError(error.message);
+                showLoading(false);
+            }
+        }
+        
+        // 将图片转换为base64
+        function convertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        // 在页面头部添加样式表链接
+        document.addEventListener('DOMContentLoaded', function() {
+            // 使用本地Font Awesome图标替代方案
+            const iconStyle = document.createElement('style');
+            iconStyle.textContent = `
+                /* 基本图标样式 */
+                .icon {
+                    display: inline-block;
+                    width: 1em;
+                    height: 1em;
+                    position: relative;
+                    margin-right: 0.25em;
+                    vertical-align: middle;
+                }
+                
+                /* 关闭图标 */
+                .icon-close:before, .icon-close:after {
+                    content: '';
+                    position: absolute;
+                    width: 100%;
+                    height: 2px;
+                    background-color: currentColor;
+                    top: 50%;
+                    left: 0;
+                }
+                .icon-close:before {
+                    transform: rotate(45deg);
+                }
+                .icon-close:after {
+                    transform: rotate(-45deg);
+                }
+                
+                /* 信息图标 */
+                .icon-info {
+                    border: 2px solid currentColor;
+                    border-radius: 50%;
+                }
+                .icon-info:after {
+                    content: 'i';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-style: italic;
+                    font-weight: bold;
+                    font-size: 0.8em;
+                }
+                
+                /* 问号图标 */
+                .icon-question {
+                    border: 2px solid currentColor;
+                    border-radius: 50%;
+                }
+                .icon-question:after {
+                    content: '?';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-weight: bold;
+                    font-size: 0.8em;
+                }
+                
+                /* 相机图标 */
+                .icon-camera {
+                    width: 0.9em;
+                    height: 0.7em;
+                    border: 2px solid currentColor;
+                    border-radius: 0.1em;
+                }
+                .icon-camera:before {
+                    content: '';
+                    position: absolute;
+                    width: 0.3em;
+                    height: 0.3em;
+                    border: 2px solid currentColor;
+                    border-radius: 50%;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+                
+                /* 列表图标 */
+                .icon-list {
+                    width: 0.9em;
+                    height: 0.8em;
+                }
+                .icon-list:before {
+                    content: '';
+                    position: absolute;
+                    width: 100%;
+                    height: 2px;
+                    background-color: currentColor;
+                    top: 0;
+                    left: 0;
+                    box-shadow: 0 0.3em 0 0 currentColor, 0 0.6em 0 0 currentColor;
+                }
+                
+                /* 历史图标 */
+                .icon-history {
+                    border: 2px solid currentColor;
+                    border-radius: 50%;
+                }
+                .icon-history:before {
+                    content: '';
+                    position: absolute;
+                    width: 0.4em;
+                    height: 0.4em;
+                    border-top: 2px solid currentColor;
+                    border-right: 2px solid currentColor;
+                    top: 25%;
+                    left: 25%;
+                    transform: rotate(45deg);
+                }
+                
+                /* 眼睛图标 */
+                .icon-eye {
+                    width: 1em;
+                    height: 0.5em;
+                    border: 2px solid currentColor;
+                    border-radius: 0.8em / 0.5em;
+                }
+                .icon-eye:before {
+                    content: '';
+                    position: absolute;
+                    width: 0.3em;
+                    height: 0.3em;
+                    border: 2px solid currentColor;
+                    border-radius: 50%;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+                
+                /* 垃圾桶图标 */
+                .icon-trash {
+                    width: 0.8em;
+                    height: 0.9em;
+                    border: 2px solid currentColor;
+                    border-radius: 0 0 0.2em 0.2em;
+                }
+                .icon-trash:before {
+                    content: '';
+                    position: absolute;
+                    width: 0.5em;
+                    height: 0.2em;
+                    border: 2px solid currentColor;
+                    border-bottom: none;
+                    border-radius: 0.1em 0.1em 0 0;
+                    top: -0.3em;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            `;
+            document.head.appendChild(iconStyle);
+            
+            // 添加自定义样式
+            const customStyle = document.createElement('style');
+            customStyle.textContent = `
+                .type-option.selected {
+                    border-color: #4f46e5;
+                    background-color: #eef2ff;
+                }
+                .type-radio-dot {
+                    transition: background-color 0.2s;
+                }
+                .loading-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                }
+                .loading-spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid #f3f3f3;
+                    border-top: 5px solid #4f46e5;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .toast {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 10px 20px;
+                    border-radius: 4px;
+                    color: white;
+                    font-size: 14px;
+                    z-index: 9999;
+                    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+                }
+                .toast.error {
+                    background-color: #ef4444;
+                }
+                .toast.success {
+                    background-color: #10b981;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(customStyle);
+        });
+
+        // 显示加载状态
+        function showLoading(show) {
+            const existingOverlay = document.querySelector('.loading-overlay');
+            
+            if (show) {
+                if (!existingOverlay) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'loading-overlay';
+                    overlay.innerHTML = '<div class="loading-spinner"></div>';
+                    document.body.appendChild(overlay);
+                }
+            } else {
+                if (existingOverlay) {
+                    existingOverlay.remove();
+                }
+            }
+        }
+
+        // 显示错误提示
+        function showError(message) {
+            showToast(message, 'error');
+        }
+
+        // 显示成功提示
+        function showSuccess(message) {
+            showToast(message, 'success');
+        }
+
+        // 显示提示信息
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+
+        // 页面加载时测试API连接
+        window.addEventListener('DOMContentLoaded', async () => {
+            const isConnected = await testAPIConnection(API_URL, API_KEY, MODEL);
+            if (!isConnected) {
+                showError('API连接失败，请检查网络或API密钥');
+            }
+        });
+
+        // 在导航栏的链接上添加点击事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取导航栏中的链接
+            const helpLink = Array.from(document.querySelectorAll('nav a')).find(a => a.textContent === '使用说明');
+            const faqLink = Array.from(document.querySelectorAll('nav a')).find(a => a.textContent === '常见问题');
+            const contactLink = Array.from(document.querySelectorAll('nav a')).find(a => a.textContent === '联系我们');
+            
+            if (helpLink) {
+                helpLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showHelpModal();
+                });
+            }
+            
+            if (faqLink) {
+                faqLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showFAQModal();
+                });
+            }
+            
+            if (contactLink) {
+                contactLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showContactModal();
+                });
+            }
+            
+            // 在上传区域添加使用说明按钮
+            const uploadArea = document.querySelector('.upload-area');
+            const helpButton = document.createElement('button');
+            helpButton.className = 'text-indigo-600 hover:text-indigo-800 mt-4 text-sm flex items-center mx-auto';
+            helpButton.innerHTML = '<i class="fas fa-question-circle mr-1"></i> 如何使用？';
+            helpButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                showHelpModal();
+            });
+            
+            uploadArea.appendChild(helpButton);
+        });
+
+        // 优化弹窗样式和响应式设计
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加自定义样式
+            const modalStyle = document.createElement('style');
+            modalStyle.textContent = `
+                /* 弹窗基础样式 */
+                .modal-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    padding: 1rem;
+                    overflow-y: auto;
+                }
+                
+                .modal-container {
+                    background-color: white;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                    width: 100%;
+                    max-width: 90%;
+                    max-height: 90vh;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .modal-header {
+                    padding: 1rem 1.5rem;
+                    border-bottom: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    position: sticky;
+                    top: 0;
+                    background-color: white;
+                    z-index: 1;
+                }
+                
+                .modal-body {
+                    padding: 1.5rem;
+                    overflow-y: auto;
+                    flex: 1;
+                }
+                
+                .modal-footer {
+                    padding: 1rem 1.5rem;
+                    background-color: #f9fafb;
+                    border-top: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: flex-end;
+                    position: sticky;
+                    bottom: 0;
+                    z-index: 1;
+                }
+                
+                /* 响应式调整 */
+                @media (min-width: 640px) {
+                    .modal-container {
+                        max-width: 80%;
+                    }
+                }
+                
+                @media (min-width: 768px) {
+                    .modal-container {
+                        max-width: 70%;
+                    }
+                }
+                
+                @media (min-width: 1024px) {
+                    .modal-container {
+                        max-width: 60%;
+                    }
+                }
+                
+                @media (min-width: 1280px) {
+                    .modal-container {
+                        max-width: 50%;
+                    }
+                }
+                
+                /* 题目类型选择弹窗特殊样式 */
+                .type-selection-modal .modal-container {
+                    max-height: 95vh;
+                }
+                
+                @media (max-width: 640px) {
+                    .type-selection-modal .modal-body {
+                        padding: 1rem;
+                    }
+                    
+                    .type-option {
+                        padding: 0.75rem !important;
+                    }
+                }
+            `;
+            document.head.appendChild(modalStyle);
+        });
+
+        // 显示题目类型选择对话框
+        function showTypeSelectionModal(file, base64Image) {
+            // 隐藏加载状态
+            showLoading(false);
+            
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay type-selection-modal';
+            modal.id = 'type-selection-modal';
+            
+            // 创建图片预览URL
+            const imageUrl = URL.createObjectURL(file);
+            
+            // 模态框内容 - 优化响应式设计
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="text-xl font-bold text-gray-800">选择题目类型</h2>
+                        <button id="close-type-modal" class="text-gray-500 hover:text-gray-700">
+                            <span class="icon icon-close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/2">
+                                <h3 class="text-lg font-semibold mb-3 text-gray-800">题目预览</h3>
+                                <div class="rounded-lg overflow-hidden border border-gray-200 mb-4">
+                                    <img src="${imageUrl}" alt="题目图片" class="w-full">
+                                </div>
+                                <p class="text-sm text-gray-600">
+                                    <span class="icon icon-info text-indigo-500"></span>
+                                    选择正确的题目类型可以提高解答准确率
+                                </p>
+                            </div>
+                            <div class="md:w-1/2">
+                                <h3 class="text-lg font-semibold mb-3 text-gray-800">题目类型</h3>
+                                <div class="space-y-3">
+                                    <div class="type-option bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-indigo-50 border-2 border-transparent selected" data-type="auto">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full border-2 border-indigo-600 flex items-center justify-center mr-3 type-radio">
+                                                <div class="w-3 h-3 rounded-full bg-indigo-600 type-radio-dot"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">自动识别</h4>
+                                                <p class="text-sm text-gray-600">系统将自动识别题目类型</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="type-option bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-indigo-50 border-2 border-transparent" data-type="single">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full border-2 border-indigo-600 flex items-center justify-center mr-3 type-radio">
+                                                <div class="w-3 h-3 rounded-full bg-transparent type-radio-dot"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">单选题</h4>
+                                                <p class="text-sm text-gray-600">从多个选项中选择一个正确答案</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="type-option bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-indigo-50 border-2 border-transparent" data-type="multiple">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full border-2 border-indigo-600 flex items-center justify-center mr-3 type-radio">
+                                                <div class="w-3 h-3 rounded-full bg-transparent type-radio-dot"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">多选题</h4>
+                                                <p class="text-sm text-gray-600">从多个选项中选择多个正确答案</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="type-option bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-indigo-50 border-2 border-transparent" data-type="fill">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full border-2 border-indigo-600 flex items-center justify-center mr-3 type-radio">
+                                                <div class="w-3 h-3 rounded-full bg-transparent type-radio-dot"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">填空题</h4>
+                                                <p class="text-sm text-gray-600">需要填写具体答案的题目</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="type-option bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-indigo-50 border-2 border-transparent" data-type="calculation">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full border-2 border-indigo-600 flex items-center justify-center mr-3 type-radio">
+                                                <div class="w-3 h-3 rounded-full bg-transparent type-radio-dot"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-gray-800">计算题</h4>
+                                                <p class="text-sm text-gray-600">需要通过计算得出答案的题目</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancel-type-button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition mr-3">
+                            取消
+                        </button>
+                        <button id="confirm-type-button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            开始解题
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 默认选中自动识别
+            const typeOptions = document.querySelectorAll('.type-option');
+            let selectedType = 'auto';
+            
+            // 添加选项点击事件
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选中状态
+                    typeOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('.type-radio-dot').classList.remove('bg-indigo-600');
+                    });
+                    
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    this.querySelector('.type-radio-dot').classList.add('bg-indigo-600');
+                    
+                    // 更新选中的类型
+                    selectedType = this.getAttribute('data-type');
+                });
+            });
+            
+            // 关闭按钮事件
+            document.getElementById('close-type-modal').addEventListener('click', function() {
+                document.getElementById('type-selection-modal').remove();
+            });
+            
+            // 取消按钮事件
+            document.getElementById('cancel-type-button').addEventListener('click', function() {
+                document.getElementById('type-selection-modal').remove();
+            });
+            
+            // 确认按钮事件
+            document.getElementById('confirm-type-button').addEventListener('click', async function() {
+                // 移除模态框
+                document.getElementById('type-selection-modal').remove();
+                
+                // 显示加载状态
+                showLoading(true);
+                
+                try {
+                    // 根据选择的类型分析图片
+                    const result = await analyzeImageWithType(base64Image, selectedType);
+                    
+                    // 显示结果
+                    displayResult(result);
+                    
+                    // 保存到历史记录
+                    saveToHistory(file, result);
+                    
+                } catch (error) {
+                    console.error('处理图片失败:', error);
+                    showError(error.message);
+                } finally {
+                    showLoading(false);
+                }
+            });
+            
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // 优化其他弹窗函数
+        function showHelpModal() {
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'help-modal';
+            
+            // 模态框内容
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="text-xl font-bold text-gray-800">使用说明</h2>
+                        <button id="close-help-modal" class="text-gray-500 hover:text-gray-700">
+                            <span class="icon icon-close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 使用说明内容 -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 text-indigo-700">
+                                <span class="icon icon-info mr-2"></span>关于智能拍照答题
+                            </h3>
+                            <p class="text-gray-700 mb-3">
+                                智能拍照答题是一款基于AI技术的学习辅助工具，能够快速识别并解答各类学科题目，包括数学、物理、化学等学科的选择题、填空题和计算题。
+                            </p>
+                        </div>
+                        
+                        <!-- 其他使用说明内容 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-help-button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            我知道了
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 关闭按钮事件
+            document.getElementById('close-help-modal').addEventListener('click', function() {
+                document.getElementById('help-modal').remove();
+            });
+            
+            document.getElementById('close-help-button').addEventListener('click', function() {
+                document.getElementById('help-modal').remove();
+            });
+            
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function showFAQModal() {
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'faq-modal';
+            
+            // 模态框内容
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="text-xl font-bold text-gray-800">常见问题</h2>
+                        <button id="close-faq-modal" class="text-gray-500 hover:text-gray-700">
+                            <span class="icon icon-close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 常见问题内容 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-faq-button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 关闭按钮事件
+            document.getElementById('close-faq-modal').addEventListener('click', function() {
+                document.getElementById('faq-modal').remove();
+            });
+            
+            document.getElementById('close-faq-button').addEventListener('click', function() {
+                document.getElementById('faq-modal').remove();
+            });
+            
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function showContactModal() {
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'contact-modal';
+            
+            // 模态框内容
+            modal.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2 class="text-xl font-bold text-gray-800">联系我们</h2>
+                        <button id="close-contact-modal" class="text-gray-500 hover:text-gray-700">
+                            <span class="icon icon-close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 联系我们内容 -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-contact-button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 关闭按钮事件
+            document.getElementById('close-contact-modal').addEventListener('click', function() {
+                document.getElementById('contact-modal').remove();
+            });
+            
+            document.getElementById('close-contact-button').addEventListener('click', function() {
+                document.getElementById('contact-modal').remove();
+            });
+            
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // 根据选择的类型分析图片
+        async function analyzeImageWithType(base64Image, questionType) {
+            try {
+                // 构建系统提示，根据题目类型调整
+                let systemPrompt = '你是一个专业的题目解答助手。请分析图片中的所有题目，并给出详细的解题步骤和最终答案。你的解题步骤应该清晰、易懂，适合学生学习。';
+                
+                // 根据选择的题目类型调整提示
+                if (questionType !== 'auto') {
+                    const typeMap = {
+                        'single': '单选题',
+                        'multiple': '多选题',
+                        'fill': '填空题',
+                        'calculation': '计算题'
+                    };
+                    
+                    systemPrompt += `用户已指定这是${typeMap[questionType]}，请针对性地解答。`;
+                }
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + API_KEY
+                    },
+                    body: JSON.stringify({
+                        model: MODEL,
+                        messages: [
+                            {
+                                role: 'system',
+                                content: systemPrompt
+                            },
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        type: 'text',
+                                        text: `请分析这张图片中的所有题目，并给出详细的解题步骤和最终答案。${questionType !== 'auto' ? `这是${questionType === 'single' ? '单选题' : questionType === 'multiple' ? '多选题' : questionType === 'fill' ? '填空题' : '计算题'}。` : ''}格式为JSON，包含以下字段：questions（数组，每个元素包含questionText、questionType、options（如果是选择题）和answer字段，分别表示题目文本、题目类型、选项（如果有）和答案），solutions（数组，每个元素对应一个题目的解题过程，包含questionIndex和steps两个字段，分别表示题目索引和解题步骤数组）`
+                                    },
+                                    {
+                                        type: 'image_url',
+                                        image_url: {
+                                            url: `data:image/jpeg;base64,${base64Image}`
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        max_tokens: 2500,
+                        
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text(); const errorData = errorText.startsWith('{') ? JSON.parse(errorText) : {}; console.error('API Error response:', errorText.substring(0, 300));
+                    throw new Error(`API请求失败: ${errorData.error?.message || response.statusText}`);
+                }
+
+                const data = await response.json();
+                const choice = data.choices[0];
+                const content = choice.messages ? choice.messages[0].content : choice.message.content;
+                console.log('API返回content前100字:', content ? content.substring(0, 100) : 'null/undefined');
+                console.log('原始data:', JSON.stringify(data).substring(0, 200));
+                console.log('raw data stringified:', JSON.stringify(data).substring(0, 300));
+                console.log('content type:', typeof content, 'content preview:', String(content).substring(0, 100));
+                return JSON.parse(content);
+                
+            } catch (error) {
+                console.error('分析图片失败:', error);
+                throw error;
+            }
+        }
+
+        // 显示结果
+        function displayResult(result) {
+            // 显示结果卡片
+            resultCard.style.display = 'block';
+            
+            // 清空结果区域
+            const resultsContainer = document.querySelector('.result-card .flex.flex-col.md\\:flex-row');
+            resultsContainer.innerHTML = '';
+            
+            // 创建左侧图片区域
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'md:w-1/3';
+            
+            // 修复：使用文件URL而不是尝试获取不存在的图片元素
+            const imageUrl = fileInput.files.length ? URL.createObjectURL(fileInput.files[0]) : '';
+            
+            imageContainer.innerHTML = `
+                <div class="rounded-lg overflow-hidden border border-gray-200">
+                    <img src="${imageUrl}" alt="题目图片" class="w-full">
+                </div>
+            `;
+            resultsContainer.appendChild(imageContainer);
+            
+            // 创建右侧答案区域
+            const answersContainer = document.createElement('div');
+            answersContainer.className = 'md:w-2/3';
+            resultsContainer.appendChild(answersContainer);
+            
+            // 如果使用旧格式的响应
+            if (result.recognizedQuestion && result.solutionSteps) {
+                // 创建单个题目的解答
+                createSingleQuestionAnswer(answersContainer, result);
+            } else if (result.questions && result.solutions) {
+                // 创建多个题目的解答
+                createMultipleQuestionsAnswers(answersContainer, result);
+            }
+            
+            // 滚动到结果区域
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // 创建单个题目的解答
+        function createSingleQuestionAnswer(container, result) {
+            // 题目识别
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'mb-4';
+            
+            // 尝试从题目文本中推断题目类型
+            let questionType = '';
+            const questionText = result.recognizedQuestion || '';
+            if (questionText.includes('选择') || /[A-D]/.test(questionText)) {
+                if (questionText.includes('多选')) {
+                    questionType = '<span class="inline-block bg-indigo-100 text-indigo-800 px-2 py-1 text-xs rounded-full mr-2">多选题</span>';
+                } else {
+                    questionType = '<span class="inline-block bg-indigo-100 text-indigo-800 px-2 py-1 text-xs rounded-full mr-2">单选题</span>';
+                }
+            }
+            
+            questionDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">题目识别 ${questionType}</h3>
+                <p class="text-gray-700 bg-gray-50 p-3 rounded-lg">已识别：${result.recognizedQuestion}</p>
+            `;
+            container.appendChild(questionDiv);
+            
+            // 解题步骤
+            const stepsDiv = document.createElement('div');
+            stepsDiv.className = 'mb-4';
+            stepsDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">解题步骤</h3>
+                <div class="bg-gray-50 p-4 rounded-lg"></div>
+            `;
+            container.appendChild(stepsDiv);
+            
+            const stepsContainer = stepsDiv.querySelector('.bg-gray-50');
+            
+            // 创建步骤列表
+            const stepsList = document.createElement('div');
+            stepsList.className = 'space-y-3';
+            
+            result.solutionSteps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'mb-3';
+                
+                // 步骤内容
+                const stepContent = document.createElement('p');
+                stepContent.className = 'text-lg font-semibold mb-2';
+                
+                // 简化步骤编号显示
+                stepContent.textContent = `${index + 1}. ${step}`;
+                
+                // 添加数学公式高亮
+                stepContent.innerHTML = stepContent.innerHTML.replace(/(\d+[+\-*/^])+\d+|(\d+[=<>≤≥])+\d+|([a-zA-Z][+\-*/^=<>≤≥])+[a-zA-Z0-9]|(\([^)]+\))/g, 
+                    match => `<span class="text-indigo-600">${match}</span>`);
+                
+                stepElement.appendChild(stepContent);
+                
+                // 添加分隔线
+                if (index < result.solutionSteps.length - 1) {
+                    const divider = document.createElement('div');
+                    divider.className = 'border-b border-gray-100 mt-3';
+                    stepElement.appendChild(divider);
+                }
+                
+                stepsList.appendChild(stepElement);
+            });
+            
+            stepsContainer.appendChild(stepsList);
+            
+            // 最终答案
+            const answerDiv = document.createElement('div');
+            
+            // 尝试为选择题添加特殊样式
+            let formattedAnswer = result.finalAnswer;
+            if (questionType && (questionText.includes('选择') || /[A-D]/.test(questionText))) {
+                // 尝试提取选项标识符 (A, B, C, D 等)
+                const answerMatches = result.finalAnswer.match(/[A-D]/g);
+                if (answerMatches) {
+                    formattedAnswer = answerMatches.map(option => 
+                        `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full mr-1">${option}</span>`
+                    ).join(' ');
+                }
+            }
+            
+            answerDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">最终答案</h3>
+                <p class="text-indigo-700 font-medium bg-indigo-50 p-3 rounded-lg"><span class="font-bold">答案：</span>${formattedAnswer}</p>
+            `;
+            container.appendChild(answerDiv);
+        }
+        
+        // 创建多个题目的解答
+        function createMultipleQuestionsAnswers(container, result) {
+            // 创建题目选择器
+            const selectorDiv = document.createElement('div');
+            selectorDiv.className = 'mb-6';
+            selectorDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-3">已识别 ${result.questions.length} 个题目</h3>
+                <div class="flex flex-wrap gap-2 mb-4"></div>
+            `;
+            container.appendChild(selectorDiv);
+            
+            const buttonsContainer = selectorDiv.querySelector('.flex');
+            
+            // 创建题目内容区域
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'question-content';
+            container.appendChild(contentDiv);
+            
+            // 为每个题目创建选择按钮
+            result.questions.forEach((question, index) => {
+                const button = document.createElement('button');
+                button.className = 'px-3 py-1 rounded-full text-sm font-medium border';
+                button.textContent = `题目 ${index + 1}`;
+                button.dataset.index = index;
+                
+                if (index === 0) {
+                    button.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                } else {
+                    button.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-50');
+                }
+                
+                button.addEventListener('click', () => {
+                    // 更新按钮样式
+                    buttonsContainer.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                        btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-50');
+                    });
+                    button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300', 'hover:bg-gray-50');
+                    button.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                    
+                    // 显示对应题目的解答
+                    showQuestionSolution(contentDiv, result, index);
+                });
+                
+                buttonsContainer.appendChild(button);
+            });
+            
+            // 默认显示第一个题目的解答
+            if (result.questions.length > 0) {
+                showQuestionSolution(contentDiv, result, 0);
+            }
+        }
+        
+        // 显示指定题目的解答
+        function showQuestionSolution(container, result, questionIndex) {
+            const question = result.questions[questionIndex];
+            const solution = result.solutions.find(s => s.questionIndex === questionIndex) || 
+                            { steps: ['未找到该题目的解题步骤'] };
+            
+            container.innerHTML = '';
+            
+            // 题目文本和类型
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'mb-4';
+            
+            // 添加题目类型标签
+            const questionTypeLabel = question.questionType ? 
+                `<span class="inline-block bg-indigo-100 text-indigo-800 px-2 py-1 text-xs rounded-full mr-2">${question.questionType}</span>` : '';
+            
+            questionDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">题目 ${questionIndex + 1} ${questionTypeLabel}</h3>
+                <p class="text-gray-700 bg-gray-50 p-3 rounded-lg">${question.questionText}</p>
+            `;
+            container.appendChild(questionDiv);
+            
+            // 如果是选择题，显示选项
+            if (question.options && question.options.length > 0) {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'mb-4';
+                optionsDiv.innerHTML = `
+                    <h3 class="text-lg font-semibold mb-2">选项</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg"></div>
+                `;
+                container.appendChild(optionsDiv);
+                
+                const optionsContainer = optionsDiv.querySelector('.bg-gray-50');
+                
+                // 创建选项列表
+                const optionsList = document.createElement('div');
+                optionsList.className = 'space-y-2';
+                
+                question.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'flex items-start';
+                    
+                    // 修复：确保answer是字符串并安全处理
+                    const answerStr = String(question.answer || '');
+                    
+                    // 判断该选项是否是答案的一部分
+                    const isCorrect = answerStr.includes(String.fromCharCode(65 + index)) || // A, B, C...
+                                      answerStr.includes((index + 1).toString()) ||         // 1, 2, 3...
+                                      (typeof option === 'string' && 
+                                       answerStr.toLowerCase().includes(option.toLowerCase()));
+                    
+                    // 选项标记（A, B, C...）
+                    const optionLabel = document.createElement('span');
+                    optionLabel.className = `inline-block w-6 h-6 flex-shrink-0 rounded-full mr-2 flex items-center justify-center text-sm font-medium ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`;
+                    optionLabel.textContent = String.fromCharCode(65 + index); // A, B, C...
+                    
+                    // 选项内容
+                    const optionContent = document.createElement('p');
+                    optionContent.className = 'text-gray-700';
+                    optionContent.textContent = option;
+                    
+                    optionElement.appendChild(optionLabel);
+                    optionElement.appendChild(optionContent);
+                    optionsList.appendChild(optionElement);
+                });
+                
+                optionsContainer.appendChild(optionsList);
+            }
+            
+            // 解题步骤
+            const stepsDiv = document.createElement('div');
+            stepsDiv.className = 'mb-4';
+            stepsDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">解题步骤</h3>
+                <div class="bg-gray-50 p-4 rounded-lg"></div>
+            `;
+            container.appendChild(stepsDiv);
+            
+            const stepsContainer = stepsDiv.querySelector('.bg-gray-50');
+            
+            // 创建步骤列表
+            const stepsList = document.createElement('div');
+            stepsList.className = 'space-y-3';
+            
+            solution.steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'mb-3';
+                
+                // 步骤内容
+                const stepContent = document.createElement('p');
+                stepContent.className = 'text-lg font-semibold mb-2';
+                
+                // 简化步骤编号显示
+                stepContent.textContent = `${index + 1}. ${step}`;
+                
+                // 添加数学公式高亮
+                stepContent.innerHTML = stepContent.innerHTML.replace(/(\d+[+\-*/^])+\d+|(\d+[=<>≤≥])+\d+|([a-zA-Z][+\-*/^=<>≤≥])+[a-zA-Z0-9]|(\([^)]+\))/g, 
+                    match => `<span class="text-indigo-600">${match}</span>`);
+                
+                stepElement.appendChild(stepContent);
+                
+                // 添加分隔线
+                if (index < solution.steps.length - 1) {
+                    const divider = document.createElement('div');
+                    divider.className = 'border-b border-gray-100 mt-3';
+                    stepElement.appendChild(divider);
+                }
+                
+                stepsList.appendChild(stepElement);
+            });
+            
+            stepsContainer.appendChild(stepsList);
+            
+            // 最终答案
+            const answerDiv = document.createElement('div');
+            
+            // 为选择题添加特殊样式
+            let formattedAnswer = question.answer || '未提供答案';
+            
+            // 修复：确保answer是字符串
+            if (typeof formattedAnswer !== 'string') {
+                formattedAnswer = String(formattedAnswer);
+            }
+            
+            if (question.questionType && (question.questionType.includes('选择题') || question.questionType.includes('单选') || question.questionType.includes('多选'))) {
+                // 将答案格式化为带有颜色的选项标签
+                const answerOptions = formattedAnswer.split(/[,，、\s]+/);
+                formattedAnswer = answerOptions.map(option => 
+                    `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full mr-1">${option}</span>`
+                ).join(' ');
+            }
+            
+            answerDiv.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">最终答案</h3>
+                <p class="text-indigo-700 font-medium bg-indigo-50 p-3 rounded-lg"><span class="font-bold">答案：</span>${formattedAnswer}</p>
+            `;
+            container.appendChild(answerDiv);
+        }
+        
+        // 保存到历史记录
+        function saveToHistory(file, result) {
+            // 创建历史记录项
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item p-4 hover:bg-gray-50';
+            
+            const currentDate = new Date();
+            const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+            
+            // 处理不同格式的结果
+            let questionText, answerText;
+            
+            if (result.recognizedQuestion) {
+                // 单个题目
+                questionText = result.recognizedQuestion;
+                answerText = result.finalAnswer;
+            } else if (result.questions && result.questions.length > 0) {
+                // 多个题目，只显示第一个
+                questionText = `${result.questions.length}个题目: ${result.questions[0].questionText}...`;
+                answerText = result.questions[0].answer;
+            } else {
+                questionText = "未识别题目";
+                answerText = "无答案";
+            }
+            
+            // 使用自定义图标替代Font Awesome
+            historyItem.innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="md:w-1/5 mb-3 md:mb-0">
+                        <img src="${URL.createObjectURL(file)}" alt="历史题目" class="w-20 h-20 object-cover rounded-lg">
+                    </div>
+                    <div class="md:w-3/5 md:px-4">
+                        <h4 class="font-medium mb-1">${questionText}</h4>
+                        <p class="text-sm text-gray-600 mb-2">解得：${answerText}</p>
+                        <p class="text-xs text-gray-500">${dateString}</p>
+                    </div>
+                    <div class="md:w-1/5 flex md:justify-end mt-3 md:mt-0">
+                        <button class="text-indigo-600 hover:text-indigo-800 mr-3">
+                            <span class="icon icon-eye"></span>
+                        </button>
+                        <button class="text-red-600 hover:text-red-800">
+                            <span class="icon icon-trash"></span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到历史记录区域
+            const historyContainer = document.querySelector('.divide-y.divide-gray-200');
+            historyContainer.prepend(historyItem);
+        }
+    </script>
+</body>
+</html> 
