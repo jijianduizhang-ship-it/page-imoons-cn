@@ -95,23 +95,6 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
             <p>免费 · 安全 · 高效 · 智能的一站式图像处理工具</p>
             
             
-        <section class="tool-nav-section">
-            <div class="section-label"><span class="section-label-dot"></span>站内工具</div>
-            <div class="tool-nav-grid">
-                <a href="http://tools.imoons.cn/ai/" class="tool-nav-card"><div class="tool-nav-icon">🤖</div><div class="tool-nav-info"><div class="tool-nav-name">AI对话助手</div><div class="tool-nav-desc">智能对话 · 写作 · 编程</div></div></a>
-                <a href="http://tools.imoons.cn/aidt/" class="tool-nav-card"><div class="tool-nav-icon">📷</div><div class="tool-nav-info"><div class="tool-nav-name">拍照答题</div><div class="tool-nav-desc">AI拍照识别答案</div></div></a>
-                <a href="http://tools.imoons.cn/imge/" class="tool-nav-card"><div class="tool-nav-icon">🎨</div><div class="tool-nav-info"><div class="tool-nav-name">图片转漫画</div><div class="tool-nav-desc">一键照片变艺术作品</div></div></a>
-                <a href="http://tools.imoons.cn/hua/" class="tool-nav-card"><div class="tool-nav-icon">🌸</div><div class="tool-nav-info"><div class="tool-nav-name">花卉识别</div><div class="tool-nav-desc">拍照识花 · 植物识别</div></div></a>
-                <a href="http://tools.imoons.cn/dts/" class="tool-nav-card"><div class="tool-nav-icon">📸</div><div class="tool-nav-info"><div class="tool-nav-name">图像工具</div><div class="tool-nav-desc">智能图像编辑工具</div></div></a>
-                <a href="http://tools.imoons.cn/mz/" class="tool-nav-card"><div class="tool-nav-icon">✨</div><div class="tool-nav-info"><div class="tool-nav-name">智能起名</div><div class="tool-nav-desc">新生儿八字起名</div></div></a>
-                <a href="http://tools.imoons.cn/qm/" class="tool-nav-card"><div class="tool-nav-icon">📱</div><div class="tool-nav-info"><div class="tool-nav-name">二维码生成</div><div class="tool-nav-desc">新生儿起名工具</div></div></a>
-                <a href="http://tools.imoons.cn/tsc/" class="tool-nav-card"><div class="tool-nav-icon">💡</div><div class="tool-nav-info"><div class="tool-nav-name">MJ提示词</div><div class="tool-nav-desc">Midjourney提示生成</div></div></a>
-                <a href="http://tools.imoons.cn/time/" class="tool-nav-card"><div class="tool-nav-icon">🕐</div><div class="tool-nav-info"><div class="tool-nav-name">时间计数器</div><div class="tool-nav-desc">时间戳转换工具</div></div></a>
-                <a href="http://tools.imoons.cn/jiuyihuishou/" class="tool-nav-card"><div class="tool-nav-icon">👕</div><div class="tool-nav-info"><div class="tool-nav-name">旧衣回收</div><div class="tool-nav-desc">西瓜猪数据观测</div></div></a>
-                <a href="http://tools.imoons.cn/zhuan/" class="tool-nav-card"><div class="tool-nav-icon">📊</div><div class="tool-nav-info"><div class="tool-nav-name">副业统计</div><div class="tool-nav-desc">飞书数据看板</div></div></a>
-            </div>
-        </section>
-
 <div class="tabs">
                 <button class="tab active" data-category="all">全部</button>
                 <button class="tab" data-category="ai">AI工具</button>
@@ -168,13 +151,6 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
                 <h3>图片转PDF</h3>
                 <p>将多张图片合并转换为PDF文档</p>
                 <span class="tool-tag">格式转换</span>
-            </div>
-            
-            <div class="tool-card" data-category="edit">
-                <div class="tool-icon" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);">💧</div>
-                <h3>图片去水印</h3>
-                <p>智能识别并移除图片中的水印</p>
-                <span class="tool-tag">基础编辑</span>
             </div>
             
             <div class="tool-card" data-category="ai">
@@ -1316,8 +1292,6 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
                     showPanel('panel-rounded');
                 } else if (title.includes('PDF')) {
                     showPanel('panel-image2pdf');
-                } else if (title.includes('去水印')) {
-                    showToast('去水印功能开发中...');
                 } else if (title.includes('日报')) {
                     showPanel('panel-daily');
                 } else if (title.includes('复利')) {
@@ -1454,11 +1428,20 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
             showToast('下载已开始');
         });
 
-        // Midjourney Tool
-        const DEEPSEEK_KEY = 'sk-c2f2ce816b3f43b09b6740f702ad3f36';
-        const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+      
+        // Midjourney Tool - 本地提示词生成器（无需 API Key）
+        const MJ_STYLES = [
+            { label: '电影感', suffix: ', cinematic lighting, dramatic atmosphere, 8K, ultra detailed, film grain' },
+            { label: '超写实', suffix: ', photorealistic, hyperrealistic, detailed texture, natural lighting, 8K' },
+            { label: '艺术插画', suffix: ', digital art illustration, vibrant colors, concept art, masterpiece' },
+            { label: '梦幻感', suffix: ', dreamlike, ethereal, soft lighting, pastel colors, fantasy art' },
+            { label: '赛博朋克', suffix: ', cyberpunk, neon lights, futuristic city, rain, dramatic lighting, 8K' },
+            { label: '杂志风', suffix: ', editorial photography, fashion magazine cover, studio lighting, 4K' },
+            { label: '风光大片', suffix: ', landscape photography, golden hour, breathtaking view, 8K ultra hd' },
+            { label: '奇幻风格', suffix: ', fantasy art, magical atmosphere, mystical, epic composition, detailed' },
+        ];
 
-        document.getElementById('mjGenerate').addEventListener('click', async () => {
+        document.getElementById('mjGenerate').addEventListener('click', () => {
             const keywords = document.getElementById('mjKeywords').value.trim();
             if (!keywords) {
                 showToast('请输入关键词');
@@ -1468,30 +1451,17 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
             const processing = document.getElementById('processing');
             processing.classList.add('show');
 
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_KEY}` },
-                    body: JSON.stringify({
-                        model: 'deepseek-chat',
-                        messages: [
-                            { role: 'system', content: '你是一个Midjourney提示词生成专家，生成详细创意英文提示词' },
-                            { role: 'user', content: `为"${keywords}"生成Midjourney提示词` }
-                        ],
-                        temperature: 0.9
-                    })
-                });
+            setTimeout(() => {
+                const prompts = MJ_STYLES.map(s => keywords + s.suffix);
+                const result = '✔ 为您生成 ' + prompts.length + ' 组 Midjourney 提示词：\n\n' +
+                    prompts.map((p, i) => (i + 1) + '. ' + p).join('\n\n')
+                    + '\n\n★ 使用方法：直接复制提示词到 Midjourney 中使用';
 
-                const data = await res.json();
-                const result = data.choices[0].message.content;
-                
                 document.querySelector('#mjResult div').textContent = result;
                 document.getElementById('mjResult').style.display = 'block';
-            } catch (e) {
-                showToast('生成失败: ' + e.message);
-            } finally {
                 processing.classList.remove('show');
-            }
+                showToast('生成完成');
+            }, 800);
         });
 
         document.getElementById('mjCopy').addEventListener('click', () => {
@@ -1500,7 +1470,7 @@ footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;bor
             showToast('已复制');
         });
 
-        // Slider value displays
+// Slider value displays
         document.getElementById('compressQuality').addEventListener('input', (e) => {
             document.getElementById('compressValue').textContent = e.target.value;
         });
