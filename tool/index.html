@@ -1345,24 +1345,17 @@ document.querySelectorAll('.tool-card').forEach(card => {
     card.addEventListener('click', () => {
         const panelId = card.dataset.panel;
         if (!panelId) return;
-        const panelsContainer = document.getElementById('panelsContainer');
-        const panel = panelsContainer.querySelector('#' + panelId);
+        const panel = document.getElementById(panelId);
         if (!panel) return;
-        const clone = panel.cloneNode(true);
-        clone.style.display = 'block';
         const title = card.querySelector('h3').textContent;
         document.getElementById('modalTitle').textContent = title;
         const modalBody = document.getElementById('modalBody');
         modalBody.innerHTML = '';
-        modalBody.appendChild(clone);
+        modalBody.appendChild(panel); // MOVE to modal — keeps all event listeners
         document.getElementById('toolModal').classList.add('open');
         document.body.style.overflow = 'hidden';
         modalBody.scrollTop = 0;
-        // Rebind upload area clicks
-        modalBody.querySelectorAll('.upload-area').forEach(area => {
-            const input = area.querySelector('.upload-input');
-            if (input) area.addEventListener('click', () => input.click());
-        });
+    });
     });
 });
 function showPanel(panelId) {
@@ -2693,14 +2686,24 @@ Powered by 全能王工具箱`;
 </script>
 <script>
 document.getElementById('modalBack').addEventListener('click', () => {
+    const modalBody = document.getElementById('modalBody');
+    const panel = modalBody.firstElementChild;
+    if (panel) {
+        document.getElementById('panelsContainer').appendChild(panel);
+    }
     document.getElementById('toolModal').classList.remove('open');
     document.body.style.overflow = '';
 });
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.getElementById('toolModal').classList.contains('open')) {
-        document.getElementById('toolModal').classList.remove('open');
-        document.body.style.overflow = '';
+    const modalBody = document.getElementById('modalBody');
+    const panel = modalBody.firstElementChild;
+    if (panel) {
+        document.getElementById('panelsContainer').appendChild(panel);
     }
+    document.getElementById('toolModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
 });
 </script>
 </body>
