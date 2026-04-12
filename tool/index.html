@@ -1286,49 +1286,43 @@ footer{text-align:center;padding:32px 20px;border-top:1px solid var(--border);co
 <script>
 
 
-        // 搜索功能
-        const searchInput = document.getElementById('toolSearch');
-        const allCards = () => document.querySelectorAll('.tool-panel.active .tool-card, .tool-panel.active .tool-nav-card');
 
-        searchInput.addEventListener('input', (e) => {
-            const q = e.target.value.trim().toLowerCase();
-            document.querySelectorAll('.tool-panel').forEach(panel => {
-                panel.classList.add('active'); // 搜索时显示所有分类
-            });
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector('.tab[data-category="all"]').classList.add('active');
+        // ========== 搜索功能 ==========
+        document.getElementById('toolSearch').addEventListener('input', function(e) {
+            var q = this.value.trim().toLowerCase();
+
+            // Reset tabs to "全部"
+            document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+            var allTab = document.querySelector('.tab[data-category="all"]');
+            if (allTab) allTab.classList.add('active');
 
             if (!q) {
-                document.querySelectorAll('.tool-card, .tool-nav-card').forEach(c => c.style.display = '');
+                document.querySelectorAll('.tool-card').forEach(function(c) { c.style.display = ''; });
                 return;
             }
-            document.querySelectorAll('.tool-card').forEach(card => {
-                const name = card.querySelector('h3')?.textContent?.toLowerCase() || '';
-                const desc = card.querySelector('p')?.textContent?.toLowerCase() || '';
-                card.style.display = (name.includes(q) || desc.includes(q)) ? '' : 'none';
-            });
-            document.querySelectorAll('.tool-nav-card').forEach(card => {
-                const name = card.querySelector('.tool-nav-name')?.textContent?.toLowerCase() || '';
-                const desc = card.querySelector('.tool-nav-desc')?.textContent?.toLowerCase() || '';
-                card.style.display = (name.includes(q) || desc.includes(q)) ? '' : 'none';
+
+            document.querySelectorAll('.tool-card').forEach(function(card) {
+                var name = (card.querySelector('h3') && card.querySelector('h3').textContent || '').toLowerCase();
+                var desc = (card.querySelector('p') && card.querySelector('p').textContent || '').toLowerCase();
+                card.style.display = (name.indexOf(q) !== -1 || desc.indexOf(q) !== -1) ? '' : 'none';
             });
         });
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const category = tab.dataset.category;
+        // ========== Tab 切换 ==========
+        document.querySelectorAll('.tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+                this.classList.add('active');
 
-                // 清空搜索
-                const searchInput = document.getElementById('toolSearch');
+                var category = this.dataset.category;
+
+                var searchInput = document.getElementById('toolSearch');
                 if (searchInput.value) {
                     searchInput.value = '';
-                    document.querySelectorAll('.tool-card, .tool-nav-card').forEach(c => c.style.display = '');
+                    document.querySelectorAll('.tool-card').forEach(function(c) { c.style.display = ''; });
                 }
 
-                document.querySelectorAll('.tool-card').forEach(card => {
+                document.querySelectorAll('.tool-card').forEach(function(card) {
                     if (category === 'all') {
                         card.style.display = '';
                     } else if (card.dataset.category === category) {
@@ -1340,31 +1334,65 @@ footer{text-align:center;padding:32px 20px;border-top:1px solid var(--border);co
             });
         });
 
-        // Tool card click → open modal
-document.querySelectorAll('.tool-card').forEach(card => {
-    card.addEventListener('click', () => {
-        const panelId = card.dataset.panel;
-        if (!panelId) return;
-        const panel = document.getElementById(panelId);
-        if (!panel) return;
-        const title = card.querySelector('h3').textContent;
-        document.getElementById('modalTitle').textContent = title;
-        const modalBody = document.getElementById('modalBody');
-        modalBody.innerHTML = '';
-        modalBody.appendChild(panel); // MOVE to modal — keeps all event listeners
-        document.getElementById('toolModal').classList.add('open');
-        document.body.style.overflow = 'hidden';
-        modalBody.scrollTop = 0;
-    });
-    });
-});
-function showPanel(panelId) {
-            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(panelId).classList.add('active');
-            document.getElementById(panelId).scrollIntoView({ behavior: 'smooth' });
-        }
+        // ========== 卡片点击 → 打开 Modal ==========
+        document.querySelectorAll('.tool-card').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-        function showToast(msg) {
+                var panelId = this.dataset.panel;
+                if (!panelId) return;
+
+                var panel = document.getElementById(panelId);
+                if (!panel) { console.warn('Panel not found:', panelId); return; }
+
+                var modalTitle = document.getElementById('modalTitle');
+                var modalBody = document.getElementById('modalBody');
+                var modal = document.getElementById('toolModal');
+
+                modalBody.innerHTML = '';
+                modalBody.appendChild(panel);
+
+                var titleEl = this.querySelector('h3');
+                modalTitle.textContent = titleEl ? titleEl.textContent : '';
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                modalBody.scrollTop = 0;
+            });
+        });
+
+        // ========== 关闭 Modal ==========
+        document.getElementById('modalBack').addEventListener('click', function() {
+            var modalBody = document.getElementById('modalBody');
+            var panel = modalBody.firstElementChild;
+            if (panel) { document.getElementById('panelsContainer').appendChild(panel); }
+            document.getElementById('toolModal').classList.remove('open');
+            document.body.style.overflow = '';
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var modal = document.getElementById('toolModal');
+                if (modal.classList.contains('open')) {
+                    var modalBody = document.getElementById('modalBody');
+                    var panel = modalBody.firstElementChild;
+                    if (panel) { document.getElementById('panelsContainer').appendChild(panel); }
+                    modal.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        document.getElementById('toolModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                var modalBody = document.getElementById('modalBody');
+                var panel = modalBody.firstElementChild;
+                if (panel) { document.getElementById('panelsContainer').appendChild(panel); }
+                this.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.classList.add('show');
@@ -2009,454 +2037,6 @@ Powered by 全能王工具箱`;
         });
 
         // 显示/隐藏处理中遮罩
-        function showProcessing(show) {
-            document.getElementById('processing').classList.toggle('show', show);
-        }
-
-        // ========== 二维码生成 ==========
-        let qrcodeObj = null;
-
-        document.getElementById('qrcodeSize').addEventListener('input', (e) => {
-            document.getElementById('qrcodeSizeValue').textContent = e.target.value;
-        });
-
-        document.getElementById('qrcodeGenerate').addEventListener('click', () => {
-            const content = document.getElementById('qrcodeContent').value.trim();
-            if (!content) {
-                showToast('请输入内容');
-                return;
-            }
-            
-            const size = parseInt(document.getElementById('qrcodeSize').value);
-            const canvas = document.getElementById('qrcodeCanvas');
-            canvas.innerHTML = '';
-            
-            qrcodeObj = new QRCode(canvas, {
-                text: content,
-                width: size,
-                height: size,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            document.getElementById('qrcodePreview').style.display = 'block';
-            document.getElementById('qrcodeDownload').style.display = 'inline-flex';
-            showToast('二维码生成成功');
-        });
-
-        document.getElementById('qrcodeDownload').addEventListener('click', () => {
-            const canvas = document.querySelector('#qrcodeCanvas canvas');
-            if (canvas) {
-                const link = document.createElement('a');
-                link.download = 'qrcode.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showToast('下载成功');
-            }
-        });
-
-        // ========== 房贷计算器 ==========
-        document.getElementById('mortgageCalculate').addEventListener('click', () => {
-            const amount = parseFloat(document.getElementById('mortgageAmount').value) || 0;
-            const years = parseInt(document.getElementById('mortgageYears').value);
-            const rate = parseFloat(document.getElementById('mortgageRate').value) || 0;
-            const type = document.getElementById('mortgageType').value;
-            
-            if (amount <= 0 || rate <= 0) {
-                showToast('请输入正确的贷款信息');
-                return;
-            }
-            
-            const months = years * 12;
-            const monthlyRate = rate / 100 / 12;
-            const total = amount * 10000;
-            
-            let monthlyPayment, totalInterest, firstMonth, decrease;
-            
-            if (type === 'average') {
-                // 等额本息
-                monthlyPayment = total * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
-                totalInterest = monthlyPayment * months - total;
-                firstMonth = monthlyPayment;
-                decrease = 0;
-            } else {
-                // 等额本金
-                const principalPerMonth = total / months;
-                firstMonth = total * monthlyRate + principalPerMonth;
-                decrease = total * monthlyRate / months;
-                totalInterest = (total * monthlyRate * (months + 1)) / 2;
-            }
-            
-            document.getElementById('mortgageFirstMonth').textContent = '¥' + firstMonth.toFixed(2);
-            document.getElementById('mortgageDecrease').textContent = type === 'average' ? '-' : '¥' + decrease.toFixed(2);
-            document.getElementById('mortgageTotalInterest').textContent = '¥' + totalInterest.toFixed(2);
-            document.getElementById('mortgageTotal').textContent = '¥' + (total + totalInterest).toFixed(2);
-            
-            document.getElementById('mortgageResult').style.display = 'block';
-            showToast('计算完成');
-        });
-
-        // ========== BMI计算器 ==========
-        document.getElementById('bmiCalculate').addEventListener('click', () => {
-            const height = parseFloat(document.getElementById('bmiHeight').value) || 0;
-            const weight = parseFloat(document.getElementById('bmiWeight').value) || 0;
-            
-            if (height <= 0 || weight <= 0) {
-                showToast('请输入正确的身高体重');
-                return;
-            }
-            
-            const heightM = height / 100;
-            const bmi = weight / (heightM * heightM);
-            
-            let level, color;
-            if (bmi < 18.5) {
-                level = '偏瘦';
-                color = '#fbbf24';
-            } else if (bmi < 24) {
-                level = '正常';
-                color = '#22c55e';
-            } else if (bmi < 28) {
-                level = '偏胖';
-                color = '#f97316';
-            } else {
-                level = '肥胖';
-                color = '#ef4444';
-            }
-            
-            document.getElementById('bmiValue').textContent = bmi.toFixed(1);
-            document.getElementById('bmiValue').style.color = color;
-            document.getElementById('bmiLevel').textContent = level;
-            
-            document.getElementById('bmiResult').style.display = 'block';
-            showToast('计算完成');
-        });
-
-        // ========== 密码生成器 ==========
-        const pwdChars = {
-            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-            lower: 'abcdefghijklmnopqrstuvwxyz',
-            number: '0123456789',
-            symbol: '!@#$%^&*()_+-=[]{}|;:,.<>?'
-        };
-
-        document.getElementById('pwdLength').addEventListener('input', (e) => {
-            document.getElementById('pwdLengthValue').textContent = e.target.value;
-        });
-
-        document.getElementById('pwdGenerate').addEventListener('click', () => {
-            const length = parseInt(document.getElementById('pwdLength').value);
-            const useUpper = document.getElementById('pwdUpper').checked;
-            const useLower = document.getElementById('pwdLower').checked;
-            const useNumber = document.getElementById('pwdNumber').checked;
-            const useSymbol = document.getElementById('pwdSymbol').checked;
-            
-            let chars = '';
-            if (useUpper) chars += pwdChars.upper;
-            if (useLower) chars += pwdChars.lower;
-            if (useNumber) chars += pwdChars.number;
-            if (useSymbol) chars += pwdChars.symbol;
-            
-            if (!chars) {
-                showToast('请至少选择一种字符类型');
-                return;
-            }
-            
-            let password = '';
-            const array = new Uint32Array(length);
-            crypto.getRandomValues(array);
-            for (let i = 0; i < length; i++) {
-                password += chars[array[i] % chars.length];
-            }
-            
-            document.getElementById('pwdOutput').textContent = password;
-            
-            // 计算密码强度
-            let strength = '弱';
-            let strengthColor = '#ef4444';
-            let score = 0;
-            if (useUpper) score++;
-            if (useLower) score++;
-            if (useNumber) score++;
-            if (useSymbol) score++;
-            if (length >= 12) score++;
-            if (length >= 16) score++;
-            
-            if (score >= 4) {
-                strength = '强';
-                strengthColor = '#22c55e';
-            } else if (score >= 2) {
-                strength = '中等';
-                strengthColor = '#fbbf24';
-            }
-            
-            document.getElementById('pwdStrength').textContent = strength;
-            document.getElementById('pwdStrength').style.color = strengthColor;
-            
-            document.getElementById('pwdResult').style.display = 'block';
-            document.getElementById('pwdCopy').style.display = 'inline-flex';
-            showToast('密码生成成功');
-        });
-
-        document.getElementById('pwdCopy').addEventListener('click', () => {
-            const pwd = document.getElementById('pwdOutput').textContent;
-            navigator.clipboard.writeText(pwd);
-            showToast('已复制到剪贴板');
-        });
-
-        // ========== 时间戳转换 ==========
-        // 初始化当前时间
-        const now = new Date();
-        const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-        document.getElementById('tsDateInput').value = local;
-
-        document.getElementById('tsNow').addEventListener('click', () => {
-            const nowTs = Math.floor(Date.now() / 1000);
-            document.getElementById('tsInput').value = nowTs;
-        });
-
-        document.getElementById('tsToDate').addEventListener('click', () => {
-            const ts = parseInt(document.getElementById('tsInput').value);
-            if (!ts) {
-                showToast('请输入时间戳');
-                return;
-            }
-            
-            // 判断是秒级还是毫秒级
-            const date = ts > 10000000000 ? new Date(ts) : new Date(ts * 1000);
-            
-            document.getElementById('tsSecond').textContent = Math.floor(date.getTime() / 1000);
-            document.getElementById('tsMilli').textContent = date.getTime();
-            document.getElementById('tsDate').textContent = date.toLocaleString('zh-CN');
-            
-            document.getElementById('tsResult').style.display = 'block';
-            showToast('转换成功');
-        });
-
-        document.getElementById('tsToTimestamp').addEventListener('click', () => {
-            const dateStr = document.getElementById('tsDateInput').value;
-            if (!dateStr) {
-                showToast('请选择日期时间');
-                return;
-            }
-            
-            const date = new Date(dateStr);
-            const ts = Math.floor(date.getTime() / 1000);
-            
-            document.getElementById('tsInput').value = ts;
-            document.getElementById('tsSecond').textContent = ts;
-            document.getElementById('tsMilli').textContent = date.getTime();
-            document.getElementById('tsDate').textContent = date.toLocaleString('zh-CN');
-            
-            document.getElementById('tsResult').style.display = 'block';
-            showToast('转换成功');
-        });
-
-        // ========== 图片转Base64 ==========
-        let base64ImgData = null;
-
-        document.getElementById('base64ImgInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                base64ImgData = e.target.result;
-                document.getElementById('base64ImgSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
-                document.getElementById('base64ImgLen').textContent = e.target.result.length + ' 字符';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        document.getElementById('base64ImgUpload').addEventListener('click', () => {
-            document.getElementById('base64ImgInput').click();
-        });
-
-        document.getElementById('base64ImgBtn').addEventListener('click', () => {
-            if (!base64ImgData) {
-                showToast('请先上传图片');
-                return;
-            }
-            
-            const format = document.getElementById('base64Format').value;
-            let output = base64ImgData;
-            if (format === 'pure') {
-                output = base64ImgData.split(',')[1];
-            }
-            
-            document.getElementById('base64Output').value = output;
-            document.getElementById('base64ImgResult').style.display = 'block';
-            document.getElementById('base64ImgCopy').style.display = 'inline-flex';
-            showToast('转换成功');
-        });
-
-        document.getElementById('base64ImgCopy').addEventListener('click', () => {
-            navigator.clipboard.writeText(document.getElementById('base64Output').value);
-            showToast('已复制');
-        });
-
-        // ========== Base64编解码 ==========
-        document.getElementById('base64EncodeBtn').addEventListener('click', () => {
-            const input = document.getElementById('base64InputText').value;
-            if (!input) {
-                showToast('请输入内容');
-                return;
-            }
-            try {
-                const output = btoa(unescape(encodeURIComponent(input)));
-                document.getElementById('base64OutputText').value = output;
-                document.getElementById('base64TextResult').style.display = 'block';
-                document.getElementById('base64TextCopy').style.display = 'inline-flex';
-            } catch (e) {
-                showToast('编码失败: ' + e.message);
-            }
-        });
-
-        document.getElementById('base64DecodeBtn').addEventListener('click', () => {
-            const input = document.getElementById('base64InputText').value;
-            if (!input) {
-                showToast('请输入内容');
-                return;
-            }
-            try {
-                const output = decodeURIComponent(escape(atob(input)));
-                document.getElementById('base64OutputText').value = output;
-                document.getElementById('base64TextResult').style.display = 'block';
-                document.getElementById('base64TextCopy').style.display = 'inline-flex';
-            } catch (e) {
-                showToast('解码失败: 无效的Base64字符串');
-            }
-        });
-
-        document.getElementById('base64TextCopy').addEventListener('click', () => {
-            navigator.clipboard.writeText(document.getElementById('base64OutputText').value);
-            showToast('已复制');
-        });
-
-        // ========== URL编码解码 ==========
-        document.getElementById('urlEncodeBtn').addEventListener('click', () => {
-            const input = document.getElementById('urlInput').value;
-            if (!input) {
-                showToast('请输入内容');
-                return;
-            }
-            const output = encodeURIComponent(input);
-            document.getElementById('urlOutput').value = output;
-            document.getElementById('urlResult').style.display = 'block';
-            document.getElementById('urlCopy').style.display = 'inline-flex';
-        });
-
-        document.getElementById('urlDecodeBtn').addEventListener('click', () => {
-            const input = document.getElementById('urlInput').value;
-            if (!input) {
-                showToast('请输入内容');
-                return;
-            }
-            try {
-                const output = decodeURIComponent(input);
-                document.getElementById('urlOutput').value = output;
-                document.getElementById('urlResult').style.display = 'block';
-                document.getElementById('urlCopy').style.display = 'inline-flex';
-            } catch (e) {
-                showToast('解码失败');
-            }
-        });
-
-        document.getElementById('urlCopy').addEventListener('click', () => {
-            navigator.clipboard.writeText(document.getElementById('urlOutput').value);
-            showToast('已复制');
-        });
-
-        // ========== 日期计算器 ==========
-        const today = new Date().toISOString().slice(0, 10);
-        document.getElementById('dateStart').value = today;
-        document.getElementById('dateEnd').value = today;
-
-        document.getElementById('dateCalcBtn').addEventListener('click', () => {
-            const start = new Date(document.getElementById('dateStart').value);
-            const end = new Date(document.getElementById('dateEnd').value);
-            
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                showToast('请选择有效的日期');
-                return;
-            }
-            
-            const diffMs = Math.abs(end - start);
-            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
-            
-            // 计算工作日和周末
-            let workDays = 0, weekendDays = 0;
-            let current = new Date(Math.min(start, end));
-            const endDate = new Date(Math.max(start, end));
-            
-            while (current <= endDate) {
-                const day = current.getDay();
-                if (day === 0 || day === 6) {
-                    weekendDays++;
-                } else {
-                    workDays++;
-                }
-                current.setDate(current.getDate() + 1);
-            }
-            
-            document.getElementById('dateDiffDays').textContent = diffDays + ' 天';
-            document.getElementById('dateDiffHours').textContent = diffHours + ' 小时';
-            document.getElementById('dateWorkDays').textContent = workDays + ' 天';
-            document.getElementById('dateWeekendDays').textContent = weekendDays + ' 天';
-            
-            document.getElementById('dateResult').style.display = 'block';
-            showToast('计算完成');
-        });
-
-        // ========== JSON格式化 ==========
-        document.getElementById('jsonFormatBtn').addEventListener('click', () => {
-            const input = document.getElementById('jsonInput').value.trim();
-            if (!input) {
-                showToast('请输入JSON');
-                return;
-            }
-            try {
-                const obj = JSON.parse(input);
-                const output = JSON.stringify(obj, null, 4);
-                document.getElementById('jsonOutput').value = output;
-                document.getElementById('jsonStatus').textContent = '(有效JSON)';
-                document.getElementById('jsonResult').style.display = 'block';
-                document.getElementById('jsonCopy').style.display = 'inline-flex';
-            } catch (e) {
-                showToast('无效的JSON: ' + e.message);
-            }
-        });
-
-        document.getElementById('jsonCompressBtn').addEventListener('click', () => {
-            const input = document.getElementById('jsonInput').value.trim();
-            if (!input) {
-                showToast('请输入JSON');
-                return;
-            }
-            try {
-                const obj = JSON.parse(input);
-                const output = JSON.stringify(obj);
-                document.getElementById('jsonOutput').value = output;
-                document.getElementById('jsonStatus').textContent = '(已压缩)';
-                document.getElementById('jsonResult').style.display = 'block';
-                document.getElementById('jsonCopy').style.display = 'inline-flex';
-            } catch (e) {
-                showToast('无效的JSON: ' + e.message);
-            }
-        });
-
-        document.getElementById('jsonCopy').addEventListener('click', () => {
-            navigator.clipboard.writeText(document.getElementById('jsonOutput').value);
-            showToast('已复制');
-        });
-
-        // ========== UUID生成器 ==========
-        document.getElementById('uuidCount').addEventListener('input', (e) => {
-            document.getElementById('uuidCountVal').textContent = e.target.value;
-        });
-
         function uuidv4() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
                 const r = Math.random() * 16 | 0;
@@ -2684,27 +2264,7 @@ Powered by 全能王工具箱`;
         });
     
 </script>
-<script>
-document.getElementById('modalBack').addEventListener('click', () => {
-    const modalBody = document.getElementById('modalBody');
-    const panel = modalBody.firstElementChild;
-    if (panel) {
-        document.getElementById('panelsContainer').appendChild(panel);
-    }
-    document.getElementById('toolModal').classList.remove('open');
-    document.body.style.overflow = '';
-});
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.getElementById('toolModal').classList.contains('open')) {
-    const modalBody = document.getElementById('modalBody');
-    const panel = modalBody.firstElementChild;
-    if (panel) {
-        document.getElementById('panelsContainer').appendChild(panel);
-    }
-    document.getElementById('toolModal').classList.remove('open');
-    document.body.style.overflow = '';
-}
-});
+
 </script>
 </body>
 </html>
