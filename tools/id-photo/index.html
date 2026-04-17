@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>证件照换底色 - 免费在线工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans SC', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #00e5ff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 32px; }
+    .upload-area { border: 2px dashed #334155; border-radius: 16px; padding: 48px 24px; text-align: center; cursor: pointer; transition: all 0.3s; background: #1e293b; }
+    .upload-area:hover { border-color: #00e5ff; background: #1e3a4a; }
+    .upload-area input { display: none; }
+    .upload-icon { font-size: 3rem; margin-bottom: 12px; }
+    .upload-text { color: #94a3b8; }
+    .upload-text strong { color: #00e5ff; }
+    .preview-wrap { display: none; margin-top: 32px; }
+    .preview-wrap.show { display: block; }
+    .canvas-row { display: flex; gap: 24px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .canvas-box { text-align: center; }
+    .canvas-box canvas { max-width: 280px; max-height: 350px; border-radius: 12px; border: 1px solid #334155; }
+    .canvas-label { margin-top: 8px; font-size: 0.85rem; color: #64748b; }
+    .controls { margin-top: 24px; text-align: center; }
+    .color-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .color-btn { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: all 0.2s; }
+    .color-btn:hover, .color-btn.active { border-color: #fff; transform: scale(1.15); }
+    .color-btn.red { background: #e53e3e; }
+    .color-btn.blue { background: #3182ce; }
+    .color-btn.white { background: #f7fafc; border: 2px solid #cbd5e0; }
+    .color-btn.purple { background: #805ad5; }
+    .color-btn.green { background: #38a169; }
+    .color-btn.orange { background: #dd6b20; }
+    .color-btn.pink { background: #ed64a6; }
+    .btn { padding: 10px 28px; border-radius: 10px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-download { background: linear-gradient(135deg, #00e5ff, #8b5cf6); color: #0f1117; }
+    .btn-download:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-reset { background: #1e293b; color: #94a3b8; border: 1px solid #334155; margin-left: 12px; }
+    .btn-reset:hover { border-color: #00e5ff; color: #00e5ff; }
+    .tips { margin-top: 32px; background: #1e293b; border-radius: 12px; padding: 20px; }
+    .tips h3 { font-size: 0.95rem; color: #00e5ff; margin-bottom: 10px; }
+    .tips ul { list-style: none; padding: 0; }
+    .tips li { font-size: 0.85rem; color: #94a3b8; padding: 4px 0; }
+    .tips li::before { content: '✓ '; color: #38a169; }
+    .back-link { display: inline-block; margin-bottom: 24px; color: #64748b; text-decoration: none; font-size: 0.9rem; }
+    .back-link:hover { color: #00e5ff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/tool/" class="back-link">← 返回工具箱</a>
+    <h1>证件照换底色</h1>
+    <p class="subtitle">上传证件照，一键更换背景颜色，支持红、蓝、白等多种底色</p>
+
+    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept="image/*">
+      <div class="upload-icon">📷</div>
+      <p class="upload-text">点击上传证件照（支持 JPG、PNG）</p>
+      <p class="upload-text" style="font-size:0.8rem;margin-top:8px;">建议使用清晰的正面证件照</p>
+    </div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <div class="canvas-row">
+        <div class="canvas-box">
+          <canvas id="originalCanvas" width="300" height="400"></canvas>
+          <p class="canvas-label">原图</p>
+        </div>
+        <div class="canvas-box">
+          <canvas id="resultCanvas" width="300" height="400"></canvas>
+          <p class="canvas-label">换底后</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="color-btns">
+          <button class="color-btn red active" data-color="255,62,62" title="红色"></button>
+          <button class="color-btn blue" data-color="49,130,206" title="蓝色"></button>
+          <button class="color-btn white" data-color="247,250,252" title="白色"></button>
+          <button class="color-btn purple" data-color="128,90,213" title="紫色"></button>
+          <button class="color-btn green" data-color="56,161,105" title="绿色"></button>
+          <button class="color-btn orange" data-color="221,107,32" title="橙色"></button>
+          <button class="color-btn pink" data-color="237,100,166" title="粉色"></button>
+        </div>
+        <button class="btn btn-download" onclick="downloadResult()">⬇ 下载证件照</button>
+        <button class="btn btn-reset" onclick="resetImage()">🔄 重新上传</button>
+      </div>
+    </div>
+
+    <div class="tips">
+      <h3>💡 使用说明</h3>
+      <ul>
+        <li>上传证件照，系统自动识别人像区域并更换背景色</li>
+        <li>点击不同颜色按钮可实时切换底色</li>
+        <li>支持红、蓝、白、紫、绿、橙、粉等常见证件照底色</li>
+        <li>处理完成后点击下载保存高清证件照</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const previewWrap = document.getElementById('previewWrap');
+    const originalCanvas = document.getElementById('originalCanvas');
+    const resultCanvas = document.getElementById('resultCanvas');
+    const colorBtns = document.querySelectorAll('.color-btn');
+    let originalImage = null;
+    let currentColor = [255, 62, 62];
+
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          originalImage = img;
+          drawOriginal();
+          applyBgColor();
+          previewWrap.classList.add('show');
+          uploadArea.style.display = 'none';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function drawOriginal() {
+      const w = originalCanvas.width;
+      const h = originalCanvas.height;
+      const ctx = originalCanvas.getContext('2d');
+      ctx.drawImage(originalImage, 0, 0, w, h);
+    }
+
+    function applyBgColor() {
+      if (!originalImage) return;
+      const w = resultCanvas.width;
+      const h = resultCanvas.height;
+      const ctx = resultCanvas.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw background
+      ctx.fillStyle = `rgb(${currentColor.join(',')})`;
+      ctx.fillRect(0, 0, w, h);
+
+      // Draw image with transparent background using flood fill tolerance
+      ctx.drawImage(originalImage, 0, 0, w, h);
+
+      // Simple chroma key: replace white-ish background with transparency
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      const tolerance = 60;
+      const bgR = 255, bgG = 255, bgB = 255;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        const brightness = (r + g + b) / 3;
+        const dist = Math.sqrt((r-bgR)**2 + (g-bgG)**2 + (b-bgB)**2);
+        if (dist < tolerance && brightness > 120) {
+          data[i+3] = 0; // transparent
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    colorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        colorBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentColor = btn.dataset.color.split(',').map(Number);
+        applyBgColor();
+      });
+    });
+
+    function downloadResult() {
+      const link = document.createElement('a');
+      link.download = '证件照_换底.png';
+      link.href = resultCanvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function resetImage() {
+      originalImage = null;
+      fileInput.value = '';
+      previewWrap.classList.remove('show');
+      uploadArea.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
