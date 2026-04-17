@@ -2297,6 +2297,394 @@ Powered by 全能王工具箱`;
             showToast('已复制全部名字');
         });
     
+        // ========== 二维码生成 ==========
+        document.getElementById('qrcodeGenerate').addEventListener('click', () => {
+            const content = document.getElementById('qrcodeContent').value.trim();
+            const size = parseInt(document.getElementById('qrcodeSize').value);
+            if (!content) {
+                showToast('请输入内容');
+                return;
+            }
+            const container = document.getElementById('qrcodeCanvas');
+            container.innerHTML = '';
+            new QRCode(container, {
+                text: content,
+                width: size,
+                height: size,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            document.getElementById('qrcodeDownload').style.display = 'inline-flex';
+            document.getElementById('qrcodePreview').style.display = 'block';
+            showToast('生成成功');
+        });
+
+        document.getElementById('qrcodeDownload').addEventListener('click', () => {
+            const canvas = document.querySelector('#qrcodeCanvas canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('下载成功');
+            }
+        });
+
+        document.getElementById('qrcodeSize').addEventListener('input', (e) => {
+            document.getElementById('qrcodeSizeValue').textContent = e.target.value;
+        });
+
+        // ========== 房贷计算器 ==========
+        document.getElementById('mortgageCalculate').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('mortgageAmount').value);
+            const years = parseInt(document.getElementById('mortgageYears').value);
+            const rate = parseFloat(document.getElementById('mortgageRate').value);
+            const type = document.getElementById('mortgageType').value;
+
+            if (!amount || !years || !rate) {
+                showToast('请填写完整信息');
+                return;
+            }
+
+            const principal = amount * 10000;
+            const monthlyRate = rate / 100 / 12;
+            const months = years * 12;
+            let firstMonth, decrease, totalInterest, total;
+
+            if (type === 'average') {
+                // 等额本息
+                const factor = Math.pow(1 + monthlyRate, months);
+                firstMonth = principal * (monthlyRate * factor) / (factor - 1);
+                total = firstMonth * months;
+                decrease = 0;
+            } else {
+                // 等额本金
+                const monthlyPrincipal = principal / months;
+                firstMonth = monthlyPrincipal + principal * monthlyRate;
+                decrease = monthlyPrincipal * monthlyRate;
+                total = 0;
+                let balance = principal;
+                for (let i = 0; i < months; i++) {
+                    total += monthlyPrincipal + balance * monthlyRate;
+                    balance -= monthlyPrincipal;
+                }
+            }
+
+            totalInterest = total - principal;
+
+            document.getElementById('mortgageFirstMonth').textContent = firstMonth.toFixed(2) + ' 元';
+            document.getElementById('mortgageDecrease').textContent = decrease.toFixed(2) + ' 元';
+            document.getElementById('mortgageTotalInterest').textContent = totalInterest.toFixed(2) + ' 元';
+            document.getElementById('mortgageTotal').textContent = total.toFixed(2) + ' 元';
+            document.getElementById('mortgageResult').style.display = 'block';
+            showToast('计算完成');
+        });
+
+        // ========== BMI计算器 ==========
+        document.getElementById('bmiCalculate').addEventListener('click', () => {
+            const height = parseFloat(document.getElementById('bmiHeight').value);
+            const weight = parseFloat(document.getElementById('bmiWeight').value);
+
+            if (!height || !weight || height <= 0 || weight <= 0) {
+                showToast('请输入有效的身高和体重');
+                return;
+            }
+
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
+            const bmiVal = bmi.toFixed(1);
+
+            let level, levelColor;
+            if (bmi < 18.5) {
+                level = '偏瘦';
+                levelColor = '#60a5fa';
+            } else if (bmi < 24) {
+                level = '正常';
+                levelColor = '#34d399';
+            } else if (bmi < 28) {
+                level = '超重';
+                levelColor = '#fbbf24';
+            } else {
+                level = '肥胖';
+                levelColor = '#f87171';
+            }
+
+            document.getElementById('bmiValue').textContent = bmiVal;
+            document.getElementById('bmiValue').style.color = levelColor;
+            document.getElementById('bmiLevel').textContent = level;
+            document.getElementById('bmiResult').style.display = 'block';
+            showToast('BMI: ' + bmiVal);
+        });
+
+        // ========== 时间戳转换 ==========
+        document.getElementById('tsNow').addEventListener('click', () => {
+            const now = Date.now();
+            document.getElementById('tsInput').value = Math.floor(now / 1000);
+            document.getElementById('tsDateInput').value = new Date().toISOString().slice(0, 16);
+        });
+
+        document.getElementById('tsToDate').addEventListener('click', () => {
+            const ts = document.getElementById('tsInput').value.trim();
+            if (!ts) {
+                showToast('请输入时间戳');
+                return;
+            }
+            const ms = parseInt(ts) < 10000000000 ? parseInt(ts) * 1000 : parseInt(ts);
+            const date = new Date(ms);
+            if (isNaN(date.getTime())) {
+                showToast('无效的时间戳');
+                return;
+            }
+            document.getElementById('tsSecond').textContent = Math.floor(ms / 1000);
+            document.getElementById('tsMilli').textContent = ms;
+            document.getElementById('tsDate').textContent = date.toLocaleString('zh-CN');
+            document.getElementById('tsResult').style.display = 'block';
+            showToast('转换成功');
+        });
+
+        document.getElementById('tsToTimestamp').addEventListener('click', () => {
+            const dateStr = document.getElementById('tsDateInput').value;
+            if (!dateStr) {
+                showToast('请选择日期时间');
+                return;
+            }
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) {
+                showToast('无效的日期');
+                return;
+            }
+            const ms = date.getTime();
+            document.getElementById('tsSecond').textContent = Math.floor(ms / 1000);
+            document.getElementById('tsMilli').textContent = ms;
+            document.getElementById('tsDate').textContent = date.toLocaleString('zh-CN');
+            document.getElementById('tsResult').style.display = 'block';
+            showToast('转换成功');
+        });
+
+        // ========== 密码生成器 ==========
+        document.getElementById('pwdLength').addEventListener('input', (e) => {
+            document.getElementById('pwdLengthValue').textContent = e.target.value;
+        });
+
+        document.getElementById('pwdGenerate').addEventListener('click', () => {
+            const length = parseInt(document.getElementById('pwdLength').value);
+            const useUpper = document.getElementById('pwdUpper').checked;
+            const useLower = document.getElementById('pwdLower').checked;
+            const useNumber = document.getElementById('pwdNumber').checked;
+            const useSymbol = document.getElementById('pwdSymbol').checked;
+
+            if (!useUpper && !useLower && !useNumber && !useSymbol) {
+                showToast('请至少选择一种字符类型');
+                return;
+            }
+
+            let chars = '';
+            if (useUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
+            if (useNumber) chars += '0123456789';
+            if (useSymbol) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            document.getElementById('pwdOutput').textContent = password;
+
+            let strength = '弱';
+            let strengthColor = '#f87171';
+            const types = [useUpper, useLower, useNumber, useSymbol].filter(Boolean).length;
+            if (types >= 3 && length >= 16) {
+                strength = '极强';
+                strengthColor = '#34d399';
+            } else if (types >= 2 && length >= 12) {
+                strength = '强';
+                strengthColor = '#60a5fa';
+            } else if (types >= 2 && length >= 8) {
+                strength = '中等';
+                strengthColor = '#fbbf24';
+            }
+
+            document.getElementById('pwdStrength').textContent = strength;
+            document.getElementById('pwdStrength').style.color = strengthColor;
+            document.getElementById('pwdResult').style.display = 'block';
+            document.getElementById('pwdCopy').style.display = 'inline-flex';
+            showToast('密码已生成');
+        });
+
+        document.getElementById('pwdCopy').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('pwdOutput').textContent);
+            showToast('已复制');
+        });
+
+        // ========== 日期计算器 ==========
+        document.getElementById('dateCalcBtn').addEventListener('click', () => {
+            const startStr = document.getElementById('dateStart').value;
+            const endStr = document.getElementById('dateEnd').value;
+
+            if (!startStr || !endStr) {
+                showToast('请选择开始和结束日期');
+                return;
+            }
+
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+
+            if (end < start) {
+                showToast('结束日期不能早于开始日期');
+                return;
+            }
+
+            const diffMs = end - start;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+            let workDays = 0;
+            let weekendDays = 0;
+            let current = new Date(start);
+            while (current <= end) {
+                const day = current.getDay();
+                if (day === 0 || day === 6) {
+                    weekendDays++;
+                } else {
+                    workDays++;
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            document.getElementById('dateDiffDays').textContent = diffDays + ' 天';
+            document.getElementById('dateDiffHours').textContent = diffHours + ' 小时';
+            document.getElementById('dateWorkDays').textContent = workDays + ' 天';
+            document.getElementById('dateWeekendDays').textContent = weekendDays + ' 天';
+            document.getElementById('dateResult').style.display = 'block';
+            showToast('计算完成');
+        });
+
+        // ========== JSON格式化 ==========
+        document.getElementById('jsonFormatBtn').addEventListener('click', () => {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showToast('请输入JSON');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(input);
+                const formatted = JSON.stringify(parsed, null, 2);
+                document.getElementById('jsonOutput').value = formatted;
+                document.getElementById('jsonStatus').textContent = '✓ 合法JSON';
+                document.getElementById('jsonStatus').style.color = '#22c55e';
+                document.getElementById('jsonCopy').style.display = 'inline-flex';
+                document.getElementById('jsonResult').style.display = 'block';
+                showToast('格式化成功');
+            } catch (e) {
+                showToast('JSON格式错误: ' + e.message);
+            }
+        });
+
+        document.getElementById('jsonCompressBtn').addEventListener('click', () => {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showToast('请输入JSON');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(input);
+                const compressed = JSON.stringify(parsed);
+                document.getElementById('jsonOutput').value = compressed;
+                document.getElementById('jsonStatus').textContent = '✓ 已压缩';
+                document.getElementById('jsonStatus').style.color = '#60a5fa';
+                document.getElementById('jsonCopy').style.display = 'inline-flex';
+                document.getElementById('jsonResult').style.display = 'block';
+                showToast('压缩成功');
+            } catch (e) {
+                showToast('JSON格式错误: ' + e.message);
+            }
+        });
+
+        document.getElementById('jsonCopy').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('jsonOutput').value);
+            showToast('已复制');
+        });
+
+        // ========== Base64编解码 ==========
+        document.getElementById('base64EncodeBtn').addEventListener('click', () => {
+            const input = document.getElementById('base64InputText').value;
+            if (!input) {
+                showToast('请输入内容');
+                return;
+            }
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                document.getElementById('base64OutputText').value = encoded;
+                document.getElementById('base64TextResult').style.display = 'block';
+                document.getElementById('base64TextCopy').style.display = 'inline-flex';
+                showToast('编码成功');
+            } catch (e) {
+                showToast('编码失败');
+            }
+        });
+
+        document.getElementById('base64DecodeBtn').addEventListener('click', () => {
+            const input = document.getElementById('base64InputText').value.trim();
+            if (!input) {
+                showToast('请输入内容');
+                return;
+            }
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                document.getElementById('base64OutputText').value = decoded;
+                document.getElementById('base64TextResult').style.display = 'block';
+                document.getElementById('base64TextCopy').style.display = 'inline-flex';
+                showToast('解码成功');
+            } catch (e) {
+                showToast('Base64解码失败，请检查输入');
+            }
+        });
+
+        document.getElementById('base64TextCopy').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('base64OutputText').value);
+            showToast('已复制');
+        });
+
+        // ========== URL编码解码 ==========
+        document.getElementById('urlEncodeBtn').addEventListener('click', () => {
+            const input = document.getElementById('urlInput').value;
+            if (!input) {
+                showToast('请输入内容');
+                return;
+            }
+            try {
+                document.getElementById('urlOutput').value = encodeURIComponent(input);
+                document.getElementById('urlResult').style.display = 'block';
+                document.getElementById('urlCopy').style.display = 'inline-flex';
+                showToast('URL编码成功');
+            } catch (e) {
+                showToast('编码失败');
+            }
+        });
+
+        document.getElementById('urlDecodeBtn').addEventListener('click', () => {
+            const input = document.getElementById('urlInput').value.trim();
+            if (!input) {
+                showToast('请输入内容');
+                return;
+            }
+            try {
+                document.getElementById('urlOutput').value = decodeURIComponent(input);
+                document.getElementById('urlResult').style.display = 'block';
+                document.getElementById('urlCopy').style.display = 'inline-flex';
+                showToast('URL解码成功');
+            } catch (e) {
+                showToast('URL解码失败，请检查输入');
+            }
+        });
+
+        document.getElementById('urlCopy').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('urlOutput').value);
+            showToast('已复制');
+        });
+
 </script>
 
 </script>
