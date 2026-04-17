@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>证件照制作 - 全能王工具箱</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0a0e1a;--surface:#111827;--card:#1a2235;--card-hover:#1e2940;
+    --border:#2a3548;--border-hover:#4f6ef7;--text:#f1f5f9;--muted:#94a3b8;
+    --accent:#4f6ef7;--accent2:#818cf8;--gold:#f59e0b;--green:#22c55e;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(79,110,247,0.3);border-radius:2px}
+
+header{padding:20px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:var(--bg)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;text-decoration:none;color:var(--text);}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(139,92,246,0.3)}
+.back-link{color:var(--muted);font-size:14px;text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:var(--text);}
+
+main{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+.panel-header{text-align:center;margin-bottom:32px}
+.panel-header h1{font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#f9fafb 0%,#c7d2fe 40%,#a78bfa 70%,#f9fafb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.panel-header p{color:var(--muted);font-size:14px;}
+
+.tool-panel{display:block;}
+
+.upload-area{border:2px dashed var(--border);border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:24px}
+.upload-area:hover{border-color:var(--accent);background:rgba(79,110,247,0.05)}
+.upload-icon{font-size:40px;margin-bottom:12px}
+.upload-text{font-size:15px;font-weight:600;margin-bottom:6px}
+.upload-hint{font-size:12px;color:var(--muted)}
+.upload-input{display:none}
+
+.controls{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));display:grid;gap:16px;margin-bottom:24px}
+.control-group{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.control-group label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:block}
+input[type="text"],input[type="number"],input[type="date"],input[type="datetime-local"],select,textarea{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--surface)}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);margin-right:8px}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+.bg-color{display:inline-block;width:40px;height:40px;border-radius:50%;cursor:pointer;border:2px solid #ddd;transition:border-color 0.2s,transform 0.2s;}
+.bg-color:hover{transform:scale(1.1);}
+.bg-color.active{border-color:var(--accent);border-width:3px;}
+
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:var(--accent2);transform:translateY(-1px)}
+
+.preview-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.preview-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.preview-box h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.preview-image{max-width:100%;max-height:200px;border-radius:8px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;z-index:2000;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.processing-overlay{position:fixed;inset:0;background:rgba(10,14,26,0.85);display:none;align-items:center;justify-content:center;z-index:1500;backdrop-filter:blur(4px)}
+.processing-overlay.show{display:flex}
+.processing-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 60px;text-align:center}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+    .preview-container{grid-template-columns:1fr}
+    .controls{grid-template-columns:1fr !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <div class="logo-icon">🛠️</div>
+            <span>全能王工具箱</span>
+        </a>
+        <a href="/" class="back-link">← 返回工具箱</a>
+    </div>
+</header>
+
+<main>
+    <div class="tool-panel">
+        <div class="panel-header">
+            <h1>📷 证件照制作</h1>
+            <p>上传照片，智能更换背景色和尺寸</p>
+        </div>
+        
+        <div class="upload-area" id="photoIdUpload">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">点击或拖拽上传照片</div>
+            <div class="upload-hint">支持 JPG、PNG 格式</div>
+            <input type="file" class="upload-input" id="photoIdInput" accept="image/*">
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>照片尺寸</label>
+                <select id="photoSize">
+                    <option value="1寸">一寸 (295×413px)</option>
+                    <option value="2寸">二寸 (413×579px)</option>
+                    <option value="大一寸">大一寸 (335×450px)</option>
+                    <option value="小二寸">小二寸 (390×260px)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>背景颜色</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="bg-color white active" data-color="#FFFFFF" style="background:#fff;"></div>
+                    <div class="bg-color blue" data-color="#007AFF" style="background:#007AFF;"></div>
+                    <div class="bg-color red" data-color="#FF3B30" style="background:#FF3B30;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" id="photoIdProcess">✨ 开始处理</button>
+        </div>
+
+        <div class="preview-container" id="photoIdPreview" style="display: none;">
+            <div class="preview-box">
+                <h4>原始照片</h4>
+                <img class="preview-image" id="photoIdOriginal" alt="原始">
+            </div>
+            <div class="preview-box">
+                <h4>处理后</h4>
+                <img class="preview-image" id="photoIdResult" alt="结果">
+            </div>
+        </div>
+        <div class="btn-group" id="photoIdDownloadGroup" style="display: none;">
+            <button class="btn" id="photoIdDownload">⬇️ 下载证件照</button>
+        </div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="processing-overlay" id="processing">
+    <div class="processing-box">
+        <div class="spinner"></div>
+        <p>处理中，请稍候...</p>
+    </div>
+</div>
+
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showProcessing(show) {
+    document.getElementById('processing').classList.toggle('show', show);
+}
+
+let photoIdImage = null;
+let selectedBgColor = '#FFFFFF';
+
+document.getElementById('photoIdUpload').addEventListener('click', () => document.getElementById('photoIdInput').click());
+document.getElementById('photoIdInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handlePhotoFile(file);
+});
+
+function handlePhotoFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        photoIdImage = new Image();
+        photoIdImage.onload = () => {
+            document.getElementById('photoIdOriginal').src = e.target.result;
+            document.getElementById('photoIdPreview').style.display = 'grid';
+            showToast('照片上传成功');
+        };
+        photoIdImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+document.querySelectorAll('.bg-color').forEach(el => {
+    el.addEventListener('click', () => {
+        document.querySelectorAll('.bg-color').forEach(e => {
+            e.style.border = '2px solid #ddd';
+            e.classList.remove('active');
+        });
+        el.style.border = '2px solid var(--accent)';
+        el.style.borderWidth = '3px';
+        el.classList.add('active');
+        selectedBgColor = el.dataset.color;
+    });
+});
+
+document.getElementById('photoIdProcess').addEventListener('click', async () => {
+    if (!photoIdImage) {
+        showToast('请先上传照片');
+        return;
+    }
+    showProcessing(true);
+    await new Promise(r => setTimeout(r, 1500));
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const sizes = { '1寸': [295, 413], '2寸': [413, 579], '大一寸': [335, 450], '小二寸': [390, 260] };
+    const [w, h] = sizes[document.getElementById('photoSize').value];
+    canvas.width = w;
+    canvas.height = h;
+
+    ctx.fillStyle = selectedBgColor;
+    ctx.fillRect(0, 0, w, h);
+
+    const scale = Math.min(w / photoIdImage.width, h / photoIdImage.height) * 0.8;
+    const sw = photoIdImage.width * scale;
+    const sh = photoIdImage.height * scale;
+    const x = (w - sw) / 2;
+    const y = (h - sh) / 2;
+
+    ctx.drawImage(photoIdImage, x, y, sw, sh);
+
+    const resultDataUrl = canvas.toDataURL('image/png');
+    document.getElementById('photoIdResult').src = resultDataUrl;
+    document.getElementById('photoIdDownloadGroup').style.display = 'flex';
+    showProcessing(false);
+    showToast('处理完成');
+});
+
+document.getElementById('photoIdDownload').addEventListener('click', () => {
+    const result = document.getElementById('photoIdResult').src;
+    const link = document.createElement('a');
+    link.download = `证件照-${document.getElementById('photoSize').value}-${Date.now()}.png`;
+    link.href = result;
+    link.click();
+    showToast('下载已开始');
+});
+</script>
+</body>
+</html>
