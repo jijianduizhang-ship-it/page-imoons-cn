@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图片压缩 - 全能王工具箱</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0a0e1a;--surface:#111827;--card:#1a2235;--card-hover:#1e2940;
+    --border:#2a3548;--border-hover:#4f6ef7;--text:#f1f5f9;--muted:#94a3b8;
+    --accent:#4f6ef7;--accent2:#818cf8;--gold:#f59e0b;--green:#22c55e;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(79,110,247,0.3);border-radius:2px}
+
+header{padding:20px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:var(--bg)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;text-decoration:none;color:var(--text);}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(139,92,246,0.3)}
+.back-link{color:var(--muted);font-size:14px;text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:var(--text);}
+
+main{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+.panel-header{text-align:center;margin-bottom:32px}
+.panel-header h1{font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#f9fafb 0%,#c7d2fe 40%,#a78bfa 70%,#f9fafb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.panel-header p{color:var(--muted);font-size:14px;}
+
+.upload-area{border:2px dashed var(--border);border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:24px}
+.upload-area:hover{border-color:var(--accent);background:rgba(79,110,247,0.05)}
+.upload-icon{font-size:40px;margin-bottom:12px}
+.upload-text{font-size:15px;font-weight:600;margin-bottom:6px}
+.upload-hint{font-size:12px;color:var(--muted)}
+.upload-input{display:none}
+
+.controls{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));display:grid;gap:16px;margin-bottom:24px}
+.control-group{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.control-group label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:block}
+input[type="text"],input[type="number"],input[type="date"],input[type="datetime-local"],select,textarea{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--surface)}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);margin-right:8px}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+.slider-container{margin-top:8px;}
+
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:var(--accent2);transform:translateY(-1px)}
+
+.preview-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.preview-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.preview-box h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.preview-image{max-width:100%;max-height:200px;border-radius:8px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;z-index:2000;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.processing-overlay{position:fixed;inset:0;background:rgba(10,14,26,0.85);display:none;align-items:center;justify-content:center;z-index:1500;backdrop-filter:blur(4px)}
+.processing-overlay.show{display:flex}
+.processing-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 60px;text-align:center}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+    .preview-container{grid-template-columns:1fr}
+    .controls{grid-template-columns:1fr !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <div class="logo-icon">🛠️</div>
+            <span>全能王工具箱</span>
+        </a>
+        <a href="/" class="back-link">← 返回工具箱</a>
+    </div>
+</header>
+
+<main>
+    <div class="panel-header">
+        <h1>🗜️ 图片压缩</h1>
+        <p>智能压缩图片，保持质量减小体积</p>
+    </div>
+    
+    <div class="upload-area" id="compressUpload">
+        <div class="upload-icon">🗜️</div>
+        <div class="upload-text">点击或拖拽上传图片</div>
+        <div class="upload-hint">支持 JPG、PNG、WebP 格式</div>
+        <input type="file" class="upload-input" id="compressInput" accept="image/*">
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>压缩质量: <span id="compressValue">80</span>%</label>
+            <div class="slider-container">
+                <input type="range" id="compressQuality" min="10" max="100" value="80">
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" id="compressBtn">✨ 开始压缩</button>
+    </div>
+
+    <div class="preview-container" id="compressPreview" style="display: none;">
+        <div class="preview-box">
+            <h4>原始大小: <span id="compressOriginalSize">-</span></h4>
+            <img class="preview-image" id="compressOriginal" alt="原始">
+        </div>
+        <div class="preview-box">
+            <h4>压缩后: <span id="compressNewSize">-</span> (<span id="compressRatio">-</span>)</h4>
+            <img class="preview-image" id="compressResult" alt="压缩后">
+        </div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="processing-overlay" id="processing">
+    <div class="processing-box">
+        <div class="spinner"></div>
+        <p>处理中，请稍候...</p>
+    </div>
+</div>
+
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+function showProcessing(show) {
+    document.getElementById('processing').classList.toggle('show', show);
+}
+
+document.getElementById('compressQuality').addEventListener('input', (e) => {
+    document.getElementById('compressValue').textContent = e.target.value;
+});
+
+let compressImage = null;
+document.getElementById('compressUpload').addEventListener('click', () => document.getElementById('compressInput').click());
+document.getElementById('compressInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            compressImage = new Image();
+            compressImage.onload = () => {
+                document.getElementById('compressOriginal').src = ev.target.result;
+                document.getElementById('compressOriginalSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+                document.getElementById('compressPreview').style.display = 'grid';
+            };
+            compressImage.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.getElementById('compressBtn').addEventListener('click', async () => {
+    if (!compressImage) {
+        showToast('请先上传图片');
+        return;
+    }
+    showProcessing(true);
+    await new Promise(r => setTimeout(r, 800));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = compressImage.width;
+    canvas.height = compressImage.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(compressImage, 0, 0);
+    
+    const quality = parseInt(document.getElementById('compressQuality').value) / 100;
+    const result = canvas.toDataURL('image/jpeg', quality);
+    
+    document.getElementById('compressResult').src = result;
+    const newSize = Math.round(result.length * 0.75);
+    document.getElementById('compressNewSize').textContent = (newSize / 1024).toFixed(1) + ' KB';
+    const ratio = Math.round((1 - newSize / compressImage.src.length) * 100);
+    document.getElementById('compressRatio').textContent = ratio > 0 ? '-' + ratio + '%' : '+' + Math.abs(ratio) + '%';
+    showProcessing(false);
+    showToast('压缩完成');
+});
+</script>
+</body>
+</html>
