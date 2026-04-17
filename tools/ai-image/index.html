@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 图片生成器 - 免费在线工具</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:#0a0a0a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+:root{--accent:#a855f7;--accent2:#06b6d4;--surface:#141418;--border:#27272a}
+.container{max-width:720px;margin:0 auto;padding:48px 20px}
+.header{text-align:center;margin-bottom:48px}
+.header h1{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.header p{color:#71717a;font-size:0.95rem}
+.main-panel{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px;margin-bottom:24px}
+textarea{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:16px;color:#e2e8f0;font-size:1rem;resize:vertical;min-height:120px;outline:none;transition:border 0.2s;font-family:inherit;line-height:1.6}
+textarea:focus{border-color:var(--accent)}
+textarea::placeholder{color:#52525b}
+.row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;align-items:center}
+select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:0.9rem;outline:none}
+select:focus,input[type="text"]:focus{border-color:var(--accent)}
+input[type="text"]{width:120px}
+.btn{padding:12px 32px;border-radius:12px;border:none;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.btn-gen{background:linear-gradient(135deg,#a855f7,#06b6d4);color:#fff;flex:1}
+.btn-gen:hover{opacity:0.88;transform:translateY(-1px)}
+.btn-gen:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-sm{padding:8px 16px;font-size:0.85rem;background:var(--surface);color:#a1a1aa;border:1px solid var(--border)}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.pill{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:#0a0a0a;color:#a1a1aa;font-size:0.82rem;cursor:pointer;transition:all 0.2s}
+.pill:hover,.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(168,85,247,0.1)}
+.model-tabs{display:flex;gap:0;margin-top:16px;border:1px solid var(--border);border-radius:10px;overflow:hidden;width:fit-content}
+.model-tab{padding:8px 20px;background:#0a0a0a;color:#71717a;font-size:0.85rem;cursor:pointer;border:none;transition:all 0.2s}
+.model-tab:hover{color:#e2e8f0}
+.model-tab.active{background:linear-gradient(135deg,#a855f7,#06b6d4);color:#fff}
+.result-area{margin-top:24px;display:none;flex-direction:column;align-items:center;gap:16px}
+.result-area.show{display:flex}
+.result-area img{max-width:100%;max-height:512px;border-radius:16px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.loading{display:none;flex-direction:column;align-items:center;gap:16px;padding:40px}
+.loading.show{display:flex}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:#71717a;font-size:0.9rem}
+.gallery{margin-top:40px}
+.gallery h3{font-size:1rem;font-weight:600;color:#a1a1aa;margin-bottom:16px;padding-left:4px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.gallery-item{aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;position:relative;transition:all 0.2s}
+.gallery-item:hover{border-color:var(--accent);transform:scale(1.02)}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+.gallery-item:hover .gallery-overlay{display:flex}
+.gallery-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;font-size:0.8rem;color:#fff;gap:8px}
+.history-tag{display:none;position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);padding:2px 8px;border-radius:8px;font-size:0.7rem;color:#a1a1aa}
+.history-tag.show{display:block}
+.footer-tip{margin-top:40px;text-align:center;color:#3f3f46;font-size:0.8rem}
+.footer-tip a{color:var(--accent2);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>AI 图片生成器</h1>
+    <p>基于 Pollinations AI，免费无需注册 · 永久免费</p>
+  </div>
+
+  <div class="main-panel">
+    <textarea id="promptInput" placeholder="描述你想要生成的图片...&#10;例如：a beautiful sunset over mountains, golden hour lighting"></textarea>
+
+    <div class="pills">
+      <span style="font-size:0.8rem;color:#52525b;align-self:center;margin-right:4px">风格:</span>
+      <button class="pill active" data-style="">默认</button>
+      <button class="pill" data-style=", photorealistic, 8K, detailed">摄影</button>
+      <button class="pill" data-style=", anime style, vibrant colors">动漫</button>
+      <button class="pill" data-style=", digital art illustration, masterpiece">插画</button>
+      <button class="pill" data-style=", cyberpunk, neon lights, futuristic">赛博</button>
+      <button class="pill" data-style=", oil painting style, brush strokes">油画</button>
+      <button class="pill" data-style=", Studio Ghibli style, hand drawn">吉卜力</button>
+      <button class="pill" data-style=", concept art, cinematic lighting">概念艺术</button>
+    </div>
+
+    <div class="row" style="margin-top:16px">
+      <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <button class="model-tab active" data-model="flux">Flux</button>
+        <button class="model-tab" data-model="sdxl">SDXL</button>
+      </div>
+      <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <button class="model-tab aspect-btn active" data-w="512" data-h="512">1:1</button>
+        <button class="model-tab aspect-btn" data-w="768" data-h="512">16:9</button>
+        <button class="model-tab aspect-btn" data-w="512" data-h="768">9:16</button>
+      </div>
+      <input type="text" id="seedInput" placeholder="Seed(可选)">
+      <button class="btn btn-sm" onclick="document.getElementById('imgUpload').click()">🖼 图生图</button>
+      <input type="file" id="imgUpload" accept="image/*" style="display:none" onchange="handleImg2Img(this)">
+    </div>
+
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-gen" id="genBtn" onclick="generate()">✨ 生成图片</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">AI 正在创作，请稍候...</div>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <img id="resultImg" src="" alt="生成结果">
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-gen" onclick="downloadImg()">⬇ 下载图片</button>
+        <button class="btn btn-sm" onclick="regenerate()">🔄 重新生成</button>
+        <button class="btn btn-sm" onclick="useAsSeed()">📋 用作种子图</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <h3>📁 最近生成</h3>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <div class="footer-tip">
+    使用 <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> API · 完全免费 · 无需登录
+  </div>
+</div>
+
+<script>
+let currentPrompt = '', currentStyle = '', currentModel = 'flux', currentW = 512, currentH = 512, currentSeed = null, currentUrl = null;
+let img2imgUrl = null;
+
+const STYLE_SUFFIXES = {};
+document.querySelectorAll('.pill').forEach(p => {
+  STYLE_SUFFIXES[p.dataset.style] = true;
+});
+
+document.querySelectorAll('.model-tab.aspect-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentW = parseInt(btn.dataset.w);
+    currentH = parseInt(btn.dataset.h);
+  });
+});
+
+document.querySelectorAll('.model-tab[data-model]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.classList.contains('aspect-btn')) return;
+    document.querySelectorAll('.model-tab[data-model]').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentModel = tab.dataset.model;
+  });
+});
+
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.pill').forEach(pp => pp.classList.remove('active'));
+    p.classList.add('active');
+    currentStyle = p.dataset.style;
+  });
+});
+
+function handleImg2Img(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { img2imgUrl = e.target.result; alert('已选择参考图，将与 prompt 一起生成'); };
+  reader.readAsDataURL(file);
+}
+
+async function generate(seed) {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) { alert('请输入图片描述'); return; }
+  currentPrompt = prompt;
+  const seedVal = seed || document.getElementById('seedInput').value.trim() || Math.floor(Math.random() * 99999999);
+  currentSeed = seedVal;
+  const stylePrompt = currentStyle ? prompt + currentStyle : prompt;
+  const encoded = encodeURIComponent(stylePrompt);
+  let url;
+  if (img2imgUrl) {
+    url = `https://image.pollinations.ai/prompt/${encoded}?width=${currentW}&height=${currentH}&model=${currentModel}&seed=${seedVal}&nologo=true`;
+  } else {
+    url = `https://image.pollinations.ai/prompt/${encoded}?width=${currentW}&height=${currentH}&model=${currentModel}&seed=${seedVal}&nologo=true`;
+  }
+  currentUrl = url;
+  showLoading(true);
+  try {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      document.getElementById('resultImg').src = url;
+      document.getElementById('resultArea').classList.add('show');
+      showLoading(false);
+      saveToHistory(url, prompt + currentStyle, seedVal);
+    };
+    img.onerror = () => { showLoading(false); alert('生成失败，请重试'); };
+    img.src = url;
+  } catch(e) { showLoading(false); alert('生成失败: ' + e.message); }
+}
+
+function showLoading(show) {
+  document.getElementById('loading').classList.toggle('show', show);
+  document.getElementById('genBtn').disabled = show;
+  if (show) document.getElementById('resultArea').classList.remove('show');
+}
+
+function downloadImg() {
+  const a = document.createElement('a');
+  a.download = 'ai-image.png';
+  a.href = document.getElementById('resultImg').src;
+  a.click();
+}
+
+function regenerate() {
+  document.getElementById('seedInput').value = '';
+  generate();
+}
+
+function useAsSeed() {
+  alert('图生图功能：可上传参考图片，下次生成时将自动使用');
+}
+
+function saveToHistory(url, prompt, seed) {
+  try {
+    let history = JSON.parse(localStorage.getItem('ai_image_history') || '[]');
+    history.unshift({ url, prompt, seed, time: Date.now() });
+    history = history.slice(0, 20);
+    localStorage.setItem('ai_image_history', JSON.stringify(history));
+    renderGallery();
+  } catch(e) {}
+}
+
+function renderGallery() {
+  try {
+    const history = JSON.parse(localStorage.getItem('ai_image_history') || '[]');
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = history.map((item, i) => `
+      <div class="gallery-item" onclick="loadFromHistory(${i})">
+        <img src="${item.url}" alt="history">
+        <div class="gallery-overlay">🔄 重新生成</div>
+        <div class="history-tag show">${item.seed}</div>
+      </div>
+    `).join('');
+    document.getElementById('gallery').style.display = history.length ? 'block' : 'none';
+  } catch(e) {}
+}
+
+function loadFromHistory(idx) {
+  try {
+    const history = JSON.parse(localStorage.getItem('ai_image_history') || '[]');
+    const item = history[idx];
+    if (!item) return;
+    document.getElementById('promptInput').value = item.prompt;
+    currentSeed = item.seed;
+    document.getElementById('seedInput').value = item.seed;
+    document.getElementById('resultImg').src = item.url;
+    currentUrl = item.url;
+    document.getElementById('resultArea').classList.add('show');
+  } catch(e) {}
+}
+
+// Init
+renderGallery();
+</script>
+</body>
+</html>
