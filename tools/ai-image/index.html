@@ -13,62 +13,42 @@ body{font-family:'Noto Sans SC',sans-serif;background:#0a0a0a;color:#e2e8f0;min-
 .header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
 .header p{color:#71717a;font-size:0.88rem}
 .main-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px}
-
 .prompt-tip{background:#1c1c1f;border:1px solid #2a2a2e;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.82rem;color:#a1a1aa;line-height:1.7}
 .prompt-tip strong{color:#06b6d4}
-.prompt-tip span{color:#a855f7}
-
 textarea{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:14px;color:#e2e8f0;font-size:0.95rem;resize:vertical;min-height:100px;outline:none;transition:border 0.2s;font-family:inherit;line-height:1.6}
 textarea:focus{border-color:var(--accent)}
 textarea::placeholder{color:#52525b}
-
 .examples{margin-top:12px}
 .examples-label{font-size:0.78rem;color:#52525b;margin-bottom:8px}
 .examples-grid{display:flex;flex-wrap:wrap;gap:6px}
 .example-btn{padding:5px 12px;background:#0a0a0a;border:1px solid #2a2a2e;border-radius:20px;font-size:0.78rem;color:#71717a;cursor:pointer;transition:all 0.2s}
 .example-btn:hover{border-color:var(--accent);color:var(--accent)}
-
 .row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
 select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:0.88rem;outline:none;width:120px}
-select:focus,input[type="text"]:focus{border-color:var(--accent)}
 .btn{padding:11px 28px;border-radius:10px;border:none;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit}
 .btn-gen{background:linear-gradient(135deg,#a855f7,#06b6d4);color:#fff;flex:1}
 .btn-gen:hover{opacity:0.88;transform:translateY(-1px)}
 .btn-gen:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 .btn-sm{padding:8px 16px;background:#0a0a0a;color:#a1a1aa;border:1px solid var(--border);font-size:0.85rem}
 .btn-sm:hover{border-color:var(--accent);color:var(--accent)}
-.btn-sm.active{border-color:var(--accent);color:var(--accent);background:rgba(168,85,247,0.1)}
-
-.pills{margin-top:14px}
-.pills-label{font-size:0.78rem;color:#52525b;margin-bottom:8px;display:block}
-.pills-flex{display:flex;gap:6px;flex-wrap:wrap}
-.pill{padding:5px 14px;border-radius:20px;border:1px solid #2a2a2e;background:#0a0a0a;color:#71717a;font-size:0.8rem;cursor:pointer;transition:all 0.2s}
-.pill:hover,.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(168,85,247,0.1)}
-
 .model-row{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;width:fit-content}
-.model-tab{padding:8px 18px;background:#0a0a0a;color:#71717a;font-size:0.85rem;cursor:pointer;border:none;transition:all 0.2s}
+.model-tab{padding:8px 18px;background:#0a0a0a;color:#71717a;font-size:0.82rem;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap}
 .model-tab:hover{color:#e2e8f0}
 .model-tab.active{background:linear-gradient(135deg,#a855f7,#06b6d4);color:#fff}
-
 .aspect-row{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .aspect-btn{padding:8px 14px;background:#0a0a0a;color:#71717a;font-size:0.85rem;cursor:pointer;border:none;transition:all 0.2s}
 .aspect-btn:hover{color:#e2e8f0}
 .aspect-btn.active{border-color:var(--accent);background:rgba(168,85,247,0.15);color:var(--accent)}
-
 .loading{margin-top:20px;display:none;flex-direction:column;align-items:center;gap:12px}
 .loading.show{display:flex}
 .spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{color:#71717a;font-size:0.88rem}
-
+.loading-text{color:#71717a;font-size:0.88rem;text-align:center}
 .result-area{margin-top:20px;display:none;flex-direction:column;align-items:center;gap:14px}
 .result-area.show{display:flex}
 .result-area img{max-width:100%;max-height:520px;border-radius:14px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
-
-.result-info{margin-top:4px;font-size:0.78rem;color:#52525b;text-align:center}
-
+.result-info{margin-top:4px;font-size:0.78rem;color:#52525b;text-align:center;line-height:1.6}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-
 .gallery{margin-top:28px}
 .gallery h3{font-size:0.9rem;font-weight:600;color:#71717a;margin-bottom:12px}
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
@@ -79,66 +59,51 @@ select:focus,input[type="text"]:focus{border-color:var(--accent)}
 .gallery-item:hover .gallery-overlay{display:flex}
 .gallery-del{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,0.7);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:10px;cursor:pointer;color:#ff6b6b}
 .gallery-item:hover .gallery-del{display:flex}
-
 .footer-tip{margin-top:32px;text-align:center;color:#3f3f46;font-size:0.78rem}
 .footer-tip a{color:var(--accent2);text-decoration:none}
+.hd-banner{background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(6,182,212,0.15));border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:10px 16px;margin-bottom:12px;font-size:0.82rem;color:#a1a1aa;text-align:center;line-height:1.7}
+.hd-banner strong{color:#a855f7}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
     <h1>AI 图片生成器</h1>
-    <p>Pollinations 免费 AI · 无需注册 · 永久免费</p>
+    <p>免费 AI 生图 · 无需注册 · 直接使用</p>
   </div>
 
   <div class="main-panel">
-    <div class="prompt-tip">
-      💡 <strong>提示：</strong>英文描述效果最佳！点击下方示例可自动填入。
-      示例越<strong>详细</strong>，效果越<strong>好</strong>。推荐用英文。
+    <div class="hd-banner">
+      <strong>🎯 高清图片</strong>：直接对本助手说「<strong>生成图片：[描述]</strong>」可获得 MiniMax 高清输出（质量远超网页版）<br>
+      本页面使用 <strong>Pollinations 免费引擎</strong>，适合快速预览，分辨率上限 768×768
     </div>
 
-    <textarea id="promptInput" placeholder="输入英文描述...&#10;e.g. a majestic wolf howling at the moon, full moon, snow, cinematic lighting, 8K"></textarea>
+    <textarea id="promptInput" placeholder="输入图片描述（中英文均可）...&#10;例如：一只橘猫在阳光下打哈欠，毛发蓬松，高清摄影"></textarea>
 
     <div class="examples">
-      <div class="examples-label">✨ 示例 prompt（点击加载）</div>
+      <div class="examples-label">✨ 示例（点击加载）</div>
       <div class="examples-grid">
         <button class="example-btn" onclick="loadExample('a cozy coffee shop interior, rainy window, warm lighting, vintage furniture, photorealistic, 8K')">☕ 咖啡馆</button>
-        <button class="example-btn" onclick="loadExample('a beautiful woman portrait, soft golden hour light, bokeh, magazine cover, fashion photography')">👩 人像摄影</button>
-        <button class="example-btn" onclick="loadExample('cyberpunk city at night, neon signs, rain, futuristic, blade runner style, cinematic')">🌃 赛博朋克</button>
-        <button class="example-btn" onclick="loadExample('a fluffy orange cat sleeping on a couch, afternoon sunlight, cozy home, photorealistic, 8K')">🐱 可爱猫咪</button>
-        <button class="example-btn" onclick="loadExample('fantasy landscape, floating islands, waterfalls, golden sunset, magical atmosphere, epic, 8K')">🏔️ 奇幻风景</button>
-        <button class="example-btn" onclick="loadExample('a sword and magic staff crossed in a dark fantasy setting, glowing runes, cinematic lighting')">⚔️ 奇幻武器</button>
-        <button class="example-btn" onclick="loadExample('steaming bowl of ramen with egg, top-down view, wood table, food photography, 8K, delicious')">🍜 美食摄影</button>
-        <button class="example-btn" onclick="loadExample('anime girl with long blue hair, cherry blossoms, sakura petals falling, Studio Ghibli style')">🎌 动漫风格</button>
-      </div>
-    </div>
-
-    <div class="pills">
-      <span class="pills-label">🎨 风格增强（追加到 prompt）</span>
-      <div class="pills-flex">
-        <button class="pill active" data-style="">默认</button>
-        <button class="pill" data-style=", hyperrealistic, 8K, detailed textures, natural lighting">📷 超写实</button>
-        <button class="pill" data-style=", anime style, vibrant colors, detailed background, Studio Ghibli">🎌 动漫</button>
-        <button class="pill" data-style=", oil painting style, brush strokes, classic art">🖼️ 油画</button>
-        <button class="pill" data-style=", digital art illustration, vibrant colors, masterpiece, detailed">🎨 数字插画</button>
-        <button class="pill" data-style=", cyberpunk, neon lights, futuristic city, rain, dramatic lighting">🌃 赛博朋克</button>
-        <button class="pill" data-style=", cinematic lighting, dramatic atmosphere, film grain, 8K, ultra detailed">🎬 电影感</button>
-        <button class="pill" data-style=", Studio Ghibli, hand drawn, soft colors, magical atmosphere">🏯 吉卜力</button>
-        <button class="pill" data-style=", concept art, fantasy, epic composition, highly detailed">⚡ 概念艺术</button>
-        <button class="pill" data-style=", watercolor painting, soft colors, delicate, artistic">💧 水彩</button>
+        <button class="example-btn" onclick="loadExample('a beautiful woman portrait, soft golden hour light, bokeh, fashion photography, 8K')">👩 人像摄影</button>
+        <button class="example-btn" onclick="loadExample('cyberpunk city at night, neon signs, rain, futuristic, blade runner style')">🌃 赛博朋克</button>
+        <button class="example-btn" onclick="loadExample('a fluffy orange cat sleeping on a couch, afternoon sunlight, cozy home, photorealistic')">🐱 可爱猫咪</button>
+        <button class="example-btn" onclick="loadExample('fantasy landscape, floating islands, waterfalls, golden sunset, magical atmosphere, epic')">🏔️ 奇幻风景</button>
+        <button class="example-btn" onclick="loadExample('anime girl with long blue hair, cherry blossoms, sakura petals, Studio Ghibli style')">🎌 动漫风格</button>
+        <button class="example-btn" onclick="loadExample('steaming bowl of ramen with egg, top-down view, wood table, food photography, 8K')">🍜 美食摄影</button>
+        <button class="example-btn" onclick="loadExample('a sword and magic staff crossed, dark fantasy setting, glowing runes, cinematic lighting')">⚔️ 奇幻武器</button>
       </div>
     </div>
 
     <div class="row">
       <div class="model-row">
-        <button class="model-tab active" data-model="flux">Flux</button>
+        <button class="model-tab active" data-model="flux">Flux（推荐）</button>
         <button class="model-tab" data-model="sdxl">SDXL</button>
       </div>
       <div class="aspect-row">
         <button class="aspect-btn active" data-w="512" data-h="512">1:1</button>
         <button class="aspect-btn" data-w="768" data-h="512">16:9</button>
         <button class="aspect-btn" data-w="512" data-h="768">9:16</button>
-        <button class="aspect-btn" data-w="1024" data-h="1024">HD</button>
+        <button class="aspect-btn" data-w="768" data-h="768" style="color:#a855f7">HD</button>
       </div>
       <input type="text" id="seedInput" placeholder="Seed(可选)">
     </div>
@@ -158,7 +123,7 @@ select:focus,input[type="text"]:focus{border-color:var(--accent)}
       <div class="btn-row">
         <button class="btn btn-gen" onclick="downloadImg()">⬇ 下载</button>
         <button class="btn btn-sm" onclick="regenerate()">🔄 重新生成</button>
-        <button class="btn btn-sm" onclick="copyPrompt()">📋 复制 prompt</button>
+        <button class="btn btn-sm" onclick="copyPrompt()">📋 复制 Prompt</button>
       </div>
     </div>
   </div>
@@ -169,7 +134,8 @@ select:focus,input[type="text"]:focus{border-color:var(--accent)}
   </div>
 
   <div class="footer-tip">
-    使用 <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> API · 完全免费 · 无需登录
+    使用 <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> API · 完全免费 · 无需登录<br>
+    <span style="color:#52525b">如需更高清输出 → 直接对我说「生成图片：[描述]」</span>
   </div>
 </div>
 
@@ -196,14 +162,6 @@ ASPECT_BTNS.forEach(btn => {
   });
 });
 
-const PILLS = document.querySelectorAll('.pill');
-PILLS.forEach(p => {
-  p.addEventListener('click', () => {
-    PILLS.forEach(pp => pp.classList.remove('active'));
-    p.classList.add('active');
-  });
-});
-
 function loadExample(prompt) {
   document.getElementById('promptInput').value = prompt;
   document.getElementById('promptInput').focus();
@@ -211,6 +169,28 @@ function loadExample(prompt) {
 
 function hasChinese(text) {
   return /[\u4e00-\u9fa5]/.test(text);
+}
+
+function improvePrompt(prompt) {
+  // 常见中式英语修正
+  const fixes = {
+    'hairy details': 'detailed fur texture, soft fluffy fur',
+    'high definition': 'high resolution, ultra detailed',
+    'very real': 'photorealistic, hyperrealistic',
+    'so beautiful': 'stunning, breathtaking, masterpiece',
+    'very cute': 'adorable, endearing, charming',
+    'very漂亮': 'beautiful, stunning',
+    '毛发细节丰富': 'detailed fur texture, soft fluffy fur, hyperrealistic',
+    '毛发蓬松': 'fluffy fur, soft plush coat, hyperrealistic',
+    '高清摄影': 'professional photography, 8K, ultra detailed',
+    '美丽': 'beautiful, stunning, breathtaking',
+    '可爱': 'adorable, cute, charming',
+  };
+  let result = prompt;
+  for (const [from, to] of Object.entries(fixes)) {
+    result = result.replace(new RegExp(from, 'gi'), to);
+  }
+  return result;
 }
 
 async function translateToEnglish(text) {
@@ -222,7 +202,7 @@ async function translateToEnglish(text) {
       try {
         const json = JSON.parse(xhr.responseText);
         if (json.responseStatus === 200 && json.responseData?.translatedText) {
-          resolve(json.responseData.translatedText);
+          resolve(improvePrompt(json.responseData.translatedText.trim()));
         } else {
           reject(new Error('translation failed'));
         }
@@ -240,44 +220,38 @@ async function generate(useExistingSeed) {
   let prompt = rawPrompt;
   const loadingText = document.getElementById('loadingText');
 
-  // Auto-translate Chinese to English
   if (hasChinese(rawPrompt)) {
     loadingText.textContent = '🔤 检测到中文，正在翻译...';
     try {
       prompt = await translateToEnglish(rawPrompt);
-      loadingText.textContent = `✨ 翻译: ${prompt}\n🎨 AI 正在创作，请稍候...'}`;
+      loadingText.textContent = `✨ 翻译: ${prompt}\n🎨 正在生成，请稍候...`;
     } catch(e) {
-      loadingText.textContent = '⚠️ 翻译失败，使用原文\n🎨 AI 正在创作，请稍候...';
+      loadingText.textContent = '⚠️ 翻译失败\n🎨 正在生成，请稍候...';
     }
   } else {
-    loadingText.textContent = 'AI 正在创作，请稍候...';
+    loadingText.textContent = '✨ 正在生成，请稍候...';
   }
 
   const seedVal = useExistingSeed || document.getElementById('seedInput').value.trim() || Math.floor(Math.random() * 99999999);
   if (!useExistingSeed) currentSeed = seedVal;
+  currentFullPrompt = prompt;
 
-  const activeStyle = document.querySelector('.pill.active').dataset.style;
-  const fullPrompt = activeStyle ? prompt + activeStyle : prompt;
-  currentFullPrompt = fullPrompt;
-
-  const encoded = encodeURIComponent(fullPrompt);
+  const encoded = encodeURIComponent(prompt);
   const url = `https://image.pollinations.ai/prompt/${encoded}?width=${currentW}&height=${currentH}&model=${currentModel}&seed=${seedVal}&nologo=true`;
 
   showLoading(true);
-  try {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      document.getElementById('resultImg').src = url;
-      document.getElementById('resultInfo').textContent = `Seed: ${seedVal} · ${currentW}×${currentH} · ${currentModel.toUpperCase()}`;
-      document.getElementById('resultArea').classList.add('show');
-      document.getElementById('seedInput').value = seedVal;
-      showLoading(false);
-      saveToHistory(url, fullPrompt, seedVal);
-    };
-    img.onerror = () => { showLoading(false); alert('生成失败，请重试（可能是网络问题或 prompt 过于复杂）'); };
-    img.src = url;
-  } catch(e) { showLoading(false); alert('生成失败: ' + e.message); }
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    document.getElementById('resultImg').src = url;
+    document.getElementById('resultInfo').innerHTML = `Seed: ${seedVal} · ${currentW}×${currentH} · ${currentModel.toUpperCase()}<br><span style="color:#52525b">✨ 需要高清输出？→ 直接对我说「生成图片：${prompt.slice(0, 30)}...」</span>`;
+    document.getElementById('resultArea').classList.add('show');
+    document.getElementById('seedInput').value = seedVal;
+    showLoading(false);
+    saveToHistory(url, prompt, seedVal);
+  };
+  img.onerror = () => { showLoading(false); alert('生成失败，请重试（可能是网络问题或描述过于复杂）'); };
+  img.src = url;
 }
 
 function showLoading(show) {
@@ -299,17 +273,18 @@ function regenerate() {
 
 function copyPrompt() {
   if (currentFullPrompt) {
-    navigator.clipboard.writeText(currentFullPrompt);
-    alert('Prompt 已复制！可用于复现该图片');
+    navigator.clipboard.writeText(currentFullPrompt).then(() => {
+      alert('Prompt 已复制！可用于复现该图片');
+    });
   }
 }
 
 function saveToHistory(url, prompt, seed) {
   try {
-    let h = JSON.parse(localStorage.getItem('ai_image_history_v2') || '[]');
+    let h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
     h.unshift({ url, prompt, seed, time: Date.now() });
     h = h.slice(0, 10);
-    localStorage.setItem('ai_image_history_v2', JSON.stringify(h));
+    localStorage.setItem('ai_image_history_v3', JSON.stringify(h));
     renderGallery();
   } catch(e) {}
 }
@@ -317,16 +292,16 @@ function saveToHistory(url, prompt, seed) {
 function deleteFromHistory(idx, e) {
   e.stopPropagation();
   try {
-    let h = JSON.parse(localStorage.getItem('ai_image_history_v2') || '[]');
+    let h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
     h.splice(idx, 1);
-    localStorage.setItem('ai_image_history_v2', JSON.stringify(h));
+    localStorage.setItem('ai_image_history_v3', JSON.stringify(h));
     renderGallery();
   } catch(err) {}
 }
 
 function renderGallery() {
   try {
-    const h = JSON.parse(localStorage.getItem('ai_image_history_v2') || '[]');
+    const h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
     const grid = document.getElementById('galleryGrid');
     grid.innerHTML = h.map((item, i) => `
       <div class="gallery-item" onclick="loadFromHistory(${i})">
@@ -341,7 +316,7 @@ function renderGallery() {
 
 function loadFromHistory(idx) {
   try {
-    const h = JSON.parse(localStorage.getItem('ai_image_history_v2') || '[]');
+    const h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
     const item = h[idx];
     if (!item) return;
     document.getElementById('promptInput').value = item.prompt;
@@ -349,7 +324,7 @@ function loadFromHistory(idx) {
     document.getElementById('resultImg').src = item.url;
     currentSeed = item.seed;
     currentFullPrompt = item.prompt;
-    document.getElementById('resultInfo').textContent = `Seed: ${item.seed}`;
+    document.getElementById('resultInfo').innerHTML = `Seed: ${item.seed} · 重现历史<br><span style="color:#52525b">✨ 需要高清？→ 对我说「生成图片：${item.prompt.slice(0, 30)}...」</span>`;
     document.getElementById('resultArea').classList.add('show');
   } catch(e) {}
 }
