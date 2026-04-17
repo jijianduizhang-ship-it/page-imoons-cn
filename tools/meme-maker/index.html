@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表情包制作器 - 免费在线工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans SC', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #00e5ff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 32px; }
+    .back-link { display: inline-block; margin-bottom: 24px; color: #64748b; text-decoration: none; font-size: 0.9rem; }
+    .back-link:hover { color: #00e5ff; }
+
+    .canvas-center { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    #memeCanvas { max-width: 100%; border-radius: 12px; border: 2px solid #334155; cursor: crosshair; }
+    .btn { padding: 10px 28px; border-radius: 10px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, #00e5ff, #8b5cf6); color: #0f1117; }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-secondary { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+    .btn-secondary:hover { border-color: #00e5ff; color: #00e5ff; }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+    .controls { width: 100%; background: #1e293b; border-radius: 16px; padding: 24px; margin-top: 20px; }
+    .ctrl-title { font-size: 0.9rem; color: #00e5ff; font-weight: 600; margin-bottom: 16px; }
+    .ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 540px) { .ctrl-row { grid-template-columns: 1fr; } }
+    .field { }
+    .field label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px; }
+    .field input[type="text"], .field select { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px 12px; color: #e2e8f0; font-size: 0.9rem; outline: none; }
+    .field input[type="text"]:focus, .field select:focus { border-color: #00e5ff; }
+    .field input[type="range"] { width: 100%; accent-color: #00e5ff; }
+    .field input[type="color"] { width: 48px; height: 36px; border: none; border-radius: 6px; cursor: pointer; }
+
+    .text-layers { display: flex; flex-direction: column; gap: 12px; }
+    .text-layer { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px; }
+    .layer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .layer-name { font-size: 0.82rem; color: #00e5ff; }
+    .layer-toggle { background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.85rem; }
+    .layer-toggle:hover { color: #00e5ff; }
+    .layer-fields { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+
+    .tips { margin-top: 32px; background: #1e293b; border-radius: 12px; padding: 20px; }
+    .tips h3 { font-size: 0.95rem; color: #00e5ff; margin-bottom: 10px; }
+    .tips li { font-size: 0.85rem; color: #94a3b8; padding: 4px 0; list-style: none; }
+    .tips li::before { content: '✓ '; color: #38a169; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/tool/" class="back-link">← 返回工具箱</a>
+    <h1>表情包制作器</h1>
+    <p class="subtitle">上传图片，加文字，一键生成搞笑表情包，支持描边和阴影效果</p>
+
+    <div class="canvas-center">
+      <canvas id="memeCanvas" width="400" height="400"></canvas>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="document.getElementById('imgInput').click()">📷 上传图片</button>
+        <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="loadImage(this)">
+        <button class="btn btn-secondary" onclick="downloadMeme()">⬇ 下载表情包</button>
+        <button class="btn btn-secondary" onclick="resetCanvas()">🔄 重置</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctrl-title">文字图层</div>
+      <div class="text-layers">
+        <div class="text-layer" id="layer0">
+          <div class="layer-header">
+            <span class="layer-name">上方文字</span>
+            <button class="layer-toggle" onclick="toggleLayer(0)">显示/隐藏</button>
+          </div>
+          <div class="layer-fields">
+            <input type="text" id="text0" value="我就看看" placeholder="输入文字..." oninput="render()">
+            <input type="color" id="color0" value="#ffffff" oninput="render()">
+            <input type="color" id="stroke0" value="#000000" oninput="render()">
+          </div>
+          <div style="margin-top:8px; display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="field" style="margin:0">
+              <label style="font-size:0.75rem">字号</label>
+              <input type="range" id="size0" min="16" max="80" value="36" oninput="render()">
+            </div>
+            <div class="field" style="margin:0">
+              <label style="font-size:0.75rem">描边</label>
+              <input type="range" id="strokeW0" min="0" max="12" value="4" oninput="render()">
+            </div>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label style="font-size:0.75rem">位置 Y</label>
+            <input type="range" id="y0" min="20" max="180" value="50" oninput="render()">
+          </div>
+        </div>
+
+        <div class="text-layer" id="layer1">
+          <div class="layer-header">
+            <span class="layer-name">下方文字</span>
+            <button class="layer-toggle" onclick="toggleLayer(1)">显示/隐藏</button>
+          </div>
+          <div class="layer-fields">
+            <input type="text" id="text1" value="不关我事" placeholder="输入文字..." oninput="render()">
+            <input type="color" id="color1" value="#ffffff" oninput="render()">
+            <input type="color" id="stroke1" value="#000000" oninput="render()">
+          </div>
+          <div style="margin-top:8px; display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="field" style="margin:0">
+              <label style="font-size:0.75rem">字号</label>
+              <input type="range" id="size1" min="16" max="80" value="36" oninput="render()">
+            </div>
+            <div class="field" style="margin:0">
+              <label style="font-size:0.75rem">描边</label>
+              <input type="range" id="strokeW1" min="0" max="12" value="4" oninput="render()">
+            </div>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label style="font-size:0.75rem">位置 Y</label>
+            <input type="range" id="y1" min="220" max="380" value="340" oninput="render()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips">
+      <h3>💡 使用说明</h3>
+      <ul>
+        <li>上传任意图片作为表情包底图</li>
+        <li>上下各一个文字图层，可独立设置颜色、字号、描边</li>
+        <li>文字自动居中，支持描边和阴影效果</li>
+        <li>点击「下载表情包」保存为 PNG 格式</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('memeCanvas');
+    const ctx = canvas.getContext('2d');
+    let baseImage = null;
+    let hidden = [false, false];
+
+    function loadImage(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          baseImage = img;
+          canvas.width = img.width;
+          canvas.height = img.height;
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!baseImage) {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#475569';
+        ctx.font = '24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('请点击「上传图片」开始', canvas.width/2, canvas.height/2);
+        return;
+      }
+      ctx.drawImage(baseImage, 0, 0);
+      for (let i = 0; i < 2; i++) {
+        if (hidden[i]) continue;
+        const text = document.getElementById('text' + i).value;
+        if (!text) continue;
+        const color = document.getElementById('color' + i).value;
+        const stroke = document.getElementById('stroke' + i).value;
+        const size = parseInt(document.getElementById('size' + i).value);
+        const strokeW = parseInt(document.getElementById('strokeW' + i).value);
+        const y = parseInt(document.getElementById('y' + i).value);
+
+        const fontSize = Math.min(size, canvas.width / text.length * 1.8);
+        ctx.font = `bold ${fontSize}px 'Noto Sans SC', sans-serif`;
+        ctx.textAlign = 'center';
+        const x = canvas.width / 2;
+
+        // stroke
+      ctx.strokeStyle = stroke;
+        ctx.lineWidth = strokeW * 2;
+        ctx.lineJoin = 'round';
+        ctx.strokeText(text, x, y);
+        // fill
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+      }
+    }
+
+    function toggleLayer(i) { hidden[i] = !hidden[i]; render(); }
+
+    function downloadMeme() {
+      if (!baseImage) { alert('请先上传图片'); return; }
+      const link = document.createElement('a');
+      link.download = '表情包.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function resetCanvas() {
+      baseImage = null;
+      canvas.width = 400;
+      canvas.height = 400;
+      hidden = [false, false];
+      for (let i = 0; i < 2; i++) {
+        document.getElementById('text' + i).value = i === 0 ? '我就看看' : '不关我事';
+        document.getElementById('size' + i).value = 36;
+        document.getElementById('strokeW' + i).value = 4;
+        document.getElementById('y' + i).value = i === 0 ? 50 : 340;
+      }
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
