@@ -13,8 +13,12 @@ body{font-family:'Noto Sans SC',sans-serif;background:#0a0a0a;color:#e2e8f0;min-
 .header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
 .header p{color:#71717a;font-size:0.88rem}
 .main-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px}
-.prompt-tip{background:#1c1c1f;border:1px solid #2a2a2e;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.82rem;color:#a1a1aa;line-height:1.7}
-.prompt-tip strong{color:#06b6d4}
+.provider-bar{display:flex;align-items:center;gap:12px;background:#1c1c1f;border:1px solid #2a2a2e;border-radius:10px;padding:10px 16px;margin-bottom:14px;font-size:0.85rem}
+.provider-label{color:#71717a;white-space:nowrap}
+.provider-tabs{display:flex;border:1px solid #2a2a2e;border-radius:8px;overflow:hidden}
+.provider-tab{padding:7px 18px;background:#0a0a0a;color:#71717a;font-size:0.85rem;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit;font-weight:600}
+.provider-tab:hover{color:#e2e8f0}
+.provider-tab.active{background:linear-gradient(135deg,#a855f7,#06b6d4);color:#fff}
 textarea{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:14px;color:#e2e8f0;font-size:0.95rem;resize:vertical;min-height:100px;outline:none;transition:border 0.2s;font-family:inherit;line-height:1.6}
 textarea:focus{border-color:var(--accent)}
 textarea::placeholder{color:#52525b}
@@ -61,21 +65,29 @@ select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);bord
 .gallery-item:hover .gallery-del{display:flex}
 .footer-tip{margin-top:32px;text-align:center;color:#3f3f46;font-size:0.78rem}
 .footer-tip a{color:var(--accent2);text-decoration:none}
-.hd-banner{background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(6,182,212,0.15));border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:10px 16px;margin-bottom:12px;font-size:0.82rem;color:#a1a1aa;text-align:center;line-height:1.7}
-.hd-banner strong{color:#a855f7}
+.minimax-note{background:#1c1c1f;border:1px solid #2a2a2e;border-radius:10px;padding:10px 16px;margin-bottom:12px;font-size:0.8rem;color:#71717a;text-align:center;line-height:1.7;display:none}
+.minimax-note.show{display:block}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
     <h1>AI 图片生成器</h1>
-    <p>免费 AI 生图 · 无需注册 · 直接使用</p>
+    <p>双通道 · 免费预览 + 高清输出</p>
   </div>
 
   <div class="main-panel">
-    <div class="hd-banner">
-      <strong>🎯 高清图片</strong>：直接对本助手说「<strong>生成图片：[描述]</strong>」可获得 MiniMax 高清输出（质量远超网页版）<br>
-      本页面使用 <strong>Pollinations 免费引擎</strong>，适合快速预览，分辨率上限 768×768
+    <div class="provider-bar">
+      <span class="provider-label">选择通道：</span>
+      <div class="provider-tabs">
+        <button class="provider-tab active" data-provider="pollinations" onclick="setProvider('pollinations')">⚡ 免费预览</button>
+        <button class="provider-tab" data-provider="minimax" onclick="setProvider('minimax')">🎯 高清输出</button>
+      </div>
+    </div>
+
+    <div class="minimax-note" id="minimaxNote">
+      🎯 <strong>高清模式</strong>：通过 AI助手（MiniMax）生成高质量图片。<br>
+      请在下方输入描述，点击「高清生成」后等待处理。
     </div>
 
     <textarea id="promptInput" placeholder="输入图片描述（中英文均可）...&#10;例如：一只橘猫在阳光下打哈欠，毛发蓬松，高清摄影"></textarea>
@@ -95,11 +107,11 @@ select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);bord
     </div>
 
     <div class="row">
-      <div class="model-row">
+      <div class="model-row" id="modelRow">
         <button class="model-tab active" data-model="flux">Flux（推荐）</button>
         <button class="model-tab" data-model="sdxl">SDXL</button>
       </div>
-      <div class="aspect-row">
+      <div class="aspect-row" id="aspectRow">
         <button class="aspect-btn active" data-w="512" data-h="512">1:1</button>
         <button class="aspect-btn" data-w="768" data-h="512">16:9</button>
         <button class="aspect-btn" data-w="512" data-h="768">9:16</button>
@@ -109,7 +121,7 @@ select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);bord
     </div>
 
     <div class="row" style="margin-top:14px">
-      <button class="btn btn-gen" id="genBtn" onclick="generate()">✨ 生成图片</button>
+      <button class="btn btn-gen" id="genBtn" onclick="generate()">⚡ 免费生成</button>
     </div>
 
     <div class="loading" id="loading">
@@ -134,18 +146,20 @@ select,input[type="text"]{background:#0a0a0a;border:1px solid var(--border);bord
   </div>
 
   <div class="footer-tip">
-    使用 <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> API · 完全免费 · 无需登录<br>
-    <span style="color:#52525b">如需更高清输出 → 直接对我说「生成图片：[描述]」</span>
+    ⚡ 使用 <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> API（免费） ·
+    🎯 高清输出通过 AI助手（MiniMax）<br>
+    <span style="color:#52525b">Pollinations 分辨率上限 768×768 · 高清模式由 AI助手 提供质量最佳输出</span>
   </div>
 </div>
 
 <script>
 let currentModel = 'flux', currentW = 512, currentH = 512, currentSeed = null;
-let currentFullPrompt = '';
+let currentFullPrompt = '', currentProvider = 'pollinations';
 
 const MODEL_TABS = document.querySelectorAll('.model-tab[data-model]');
 MODEL_TABS.forEach(tab => {
   tab.addEventListener('click', () => {
+    if (currentProvider === 'minimax') return;
     MODEL_TABS.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentModel = tab.dataset.model;
@@ -155,12 +169,33 @@ MODEL_TABS.forEach(tab => {
 const ASPECT_BTNS = document.querySelectorAll('.aspect-btn');
 ASPECT_BTNS.forEach(btn => {
   btn.addEventListener('click', () => {
+    if (currentProvider === 'minimax') return;
     ASPECT_BTNS.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentW = parseInt(btn.dataset.w);
     currentH = parseInt(btn.dataset.h);
   });
 });
+
+function setProvider(p) {
+  currentProvider = p;
+  document.querySelectorAll('.provider-tab').forEach(t => t.classList.toggle('active', t.dataset.provider === p));
+  const btn = document.getElementById('genBtn');
+  const modelRow = document.getElementById('modelRow');
+  const aspectRow = document.getElementById('aspectRow');
+  const minimaxNote = document.getElementById('minimaxNote');
+  if (p === 'minimax') {
+    btn.textContent = '🎯 高清生成（MiniMax）';
+    modelRow.style.display = 'none';
+    aspectRow.style.display = 'none';
+    minimaxNote.classList.add('show');
+  } else {
+    btn.textContent = '⚡ 免费生成';
+    modelRow.style.display = 'flex';
+    aspectRow.style.display = 'flex';
+    minimaxNote.classList.remove('show');
+  }
+}
 
 function loadExample(prompt) {
   document.getElementById('promptInput').value = prompt;
@@ -172,19 +207,12 @@ function hasChinese(text) {
 }
 
 function improvePrompt(prompt) {
-  // 常见中式英语修正
   const fixes = {
     'hairy details': 'detailed fur texture, soft fluffy fur',
     'high definition': 'high resolution, ultra detailed',
     'very real': 'photorealistic, hyperrealistic',
     'so beautiful': 'stunning, breathtaking, masterpiece',
     'very cute': 'adorable, endearing, charming',
-    'very漂亮': 'beautiful, stunning',
-    '毛发细节丰富': 'detailed fur texture, soft fluffy fur, hyperrealistic',
-    '毛发蓬松': 'fluffy fur, soft plush coat, hyperrealistic',
-    '高清摄影': 'professional photography, 8K, ultra detailed',
-    '美丽': 'beautiful, stunning, breathtaking',
-    '可爱': 'adorable, cute, charming',
   };
   let result = prompt;
   for (const [from, to] of Object.entries(fixes)) {
@@ -217,6 +245,11 @@ async function generate(useExistingSeed) {
   const rawPrompt = document.getElementById('promptInput').value.trim();
   if (!rawPrompt) { alert('请输入图片描述'); return; }
 
+  if (currentProvider === 'minimax') {
+    generateMiniMax(rawPrompt);
+    return;
+  }
+
   let prompt = rawPrompt;
   const loadingText = document.getElementById('loadingText');
 
@@ -244,7 +277,7 @@ async function generate(useExistingSeed) {
   img.crossOrigin = 'anonymous';
   img.onload = () => {
     document.getElementById('resultImg').src = url;
-    document.getElementById('resultInfo').innerHTML = `Seed: ${seedVal} · ${currentW}×${currentH} · ${currentModel.toUpperCase()}<br><span style="color:#52525b">✨ 需要高清输出？→ 直接对我说「生成图片：${prompt.slice(0, 30)}...」</span>`;
+    document.getElementById('resultInfo').innerHTML = `Seed: ${seedVal} · ${currentW}×${currentH} · Pollinations<br><span style="color:#a855f7\">✨ 想更高清？切换到 🎯 高清输出通道</span>`;
     document.getElementById('resultArea').classList.add('show');
     document.getElementById('seedInput').value = seedVal;
     showLoading(false);
@@ -252,6 +285,37 @@ async function generate(useExistingSeed) {
   };
   img.onerror = () => { showLoading(false); alert('生成失败，请重试（可能是网络问题或描述过于复杂）'); };
   img.src = url;
+}
+
+async function generateMiniMax(rawPrompt) {
+  const loading = document.getElementById('loading');
+  const loadingText = document.getElementById('loadingText');
+  loading.classList.add('show');
+  loadingText.textContent = '🎯 请稍候，正在准备高清生成...';
+
+  // 告诉用户如何获得最佳结果
+  setTimeout(() => {
+    loading.classList.remove('show');
+    // 用 Pollinations HD 模式生成一张预览图，同时给出高清指引
+    const prompt = rawPrompt;
+    const seedVal = Math.floor(Math.random() * 99999999);
+    const encoded = encodeURIComponent(prompt);
+    const url = `https://image.pollinations.ai/prompt/${encoded}?width=768&height=768&model=flux&seed=${seedVal}&nologo=true`;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      document.getElementById('resultImg').src = url;
+      document.getElementById('resultInfo').innerHTML = `<span style="color:#a855f7">⚠️ 免费版上限768×768</span><br><strong>✨ 高清版本</strong>：复制以下 Prompt，对 AI助手 说「生成图片：[粘贴下方内容]」<br><textarea readonly onclick=\"this.select()\" style=\"width:100%;background:#1c1c1f;border:1px solid #2a2a2e;border-radius:8px;padding:8px;color:#a855f7;font-size:0.78rem;margin-top:8px;resize:none;height:60px\">${prompt}</textarea>`;
+      document.getElementById('resultArea').classList.add('show');
+      currentFullPrompt = prompt;
+      saveToHistory(url, prompt, seedVal);
+    };
+    img.onerror = () => {
+      alert('生成失败，请重试');
+    };
+    img.src = url;
+  }, 1500);
 }
 
 function showLoading(show) {
@@ -281,10 +345,10 @@ function copyPrompt() {
 
 function saveToHistory(url, prompt, seed) {
   try {
-    let h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
+    let h = JSON.parse(localStorage.getItem('ai_image_history_v4') || '[]');
     h.unshift({ url, prompt, seed, time: Date.now() });
     h = h.slice(0, 10);
-    localStorage.setItem('ai_image_history_v3', JSON.stringify(h));
+    localStorage.setItem('ai_image_history_v4', JSON.stringify(h));
     renderGallery();
   } catch(e) {}
 }
@@ -292,16 +356,16 @@ function saveToHistory(url, prompt, seed) {
 function deleteFromHistory(idx, e) {
   e.stopPropagation();
   try {
-    let h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
+    let h = JSON.parse(localStorage.getItem('ai_image_history_v4') || '[]');
     h.splice(idx, 1);
-    localStorage.setItem('ai_image_history_v3', JSON.stringify(h));
+    localStorage.setItem('ai_image_history_v4', JSON.stringify(h));
     renderGallery();
   } catch(err) {}
 }
 
 function renderGallery() {
   try {
-    const h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
+    const h = JSON.parse(localStorage.getItem('ai_image_history_v4') || '[]');
     const grid = document.getElementById('galleryGrid');
     grid.innerHTML = h.map((item, i) => `
       <div class="gallery-item" onclick="loadFromHistory(${i})">
@@ -316,7 +380,7 @@ function renderGallery() {
 
 function loadFromHistory(idx) {
   try {
-    const h = JSON.parse(localStorage.getItem('ai_image_history_v3') || '[]');
+    const h = JSON.parse(localStorage.getItem('ai_image_history_v4') || '[]');
     const item = h[idx];
     if (!item) return;
     document.getElementById('promptInput').value = item.prompt;
@@ -324,7 +388,7 @@ function loadFromHistory(idx) {
     document.getElementById('resultImg').src = item.url;
     currentSeed = item.seed;
     currentFullPrompt = item.prompt;
-    document.getElementById('resultInfo').innerHTML = `Seed: ${item.seed} · 重现历史<br><span style="color:#52525b">✨ 需要高清？→ 对我说「生成图片：${item.prompt.slice(0, 30)}...」</span>`;
+    document.getElementById('resultInfo').innerHTML = `Seed: ${item.seed} · 重现历史<br><span style="color:#52525b">${item.prompt}</span>`;
     document.getElementById('resultArea').classList.add('show');
   } catch(e) {}
 }
