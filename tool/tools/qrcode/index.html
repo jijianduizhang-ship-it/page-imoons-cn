@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二维码生成 - 全能王工具箱</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#0a0e1a;--surface:#111827;--card:#1a2235;--card-hover:#1e2940;
+    --border:#2a3548;--border-hover:#4f6ef7;--text:#f1f5f9;--muted:#94a3b8;
+    --accent:#4f6ef7;--accent2:#818cf8;--gold:#f59e0b;--green:#22c55e;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(79,110,247,0.3);border-radius:2px}
+
+header{padding:20px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:var(--bg)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;text-decoration:none;color:var(--text);}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#4c1d95,#6d28d9,#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(139,92,246,0.3)}
+.back-link{color:var(--muted);font-size:14px;text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:var(--text);}
+
+main{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+.panel-header{text-align:center;margin-bottom:32px}
+.panel-header h1{font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#f9fafb 0%,#c7d2fe 40%,#a78bfa 70%,#f9fafb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.panel-header p{color:var(--muted);font-size:14px;}
+
+.controls{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));display:grid;gap:16px;margin-bottom:24px}
+.control-group{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.control-group label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:block}
+input[type="text"],input[type="number"],input[type="date"],input[type="datetime-local"],select,textarea{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--surface)}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);margin-right:8px}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+
+.slider-container{margin-top:8px;}
+
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:var(--accent2);transform:translateY(-1px)}
+
+.preview-container{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
+.preview-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.preview-box h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.preview-image{max-width:100%;max-height:200px;border-radius:8px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;z-index:2000;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){
+    .controls{grid-template-columns:1fr !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <div class="logo-icon">🛠️</div>
+            <span>全能王工具箱</span>
+        </a>
+        <a href="/" class="back-link">← 返回工具箱</a>
+    </div>
+</header>
+
+<main>
+    <div class="panel-header">
+        <h1>🔲 二维码生成</h1>
+        <p>输入文字或链接，生成二维码图片</p>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>内容</label>
+            <input type="text" id="qrcodeContent" placeholder="输入网址或文字">
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>尺寸: <span id="qrcodeSizeValue">200</span>px</label>
+            <div class="slider-container">
+                <input type="range" id="qrcodeSize" min="100" max="400" value="200">
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" id="qrcodeGenerate">✨ 生成二维码</button>
+        <button class="btn" id="qrcodeDownload" style="background:#4CAF50;display:none;">📥 下载</button>
+    </div>
+
+    <div class="preview-container" id="qrcodePreview" style="display: none;">
+        <div class="preview-box">
+            <h4>二维码预览</h4>
+            <div id="qrcodeCanvas" style="display:flex;justify-content:center;padding:20px;"></div>
+        </div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.getElementById('qrcodeGenerate').addEventListener('click', () => {
+    const content = document.getElementById('qrcodeContent').value.trim();
+    const size = parseInt(document.getElementById('qrcodeSize').value);
+    if (!content) {
+        showToast('请输入内容');
+        return;
+    }
+    const container = document.getElementById('qrcodeCanvas');
+    container.innerHTML = '';
+    new QRCode(container, {
+        text: content,
+        width: size,
+        height: size,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    document.getElementById('qrcodeDownload').style.display = 'inline-flex';
+    document.getElementById('qrcodePreview').style.display = 'block';
+    showToast('生成成功');
+});
+
+document.getElementById('qrcodeDownload').addEventListener('click', () => {
+    const canvas = document.querySelector('#qrcodeCanvas canvas');
+    if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'qrcode.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('下载成功');
+    }
+});
+
+document.getElementById('qrcodeSize').addEventListener('input', (e) => {
+    document.getElementById('qrcodeSizeValue').textContent = e.target.value;
+});
+</script>
+</body>
+</html>
