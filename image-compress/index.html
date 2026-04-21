@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片压缩工具 - 不二的工具箱</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f7f8fa;min-height:100vh;color:#1f2329}
+    .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 20px;height:52px;display:flex;align-items:center;gap:12px}
+    .header .logo{font-size:14px;font-weight:700}
+    .header .logo span{color:#3370ff}
+    .header .back{font-size:13px;color:#3370ff;text-decoration:none;flex:none}
+    .container{max-width:860px;margin:40px auto;padding:0 20px}
+    h1{font-size:24px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+    .title-icon{width:32px;height:32px;color:#3370ff;flex-shrink:0}
+    .subtitle{color:#646a73;font-size:14px;margin-bottom:32px}
+    .upload-zone{border:2px dashed #d1d5db;border-radius:12px;padding:60px 20px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;margin-bottom:24px}
+    .upload-zone:hover{border-color:#3370ff;background:#f0f5ff}
+    .upload-zone.dragover{border-color:#3370ff;background:#e8f0fe}
+    .upload-icon{margin-bottom:16px}
+    .upload-icon svg{width:56px;height:56px;color:#3370ff}
+    .upload-text{font-size:15px;color:#646a73}
+    .upload-text strong{color:#3370ff}
+    .upload-hint{font-size:12px;color:#8c8c8c;margin-top:8px}
+    #fileInput{display:none}
+    .settings{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:16px;align-items:end}
+    .setting-group label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+    .setting-group input[type=range]{width:100%;accent-color:#3370ff}
+    .range-val{font-size:12px;color:#8c8c8c;margin-top:4px}
+    .compress-btn{padding:8px 24px;background:#3370ff;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer}
+    .compress-btn:hover{background:#2860e8}
+    .compress-btn:disabled{background:#a8c0ff;cursor:not-allowed}
+    .result-zone{display:none}
+    .result-zone.show{display:block}
+    .stats-bar{background:#fff;border-radius:12px;padding:16px 24px;display:flex;align-items:center;gap:20px;margin-bottom:20px}
+    .stat{text-align:center}
+    .stat-val{font-size:20px;font-weight:700}
+    .stat-lbl{font-size:12px;color:#8c8c8c}
+    .stat-divider{width:1px;height:40px;background:#e4e7ec}
+    .download-btn{margin-left:auto;padding:10px 28px;background:#3370ff;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none}
+    .download-btn:hover{background:#2860e8}
+    .batch-list{display:none}
+    .batch-list.show{display:block}
+    .batch-item{background:#fff;border-radius:10px;padding:14px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
+    .batch-item-name{font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .batch-item-original{font-size:12px;color:#8c8c8c}
+    .batch-item-compressed{font-size:12px;color:#0ead00;font-weight:600;min-width:60px;text-align:center}
+    .batch-item .download-btn{padding:6px 16px;font-size:12px}
+    .clear-btn{padding:6px 16px;background:#fff;color:#646a73;border:1px solid #d1d5db;border-radius:6px;font-size:12px;cursor:pointer}
+    .clear-btn:hover{background:#f7f8fa}
+    .result-card{background:#fff;border-radius:12px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px}
+    .img-preview{text-align:center}
+    .img-preview img{max-width:100%;max-height:300px;border-radius:8px;border:1px solid #e4e7ec}
+    .img-label{font-size:12px;color:#8c8c8c;margin:8px 0 4px}
+    .img-size{font-size:14px;font-weight:600}
+    .img-size.saved{color:#0ead00}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="/" class="header-home" title="返回首页">&#8592;</a>
+    <div class="header-logo"><span>不二</span>的工具箱</div>
+    <span class="header-spacer"></span>
+    <span class="header-badge">图片工具</span>
+  </header>
+  <div class="container">
+    <h1>
+      <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      图片压缩工具
+    </h1>
+    <p class="subtitle">本地压缩，不上传服务器，保护隐私。支持 JPG/PNG/GIF/WebP，批量处理。</p>
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <div class="upload-text">拖拽图片到这里，或 <strong>点击选择文件</strong></div>
+      <div class="upload-hint">支持 JPG、PNG、GIF、WebP，可多选</div>
+    </div>
+    <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/gif,image/webp">
+    <div class="settings">
+      <div class="setting-group">
+        <label>最大宽度 (px)</label>
+        <input type="range" id="maxW" min="480" max="4096" value="1920" step="8">
+        <div class="range-val" id="maxWVal">1920px</div>
+      </div>
+      <div class="setting-group">
+        <label>最大高度 (px)</label>
+        <input type="range" id="maxH" min="480" max="4096" value="1920" step="8">
+        <div class="range-val" id="maxHVal">1920px</div>
+      </div>
+      <div class="setting-group">
+        <label>压缩质量</label>
+        <input type="range" id="quality" min="10" max="100" value="85" step="1">
+        <div class="range-val" id="qualityVal">85%</div>
+      </div>
+      <button class="compress-btn" id="compressBtn" disabled>开始压缩</button>
+    </div>
+    <div class="batch-list" id="batchList"></div>
+    <div class="result-zone" id="resultZone"></div>
+  </div>
+  <script>
+class ImageCompressor{
+  constructor(o={}){this.maxWidth=o.maxWidth||1920;this.maxHeight=o.maxHeight||1920;this.quality=o.quality||.85;this.mimeType=o.mimeType||'image/jpeg'}
+  async compress(file){
+    return new Promise((resolve,reject)=>{
+      if(file.type==='image/gif'||file.type==='image/svg+xml'){resolve(file);return}
+      const reader=new FileReader();
+      reader.onerror=()=>reject(new Error('文件读取失败'));
+      reader.onload=(e)=>{
+        const img=new Image();
+        img.onerror=()=>reject(new Error('图片加载失败'));
+        img.onload=()=>{
+          try{
+            const canvas=document.createElement('canvas');
+            let w=img.width,h=img.height,scale=1;
+            if(w>this.maxWidth)scale=this.maxWidth/w;
+            if(h>this.maxHeight)scale=Math.min(scale,this.maxHeight/h);
+            w=Math.floor(w*scale);h=Math.floor(h*scale);
+            canvas.width=w;canvas.height=h;
+            const ctx=canvas.getContext('2d');
+            ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+            ctx.drawImage(img,0,0,w,h);
+            canvas.toBlob((blob)=>{
+              if(!blob)reject(new Error('Canvas toBlob失败'));
+              else if(blob.size<file.size)resolve(blob);
+              else resolve(file);
+            },file.type==='image/png'?'image/png':this.mimeType,this.quality);
+          }catch(e){reject(e)}
+        };
+        img.src=e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  static formatSize(b){
+    if(b<1024)return b+' B';
+    if(b<1024*1024)return(b/1024).toFixed(1)+' KB';
+    return(b/(1024*1024)).toFixed(1)+' MB';
+  }
+}
+const uploadZone=document.getElementById('uploadZone');
+const fileInput=document.getElementById('fileInput');
+const compressBtn=document.getElementById('compressBtn');
+const resultZone=document.getElementById('resultZone');
+const batchList=document.getElementById('batchList');
+const maxWInput=document.getElementById('maxW');
+const maxHInput=document.getElementById('maxH');
+const qualityInput=document.getElementById('quality');
+maxWInput.oninput=()=>document.getElementById('maxWVal').textContent=maxWInput.value+'px';
+maxHInput.oninput=()=>document.getElementById('maxHVal').textContent=maxHInput.value+'px';
+qualityInput.oninput=()=>document.getElementById('qualityVal').textContent=qualityInput.value+'%';
+let selectedFiles=[];
+uploadZone.onclick=()=>fileInput.click();
+uploadZone.ondragover=(e)=>{e.preventDefault();uploadZone.classList.add('dragover')};
+uploadZone.ondragleave=()=>uploadZone.classList.remove('dragover');
+uploadZone.ondrop=(e)=>{e.preventDefault();uploadZone.classList.remove('dragover');handleFiles(e.dataTransfer.files)};
+fileInput.onchange=()=>handleFiles(fileInput.files);
+function handleFiles(files){
+  selectedFiles=Array.from(files).filter(f=>f.type.startsWith('image/'));
+  if(!selectedFiles.length)return;
+  compressBtn.disabled=false;
+  renderBatchList();
+}
+function renderBatchList(){
+  batchList.classList.add('show');
+  batchList.innerHTML=selectedFiles.map((f,i)=>'<div class="batch-item"><div><div class="batch-item-name">'+f.name+'</div><div class="batch-item-original">原图: '+ImageCompressor.formatSize(f.size)+' · '+f.type.split('/')[1].toUpperCase()+'</div></div><div class="batch-item-compressed" id="r'+i+'">等待压缩...</div><button class="clear-btn" onclick="removeFile('+i+'")>移除</button></div>').join('');
+}
+function removeFile(i){
+  selectedFiles.splice(i,1);
+  if(!selectedFiles.length){batchList.classList.remove('show');compressBtn.disabled=true}else renderBatchList();
+}
+compressBtn.onclick=async()=>{
+  compressBtn.disabled=true;compressBtn.textContent='压缩中...';
+  const cp=new ImageCompressor({maxWidth:+maxWInput.value,maxHeight:+maxHInput.value,quality:+qualityInput.value/100});
+  let totO=0,totC=0,results=[];
+  for(let i=0;i<selectedFiles.length;i++){
+    try{
+      const c=await cp.compress(selectedFiles[i]);
+      results.push({o:selectedFiles[i],c});
+      totO+=selectedFiles[i].size;totC+=c.size;
+      const pct=Math.round((1-c.size/selectedFiles[i].size)*100);
+      document.getElementById('r'+i).textContent=pct>0?'压缩'+pct+'%':'无需压缩';
+    }catch(e){document.getElementById('r'+i).textContent='失败';}
+  }
+  renderResults(results,totO,totC);
+  compressBtn.textContent='开始压缩';compressBtn.disabled=false;
+};
+function renderResults(results,totO,totC){
+  resultZone.classList.add('show');
+  const saved=Math.round((1-totC/totO)*100);
+  if(results.length===1){
+    const r=results[0],s=Math.round((1-r.c.size/r.o.size)*100);
+    const origUrl=URL.createObjectURL(r.o),compUrl=URL.createObjectURL(r.c);
+    resultZone.innerHTML='<div class="stats-bar"><div class="stat"><div class="stat-val" style="color:#3370ff">'+ImageCompressor.formatSize(r.o.size)+'</div><div class="stat-lbl">原图大小</div></div><div class="stat-divider"></div><div class="stat"><div class="stat-val" style="color:#0ead00">'+ImageCompressor.formatSize(r.c.size)+'</div><div class="stat-lbl">压缩后</div></div><div class="stat-divider"></div><div class="stat"><div class="stat-val" style="color:'+(s>0?'#0ead00':'#8c8c8c')+'">'+(s>0?s+'%':'—')+'</div><div class="stat-lbl">节省空间</div></div><a href="'+compUrl+'" download="'+r.o.name.replace(/\.[^.]+$/,'')+'_compressed.jpg" class="download-btn">下载图片</a></div><div class="result-card"><div class="img-preview"><div class="img-label">原图预览</div><img src="'+origUrl+'"><div class="img-size">'+ImageCompressor.formatSize(r.o.size)+'</div></div><div class="img-preview"><div class="img-label">压缩后预览</div><img src="'+compUrl+'"><div class="img-size'+(s>0?' saved':'')+'">'+ImageCompressor.formatSize(r.c.size)+'</div></div></div>';
+  }else{
+    resultZone.innerHTML='<div class="stats-bar"><div class="stat"><div class="stat-val" style="color:#3370ff">'+results.length+'张</div><div class="stat-lbl">图片数量</div></div><div class="stat-divider"></div><div class="stat"><div class="stat-val">'+ImageCompressor.formatSize(totO)+'</div><div class="stat-lbl">原图总体积</div></div><div class="stat-divider"></div><div class="stat"><div class="stat-val" style="color:#0ead00">'+ImageCompressor.formatSize(totC)+'</div><div class="stat-lbl">压缩后</div></div><div class="stat-divider"></div><div class="stat"><div class="stat-val" style="color:'+(saved>0?'#0ead00':'#8c8c8c')+'">'+(saved>0?saved+'%':'—')+'</div><div class="stat-lbl">节省空间</div></div></div>'+results.map(r=>{const s=Math.round((1-r.c.size/r.o.size)*100);const url=URL.createObjectURL(r.c);return'<div class="batch-item"><div class="batch-item-name">'+r.o.name+'</div><div class="batch-item-original">'+ImageCompressor.formatSize(r.o.size)+'</div><div class="batch-item-compressed">'+(s>0?'-'+s+'%':'无需')+'</div><a href="'+url+'" download="'+r.o.name.replace(/\.[^.]+$/,'')+'_compressed.jpg" class="download-btn">下载</a></div>'}).join('');
+  }
+}
+  </script>
+</body>
+</html>
