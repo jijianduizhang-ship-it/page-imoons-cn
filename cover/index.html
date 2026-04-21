@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <title>封面生成器 · Cover Maker</title>
+  <!-- jsDelivr：html-to-image、MiSans 分包样式 -->
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@4.1.0/lib/Normal/MiSans-Regular.min.css" crossorigin="anonymous">
+  <style>
+    /* jsDelivr @fontsource：Noto Serif SC、JetBrains Mono（woff2） */
+    @font-face {
+      font-family: 'Noto Serif SC';
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.12/files/noto-serif-sc-chinese-simplified-400-normal.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Noto Serif SC';
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.12/files/noto-serif-sc-chinese-simplified-700-normal.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Noto Serif SC';
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.12/files/noto-serif-sc-chinese-simplified-900-normal.woff2') format('woff2');
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/files/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: #f0f2f5;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    /* ── App Header ── */
+    .app-header {
+      height: 52px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      flex: none;
+    }
+
+    .home-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: #9ca3af;
+      text-decoration: none;
+      flex: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .home-link:hover { background: #f3f4f6; color: #374151; }
+
+    .header-logo {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111;
+      font-family: sans-serif;
+      letter-spacing: 0.02em;
+      flex: none;
+    }
+
+    .header-ratio {
+      font-size: 11px;
+      font-family: sans-serif;
+      color: #9ca3af;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: #f3f4f6;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .header-spacer {
+      flex: 1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex: none;
+      align-items: center;
+    }
+
+    .header-local-hint {
+      font-size: 11px;
+      font-family: sans-serif;
+      color: #9ca3af;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-family: sans-serif;
+      letter-spacing: 0.02em;
+      background: #f9fafb;
+      color: #374151;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    /* ── Main layout: 3 columns, fills remaining vh ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr 320px;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+
+    /* ── Side panels ── */
+    .panel {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #e5e7eb transparent;
+    }
+
+    .panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .panel::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 2px;
+    }
+
+    .panel-left {
+      border-right: 1px solid #e5e7eb;
+    }
+
+    .panel-right {
+      border-left: 1px solid #e5e7eb;
+    }
+
+    .panel-body {
+      padding: 14px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Panel sections ── */
+    .psec {
+      padding: 14px 0 10px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .psec:last-child {
+      border-bottom: none;
+    }
+
+    .psec:first-child {
+      padding-top: 4px;
+    }
+
+    .psec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .psec-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #9ca3af;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: sans-serif;
+    }
+
+    /* ── Fields ── */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7280;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: sans-serif;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 7px 9px;
+      font-size: 12px;
+      font-family: sans-serif;
+      color: #111;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      outline: none;
+      resize: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      line-height: 1.5;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: #fff;
+    }
+
+    .field input:disabled,
+    .field textarea:disabled,
+    .field select:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .field textarea {
+      height: 62px;
+    }
+
+    .field textarea.tall {
+      height: 82px;
+    }
+
+    .field select {
+      cursor: pointer;
+    }
+
+    /* ── Sliders ── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+
+    .slider-val {
+      font-size: 10px;
+      font-family: sans-serif;
+      color: #374151;
+      min-width: 42px;
+      text-align: right;
+    }
+
+    /* ── Field actions group (toggle + color) ── */
+    .field-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Visibility toggle ── */
+    .vis-toggle {
+      font-size: 10px;
+      font-family: sans-serif;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #9ca3af;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .vis-toggle.on {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #16a34a;
+    }
+
+    /* ── Color swatch (text color override) ── */
+    .color-swatch {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      padding: 1px;
+      background: none;
+      flex: none;
+      transition: border-color 0.15s;
+    }
+
+    .color-swatch:hover {
+      border-color: rgba(0, 0, 0, 0.25);
+    }
+
+    .color-swatch::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-swatch::-webkit-color-swatch {
+      border: none;
+      border-radius: 2px;
+    }
+
+    .color-swatch::-moz-color-swatch {
+      border: none;
+      border-radius: 2px;
+    }
+
+    /* ── Ratio picker ── */
+    .ratio-picker {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .ratio-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 4px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .ratio-btn:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .ratio-btn.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .ratio-icon {
+      border: 2px solid #9ca3af;
+      border-radius: 2px;
+      background: #e5e7eb;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .ratio-btn.active .ratio-icon {
+      border-color: #2563eb;
+      background: #bfdbfe;
+    }
+
+    .ratio-btn span {
+      font-size: 9px;
+      font-family: sans-serif;
+      color: #6b7280;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .ratio-btn.active span {
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    /* ── Color swatches ── */
+    .color-picker {
+      display: grid;
+      grid-template-columns: repeat(8, 28px);
+      gap: 7px;
+      align-items: start;
+    }
+
+    /* 渐变色行第 8 列占位，与「自定义」纯色列对齐（渐变无「取色」对应项） */
+    .color-picker-spacer {
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+    }
+
+    /* ── Color mode groups (纯色 / 渐变色) ── */
+    .color-modes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .color-mode-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #b0b8c4;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: sans-serif;
+      margin-bottom: 3px;
+    }
+
+    .color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2.5px solid transparent;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+      outline: none;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.12);
+    }
+
+    .color-btn.active {
+      outline: 3px solid #111;
+      outline-offset: 2px;
+    }
+
+    /* ── Custom solid-color button ── */
+    .color-btn-custom {
+      background: conic-gradient(#ef4444, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ef4444);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-btn-custom::after {
+      content: '+';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      font-family: sans-serif;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+    }
+
+    .color-btn-custom input[type="color"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    /* Hide "+" once a custom color has been picked */
+    .color-btn-custom.has-custom::after {
+      display: none;
+    }
+
+    /* ── Deco picker ── */
+    .deco-picker {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .deco-btn {
+      padding: 7px 10px;
+      font-size: 12px;
+      font-family: sans-serif;
+      text-align: left;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 6px;
+      background: #f9fafb;
+      cursor: pointer;
+      color: #374151;
+      transition: all 0.15s;
+    }
+
+    .deco-btn:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .deco-btn.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    /* ── Center: preview + presets ── */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      background: #f5f6f8;
+    }
+
+    .cover-zone {
+      flex: 1;
+      min-height: 0;
+      padding: 24px 28px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .cover-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cover-wrapper .cover {
+      flex: none;
+      width: 100%;
+    }
+
+    /* ── Cover ── */
+    .cover {
+      --c-bg: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
+      --c-glow1: rgba(96, 165, 250, 0.2);
+      --c-glow2: rgba(147, 197, 253, 0.15);
+      --c-blob: rgba(59, 130, 246, 0.4);
+      --c-label: #93c5fd;
+      --c-title: #ffffff;
+      --c-subtitle: rgba(191, 219, 254, 0.85);
+      --c-meta: rgba(191, 219, 254, 0.8);
+      --c-meta-line: rgba(191, 219, 254, 0.5);
+      --c-accent: #60a5fa;
+      --c-font: 'Noto Serif SC', serif;
+
+      position: relative;
+      width: 100%;
+      background: var(--c-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+      container-type: inline-size;
+      border-radius: 4px;
+      aspect-ratio: 1200 / 480;
+      font-family: var(--c-font);
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60cqi 80cqi at 15% 50%, var(--c-glow1) 0%, transparent 70%),
+        radial-gradient(ellipse 40cqi 60cqi at 85% 30%, var(--c-glow2) 0%, transparent 70%);
+    }
+
+    /* ── Decoration elements ── */
+    .deco-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .deco-grid.classic {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .deco-grid.cyberpunk {
+      background-image:
+        linear-gradient(rgba(239, 68, 68, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(239, 68, 68, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .deco-grid.sphere {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .deco-scan {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(239, 68, 68, 0.04) 50%, transparent 100%);
+      background-size: 100% 8px;
+      animation: scan 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% {
+        background-position: 0 -100%;
+      }
+
+      100% {
+        background-position: 0 100%;
+      }
+    }
+
+    .deco-hud {
+      position: absolute;
+      width: 3cqi;
+      height: 3cqi;
+    }
+
+    .deco-hud::before,
+    .deco-hud::after {
+      content: '';
+      position: absolute;
+      background: var(--c-accent);
+      opacity: 0.6;
+    }
+
+    .deco-hud::before {
+      width: 100%;
+      height: 1.5px;
+      top: 0;
+      left: 0;
+    }
+
+    .deco-hud::after {
+      width: 1.5px;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .deco-hud-tl {
+      top: 2cqi;
+      left: 2cqi;
+    }
+
+    .deco-hud-tr {
+      top: 2cqi;
+      right: 2cqi;
+      transform: scaleX(-1);
+    }
+
+    .deco-hud-bl {
+      bottom: 2cqi;
+      left: 2cqi;
+      transform: scaleY(-1);
+    }
+
+    .deco-hud-br {
+      bottom: 2cqi;
+      right: 2cqi;
+      transform: scale(-1);
+    }
+
+    .deco-line {
+      position: absolute;
+      left: 6cqi;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 33cqi;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.6), transparent);
+    }
+
+    .deco-line.cyberpunk {
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, var(--c-accent), transparent);
+    }
+
+    .deco-line.cyberpunk::after {
+      content: '';
+      position: absolute;
+      left: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--c-accent);
+      box-shadow: 0 0 8px var(--c-accent);
+    }
+
+    .deco-circle {
+      position: absolute;
+      right: -5cqi;
+      top: -12cqi;
+      width: 23cqi;
+      height: 23cqi;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .deco-circle::after {
+      content: '';
+      position: absolute;
+      inset: 2.8cqi;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .deco-circle.cyberpunk {
+      right: -4cqi;
+      top: -10cqi;
+      width: 22cqi;
+      height: 22cqi;
+      border: 1px solid rgba(239, 68, 68, 0.12);
+    }
+
+    .deco-circle.cyberpunk::after {
+      inset: 2.5cqi;
+      border: 1px solid rgba(239, 68, 68, 0.07);
+    }
+
+    .deco-blob {
+      position: absolute;
+      right: -8cqi;
+      bottom: -8cqi;
+      width: 30cqi;
+      height: 30cqi;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--c-blob) 0%, transparent 70%);
+    }
+
+    .deco-blob.cyberpunk {
+      right: -6cqi;
+      bottom: -6cqi;
+      width: 28cqi;
+      height: 28cqi;
+    }
+
+    .deco-dots {
+      position: absolute;
+      right: 6.5cqi;
+      bottom: 10cqi;
+      display: grid;
+      grid-template-columns: repeat(5, 0.25cqi);
+      gap: 0.65cqi;
+    }
+
+    .deco-dots span {
+      display: block;
+      width: 0.25cqi;
+      height: 0.25cqi;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .deco-dots-cp {
+      position: absolute;
+      left: 6.5cqi;
+      bottom: 2.5cqi;
+      display: grid;
+      grid-template-columns: repeat(8, 0.22cqi);
+      gap: 0.5cqi;
+    }
+
+    .deco-dots-cp span {
+      display: block;
+      width: 0.22cqi;
+      height: 0.22cqi;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .deco-code {
+      position: absolute;
+      right: 3cqi;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3cqi;
+      line-height: 1.9;
+      color: rgba(239, 68, 68, 0.12);
+      text-align: right;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .deco-ai-sphere {
+      position: absolute;
+      right: 12cqi;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 25cqi;
+      height: 25cqi;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      box-shadow: inset 0 0 20px var(--c-glow1), 0 0 30px var(--c-glow2);
+      animation: spherePulse 10s infinite alternate;
+    }
+
+    .deco-ai-sphere::after {
+      content: '';
+      position: absolute;
+      inset: 3cqi;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: radial-gradient(circle, var(--c-blob) 0%, transparent 70%);
+    }
+
+    @keyframes spherePulse {
+      0% {
+        transform: translateY(-50%) scale(1);
+      }
+
+      100% {
+        transform: translateY(-50%) scale(1.05);
+      }
+    }
+
+    .deco-circuit {
+      position: absolute;
+      right: 5cqi;
+      bottom: 5cqi;
+      display: flex;
+      gap: 1.2cqi;
+      align-items: flex-end;
+    }
+
+    .deco-circuit span {
+      display: block;
+      width: 0.6cqi;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .deco-dots-sp {
+      position: absolute;
+      right: 6.5cqi;
+      top: 8cqi;
+      display: grid;
+      grid-template-columns: repeat(4, 0.3cqi);
+      gap: 0.8cqi;
+    }
+
+    .deco-dots-sp span {
+      display: block;
+      width: 0.3cqi;
+      height: 0.3cqi;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ── Minimal (简约风): centered text, ambient glow kept ── */
+    .cover.deco-minimal .cover-content {
+      text-align: center;
+      padding-left: 8cqi;
+      padding-right: 8cqi;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Cover content ── */
+    .cover-content {
+      position: relative;
+      z-index: 1;
+      padding-left: 10cqi;
+      padding-right: 6.5cqi;
+      width: 100%;
+    }
+
+    .cover .label {
+      display: inline-block;
+      font-size: 2cqi;
+      letter-spacing: 0.2em;
+      color: var(--c-label);
+      margin-bottom: 1.6cqi;
+      font-family: var(--c-font);
+      background: rgba(255, 255, 255, 0.1);
+      /* letter-spacing 会在末字后多出一格，左侧补同等宽度后左右留白对称 */
+      padding: 0.35cqi 1cqi 0.35cqi calc(1cqi + 0.2em);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cover h1 {
+      font-size: 5cqi;
+      font-weight: 900;
+      color: var(--c-title);
+      line-height: 1.5;
+      margin-bottom: 1.6cqi;
+      letter-spacing: -0.01em;
+      max-width: 70cqi;
+    }
+
+    .cover .subtitle {
+      font-size: 2.4cqi;
+      color: var(--c-subtitle);
+      line-height: 1.6;
+      max-width: 70cqi;
+      font-weight: 400;
+    }
+
+    .cover .meta {
+      position: absolute;
+      bottom: 1cqi;
+      right: 1cqi;
+      display: flex;
+      align-items: center;
+      gap: 1cqi;
+      font-size: 2cqi;
+      color: var(--c-meta);
+      letter-spacing: 0.05em;
+      z-index: 1;
+    }
+
+    .cover .meta::before,
+    .cover .meta::after {
+      content: '';
+      width: 3cqi;
+      height: 1px;
+    }
+
+    .cover .meta::before {
+      background: linear-gradient(to right, transparent, var(--c-meta-line));
+    }
+
+    .cover .meta::after {
+      background: linear-gradient(to left, transparent, var(--c-meta-line));
+    }
+
+    /* Cyberpunk overrides */
+    .cover.deco-cyberpunk .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6cqi;
+      font-size: 1.7cqi;
+      letter-spacing: 0.25em;
+      background: rgba(220, 38, 38, 0.12);
+      border-radius: 4px;
+      border-color: rgba(239, 68, 68, 0.25);
+      padding: 0.35cqi 1cqi 0.35cqi calc(1cqi + 0.25em);
+    }
+
+    .cover.deco-cyberpunk .label::before {
+      content: '▶';
+      font-size: 1.2cqi;
+      color: var(--c-accent);
+      opacity: 0.8;
+    }
+
+    .cover.deco-cyberpunk .meta {
+      font-size: 1.85cqi;
+      bottom: 2.8cqi;
+      right: 3cqi;
+    }
+
+    .cover.deco-cyberpunk h1 {
+      text-shadow: 0 0 40px rgba(239, 68, 68, 0.15);
+    }
+
+    /* Sphere overrides */
+    .cover.deco-sphere .label {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 15px var(--c-glow1);
+      backdrop-filter: blur(4px);
+    }
+
+    .cover.deco-sphere h1 {
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 40px var(--c-glow1);
+    }
+
+    /* ── Presets strip (inside center, below cover) ── */
+    .presets-strip {
+      flex: none;
+      padding: 10px 20px 12px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+    .presets-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #b0b8c4;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-family: sans-serif;
+      margin-bottom: 8px;
+    }
+
+    .presets-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+      scrollbar-color: #e5e7eb transparent;
+    }
+
+    .presets-list::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .presets-list::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 2px;
+    }
+
+    .preset-card {
+      flex: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 7px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      width: 116px;
+    }
+
+    .preset-card:hover {
+      border-color: #93c5fd;
+      background: #f0f7ff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .preset-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .preset-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 5 / 2;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .thumb-line {
+      position: absolute;
+      left: 10%;
+      top: 15%;
+      width: 2px;
+      height: 70%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.65), transparent);
+      border-radius: 1px;
+    }
+
+    .thumb-circle {
+      position: absolute;
+      right: -5%;
+      top: -20%;
+      width: 42%;
+      height: 140%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .thumb-hud {
+      position: absolute;
+      width: 18%;
+      height: 55%;
+      border-top: 1.5px solid currentColor;
+      border-left: 1.5px solid currentColor;
+      opacity: 0.75;
+    }
+
+    .thumb-hud.tl {
+      top: 8%;
+      left: 8%;
+    }
+
+    .thumb-hud.br {
+      bottom: 8%;
+      right: 8%;
+      transform: rotate(180deg);
+    }
+
+    .thumb-scan {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(255, 255, 255, 0.04) 3px, rgba(255, 255, 255, 0.04) 4px);
+    }
+
+    .thumb-sphere {
+      position: absolute;
+      right: 8%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.28);
+    }
+
+    .preset-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .preset-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #111;
+      font-family: sans-serif;
+      line-height: 1.2;
+    }
+
+    .preset-tags {
+      font-size: 9px;
+      color: #9ca3af;
+      font-family: sans-serif;
+    }
+
+    .preset-card.active .preset-name {
+      color: #1d4ed8;
+    }
+
+    .preset-card.active .preset-tags {
+      color: #60a5fa;
+    }
+
+    /* ── Mobile / narrow screens ── */
+    @media (max-width: 900px) {
+      body {
+        height: auto;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .app-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        height: auto;
+        min-height: 48px;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        padding: 8px 12px;
+      }
+
+      .header-logo {
+        font-size: 13px;
+        flex: 1 1 140px;
+        min-width: 0;
+      }
+
+      .header-ratio {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .header-spacer {
+        display: none;
+      }
+
+      .header-actions {
+        flex: 1 1 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-actions .btn {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
+      .layout {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+      }
+
+      .preview-area {
+        order: 1;
+        flex: 0 0 auto;
+        min-height: 42vh;
+        max-height: none;
+        overflow: visible;
+      }
+
+      .cover-zone {
+        padding: 12px 14px 10px;
+        min-height: 34vh;
+      }
+
+      .panel-left {
+        order: 2;
+        width: 100%;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .panel-right {
+        order: 3;
+        width: 100%;
+        border-left: none;
+        border-bottom: none;
+      }
+
+      .presets-strip {
+        padding: 8px 12px 10px;
+      }
+
+      .presets-list {
+        gap: 6px;
+      }
+
+      .preset-card {
+        width: 104px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ── -->
+  <header class="app-header">
+    <a class="home-link" href="/" title="返回首页">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1.5 6.5L7.5 1.5L13.5 6.5V13.5H9.5V9.5H5.5V13.5H1.5V6.5Z"/>
+      </svg>
+    </a>
+    <span class="header-logo"><span style="color:#3370ff">不二</span>的工具箱</span>
+    <span class="header-ratio" id="ratio-label">5:2 · 1200×480</span>
+    <div class="header-spacer"></div>
+    <div class="header-actions">
+      <span class="header-local-hint" id="local-save-hint" title="封面参数保存在本机浏览器，清除站点数据会丢失">已存本地</span>
+      <button class="btn" onclick="resetAll()">重置</button>
+      <button class="btn btn-primary" onclick="exportPng()">下载 PNG</button>
+      <button class="btn btn-primary" onclick="copyImage()">复制图片</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ── Left panel: content + per-field controls ── -->
+    <aside class="panel panel-left">
+      <div class="panel-body">
+
+        <!-- Label -->
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">标签 Label</span>
+            <div class="field-actions">
+              <button class="vis-toggle on" id="toggle-label" onclick="toggleVis('label')">隐藏</button>
+              <input type="color" class="color-swatch" id="clr-label" value="#93c5fd" title="标签颜色">
+            </div>
+          </div>
+          <div class="field">
+            <input id="inp-label" type="text" placeholder="系列标签">
+          </div>
+          <div class="field">
+            <label>字号</label>
+            <div class="slider-row">
+              <input id="sld-label" type="range" min="0.5" max="4" step="0.1" value="2">
+              <span id="val-label" class="slider-val">2 cqi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">标题 Title</span>
+            <div class="field-actions">
+              <button class="vis-toggle on" id="toggle-title" onclick="toggleVis('title')">隐藏</button>
+              <input type="color" class="color-swatch" id="clr-title" value="#ffffff" title="标题颜色">
+            </div>
+          </div>
+          <div class="field">
+            <textarea id="inp-title" class="tall" placeholder="文章标题"></textarea>
+          </div>
+          <div class="field">
+            <label>字号</label>
+            <div class="slider-row">
+              <input id="sld-title" type="range" min="2" max="9" step="0.1" value="5">
+              <span id="val-title" class="slider-val">5 cqi</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>行高</label>
+            <div class="slider-row">
+              <input id="sld-title-lh" type="range" min="1" max="2.5" step="0.05" value="1.5">
+              <span id="val-title-lh" class="slider-val">1.5</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>上间距</label>
+            <div class="slider-row">
+              <input id="sld-title-mt" type="range" min="0" max="6" step="0.1" value="0">
+              <span id="val-title-mt" class="slider-val">0 cqi</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>下间距</label>
+            <div class="slider-row">
+              <input id="sld-title-mb" type="range" min="0" max="6" step="0.1" value="1.6">
+              <span id="val-title-mb" class="slider-val">1.6 cqi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">副标题 Subtitle</span>
+            <div class="field-actions">
+              <button class="vis-toggle on" id="toggle-subtitle" onclick="toggleVis('subtitle')">隐藏</button>
+              <input type="color" class="color-swatch" id="clr-subtitle" value="#bfdbfe" title="副标题颜色">
+            </div>
+          </div>
+          <div class="field">
+            <textarea id="inp-subtitle" placeholder="副标题或摘要"></textarea>
+          </div>
+          <div class="field">
+            <label>字号</label>
+            <div class="slider-row">
+              <input id="sld-subtitle" type="range" min="1" max="4" step="0.1" value="2.4">
+              <span id="val-subtitle" class="slider-val">2.4 cqi</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>行高</label>
+            <div class="slider-row">
+              <input id="sld-subtitle-lh" type="range" min="1" max="2.5" step="0.05" value="1.6">
+              <span id="val-subtitle-lh" class="slider-val">1.6</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Author -->
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">作者 Author</span>
+            <div class="field-actions">
+              <button class="vis-toggle on" id="toggle-author" onclick="toggleVis('author')">隐藏</button>
+              <input type="color" class="color-swatch" id="clr-meta" value="#bfdbfe" title="作者颜色">
+            </div>
+          </div>
+          <div class="field">
+            <input id="inp-author" type="text" placeholder="@xxx · 姓名">
+          </div>
+          <div class="field">
+            <label>字号</label>
+            <div class="slider-row">
+              <input id="sld-author" type="range" min="0.8" max="4" step="0.1" value="1.9">
+              <span id="val-author" class="slider-val">1.9 cqi</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ── Center: cover + presets ── -->
+    <main class="preview-area">
+      <div class="cover-zone">
+        <div class="cover-wrapper">
+          <div id="cover-main" class="cover">
+            <div class="cover-content">
+              <span class="label"></span>
+              <h1></h1>
+              <p class="subtitle"></p>
+            </div>
+            <div class="meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Presets below canvas -->
+      <div class="presets-strip">
+        <div class="presets-label">快速预设 Presets</div>
+        <div class="presets-list" id="presets-list"></div>
+      </div>
+    </main>
+
+    <!-- ── Right panel: visual style controls ── -->
+    <aside class="panel panel-right">
+      <div class="panel-body">
+
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">配色 Color</span>
+          </div>
+          <div class="color-modes" id="color-section">
+            <div class="color-mode">
+              <div class="color-mode-label">纯色</div>
+              <div class="color-picker">
+                <button class="color-btn" data-scheme="0" title="宝蓝" style="background:#1d4ed8"></button>
+                <button class="color-btn" data-scheme="1" title="翡翠" style="background:#047857"></button>
+                <button class="color-btn" data-scheme="2" title="紫罗兰" style="background:#6d28d9"></button>
+                <button class="color-btn" data-scheme="3" title="玫红" style="background:#be123c"></button>
+                <button class="color-btn" data-scheme="4" title="石墨" style="background:#334155"></button>
+                <button class="color-btn" data-scheme="5" title="琥珀" style="background:#d87757"></button>
+                <button class="color-btn" data-scheme="13" title="午夜" style="background:#312e81"></button>
+                <label class="color-btn color-btn-custom" id="btn-custom-bg" title="自定义颜色">
+                  <input type="color" id="inp-custom-bg" value="#1d4ed8">
+                </label>
+              </div>
+            </div>
+            <div class="color-mode">
+              <div class="color-mode-label">渐变色</div>
+              <div class="color-picker">
+                <!-- 列对齐：0–3↔6–9；4↔12；5↔10；13↔11；自定义↔占位 -->
+                <button class="color-btn active" data-scheme="6" title="海蓝"
+                  style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"></button>
+                <button class="color-btn" data-scheme="7" title="翠绿"
+                  style="background:linear-gradient(135deg,#064e3b,#059669)"></button>
+                <button class="color-btn" data-scheme="8" title="深紫"
+                  style="background:linear-gradient(135deg,#3b0764,#7c3aed)"></button>
+                <button class="color-btn" data-scheme="9" title="玫瑰"
+                  style="background:linear-gradient(135deg,#881337,#e11d48)"></button>
+                <button class="color-btn" data-scheme="12" title="智核"
+                  style="background:linear-gradient(135deg,#020617,#1e1b4b)"></button>
+                <button class="color-btn" data-scheme="10" title="烈焰"
+                  style="background:linear-gradient(135deg,#ea580c,#fbd38d)"></button>
+                <button class="color-btn" data-scheme="11" title="午夜"
+                  style="background:linear-gradient(135deg,#1e1b4b,#4338ca)"></button>
+                <span class="color-picker-spacer" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">装饰 Decoration</span>
+          </div>
+          <div class="deco-picker" id="deco-picker">
+            <button class="deco-btn active" data-deco="classic">◈ &nbsp;极简几何</button>
+            <button class="deco-btn" data-deco="clean">◇ &nbsp;极简净底</button>
+            <button class="deco-btn" data-deco="cyberpunk">⬡ &nbsp;赛博朋克</button>
+            <button class="deco-btn" data-deco="sphere">◉ &nbsp;AI 球体</button>
+            <button class="deco-btn" data-deco="minimal">◎ &nbsp;简约风</button>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">字体 Font</span>
+          </div>
+          <div class="field">
+            <select id="sel-font" title="选择封面字体"></select>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">比例 Ratio</span>
+          </div>
+          <div class="ratio-picker" id="ratio-picker">
+            <button class="ratio-btn active" data-ratio="1200/480" data-label="5:2 · 1200×480">
+              <div class="ratio-icon" style="width:38px;height:15px"></div>
+              <span>5 : 2</span>
+            </button>
+            <button class="ratio-btn" data-ratio="3/4" data-label="3:4 · 900×1200">
+              <div class="ratio-icon" style="width:22px;height:29px"></div>
+              <span>3 : 4</span>
+            </button>
+            <button class="ratio-btn" data-ratio="16/9" data-label="16:9 · 1200×675">
+              <div class="ratio-icon" style="width:38px;height:21px"></div>
+              <span>16 : 9</span>
+            </button>
+            <button class="ratio-btn" data-ratio="2/1" data-label="2:1 · 1200×600">
+              <div class="ratio-icon" style="width:38px;height:19px"></div>
+              <span>2 : 1</span>
+            </button>
+            <button class="ratio-btn" data-ratio="4/3" data-label="4:3 · 1200×900">
+              <div class="ratio-icon" style="width:34px;height:25px"></div>
+              <span>4 : 3</span>
+            </button>
+            <button class="ratio-btn" data-ratio="1/1" data-label="1:1 · 1200×1200">
+              <div class="ratio-icon" style="width:28px;height:28px"></div>
+              <span>1 : 1</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="psec-header">
+            <span class="psec-title">内容宽度 Width</span>
+          </div>
+          <div class="slider-row">
+            <input id="sld-width" type="range" min="30" max="95" step="1" value="70">
+            <span id="val-width" class="slider-val">70 cqi</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div><!-- /.layout -->
+
+  <script>
+    // ── Color schemes ──────────────────────────────────────────────────────
+    const COLOR_SCHEMES = [
+      // ── 纯色 (0–5) ───────────────────────────────────────────────────────
+      {
+        name: '宝蓝',
+        bg: '#1d4ed8',
+        glow1: 'rgba(96,165,250,0.22)', glow2: 'rgba(147,197,253,0.15)',
+        blob: 'rgba(59,130,246,0.45)', label: '#93c5fd', title: '#ffffff',
+        subtitle: 'rgba(191,219,254,0.85)', meta: 'rgba(191,219,254,0.75)', metaLine: 'rgba(191,219,254,0.4)', accent: '#60a5fa'
+      },
+      {
+        name: '翡翠',
+        bg: '#047857',
+        glow1: 'rgba(52,211,153,0.22)', glow2: 'rgba(110,231,183,0.15)',
+        blob: 'rgba(16,185,129,0.45)', label: '#6ee7b7', title: '#ffffff',
+        subtitle: 'rgba(167,243,208,0.85)', meta: 'rgba(167,243,208,0.75)', metaLine: 'rgba(167,243,208,0.4)', accent: '#34d399'
+      },
+      {
+        name: '紫罗兰',
+        bg: '#6d28d9',
+        glow1: 'rgba(167,139,250,0.22)', glow2: 'rgba(196,181,253,0.15)',
+        blob: 'rgba(139,92,246,0.45)', label: '#c4b5fd', title: '#ffffff',
+        subtitle: 'rgba(221,214,254,0.85)', meta: 'rgba(221,214,254,0.75)', metaLine: 'rgba(221,214,254,0.4)', accent: '#a78bfa'
+      },
+      {
+        name: '玫红',
+        bg: '#be123c',
+        glow1: 'rgba(251,113,133,0.22)', glow2: 'rgba(253,164,175,0.15)',
+        blob: 'rgba(244,63,94,0.45)', label: '#fda4af', title: '#ffffff',
+        subtitle: 'rgba(254,205,211,0.85)', meta: 'rgba(254,205,211,0.75)', metaLine: 'rgba(254,205,211,0.4)', accent: '#fb7185'
+      },
+      {
+        name: '石墨',
+        bg: '#334155',
+        glow1: 'rgba(148,163,184,0.18)', glow2: 'rgba(203,213,225,0.1)',
+        blob: 'rgba(100,116,139,0.45)', label: '#94a3b8', title: '#ffffff',
+        subtitle: 'rgba(203,213,225,0.85)', meta: 'rgba(203,213,225,0.75)', metaLine: 'rgba(203,213,225,0.35)', accent: '#94a3b8'
+      },
+      {
+        name: '琥珀',
+        bg: '#d87757',
+        glow1: 'rgba(253,186,116,0.25)', glow2: 'rgba(254,215,170,0.18)',
+        blob: 'rgba(249,115,22,0.45)', label: '#fed7aa', title: '#ffffff',
+        subtitle: 'rgba(255,237,213,0.9)', meta: 'rgba(255,237,213,0.85)', metaLine: 'rgba(255,237,213,0.5)', accent: '#fb923c'
+      },
+      // ── 渐变色 (6–11) ─────────────────────────────────────────────────────
+      {
+        name: '海蓝',
+        bg: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%)',
+        glow1: 'rgba(96,165,250,0.2)', glow2: 'rgba(147,197,253,0.15)',
+        blob: 'rgba(59,130,246,0.4)', label: '#93c5fd', title: '#ffffff',
+        subtitle: 'rgba(191,219,254,0.85)', meta: 'rgba(191,219,254,0.8)', metaLine: 'rgba(191,219,254,0.5)', accent: '#60a5fa'
+      },
+      {
+        name: '翠绿',
+        bg: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%)',
+        glow1: 'rgba(52,211,153,0.2)', glow2: 'rgba(110,231,183,0.15)',
+        blob: 'rgba(16,185,129,0.4)', label: '#6ee7b7', title: '#ffffff',
+        subtitle: 'rgba(167,243,208,0.85)', meta: 'rgba(167,243,208,0.8)', metaLine: 'rgba(167,243,208,0.5)', accent: '#34d399'
+      },
+      {
+        name: '深紫',
+        bg: 'linear-gradient(135deg, #3b0764 0%, #6d28d9 50%, #7c3aed 100%)',
+        glow1: 'rgba(167,139,250,0.2)', glow2: 'rgba(196,181,253,0.15)',
+        blob: 'rgba(139,92,246,0.4)', label: '#c4b5fd', title: '#ffffff',
+        subtitle: 'rgba(221,214,254,0.85)', meta: 'rgba(221,214,254,0.8)', metaLine: 'rgba(221,214,254,0.5)', accent: '#a78bfa'
+      },
+      {
+        name: '玫瑰',
+        bg: 'linear-gradient(135deg, #881337 0%, #be123c 50%, #e11d48 100%)',
+        glow1: 'rgba(251,113,133,0.2)', glow2: 'rgba(253,164,175,0.15)',
+        blob: 'rgba(244,63,94,0.4)', label: '#fda4af', title: '#ffffff',
+        subtitle: 'rgba(254,205,211,0.85)', meta: 'rgba(254,205,211,0.8)', metaLine: 'rgba(254,205,211,0.5)', accent: '#fb7185'
+      },
+      {
+        name: '烈焰',
+        bg: 'linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fbd38d 100%)',
+        glow1: 'rgba(255,255,255,0.4)', glow2: 'rgba(255,237,213,0.3)',
+        blob: 'rgba(254,215,170,0.4)', label: '#fffbeb', title: '#ffffff',
+        subtitle: 'rgba(255,237,213,0.95)', meta: 'rgba(255,237,213,0.9)', metaLine: 'rgba(255,237,213,0.6)', accent: '#f97316'
+      },
+      {
+        name: '午夜',
+        bg: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+        glow1: 'rgba(129,140,248,0.2)', glow2: 'rgba(165,180,252,0.15)',
+        blob: 'rgba(99,102,241,0.4)', label: '#a5b4fc', title: '#ffffff',
+        subtitle: 'rgba(199,210,254,0.85)', meta: 'rgba(199,210,254,0.8)', metaLine: 'rgba(199,210,254,0.5)', accent: '#818cf8'
+      },
+      {
+        name: '智核',
+        bg: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%)',
+        glow1: 'rgba(99,102,241,0.3)', glow2: 'rgba(56,189,248,0.2)',
+        blob: 'rgba(99,102,241,0.4)', label: '#818cf8', title: '#ffffff',
+        subtitle: 'rgba(203,213,225,0.85)', meta: 'rgba(203,213,225,0.8)', metaLine: 'rgba(203,213,225,0.5)', accent: '#818cf8'
+      },
+      {
+        name: '午夜',
+        bg: '#312e81',
+        glow1: 'rgba(129,140,248,0.22)', glow2: 'rgba(165,180,252,0.15)',
+        blob: 'rgba(99,102,241,0.45)', label: '#a5b4fc', title: '#ffffff',
+        subtitle: 'rgba(199,210,254,0.85)', meta: 'rgba(199,210,254,0.75)', metaLine: 'rgba(199,210,254,0.45)', accent: '#818cf8'
+      },
+    ];
+
+    // [labelHex, subtitleHex, metaHex] per scheme — 标题色见 COLOR_SCHEMES[i].title（非 #fff 时用于色块）
+    const SCHEME_HEX = [
+      ['#93c5fd', '#bfdbfe', '#bfdbfe'],  // 0 宝蓝
+      ['#6ee7b7', '#a7f3d0', '#a7f3d0'],  // 1 翡翠
+      ['#c4b5fd', '#ddd6fe', '#ddd6fe'],  // 2 紫罗兰
+      ['#fda4af', '#fecdd3', '#fecdd3'],  // 3 玫红
+      ['#94a3b8', '#cbd5e1', '#cbd5e1'],  // 4 石墨
+      ['#fed7aa', '#ffedd5', '#ffedd5'],  // 5 琥珀
+      ['#93c5fd', '#bfdbfe', '#bfdbfe'],  // 6 海蓝渐变
+      ['#6ee7b7', '#a7f3d0', '#a7f3d0'],  // 7 翠绿渐变
+      ['#c4b5fd', '#ddd6fe', '#ddd6fe'],  // 8 深紫渐变
+      ['#fda4af', '#fecdd3', '#fecdd3'],  // 9 玫瑰渐变
+      ['#fffbeb', '#ffedd5', '#ffedd5'],  // 10 烈焰渐变
+      ['#a5b4fc', '#c7d2fe', '#c7d2fe'],  // 11 午夜渐变
+      ['#818cf8', '#cbd5e1', '#cbd5e1'],  // 12 智核渐变
+      ['#a5b4fc', '#c7d2fe', '#c7d2fe'],  // 13 午夜纯色（与渐变 11 同系）
+    ];
+
+    const DEFAULT_RATIO = '1200/480';
+    const DEFAULT_SCHEME = 6;
+    const DEFAULT_DECO = 'classic';
+    const DEFAULT_FONT = 'default';
+    let currentDeco = 'classic';
+
+    const FONT_OPTIONS = {
+      default: { name: '思源宋体 Noto Serif', family: "'Noto Serif SC', serif" },
+      misans: { name: '小米 MiSans', family: "'MiSans', 'Noto Serif SC', sans-serif", loadFamily: 'MiSans', loadWeight: 330 },
+      mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', 'Noto Serif SC', monospace", loadFamily: 'JetBrains Mono' },
+      system: { name: '系统黑体', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" },
+    };
+    const FONT_ORDER = ['default', 'misans', 'mono', 'system'];
+
+    // ── Field visibility ──────────────────────────────────────────────────
+    const VIS_MAP = {
+      label: { inputId: 'inp-label', selector: '.label' },
+      title: { inputId: 'inp-title', selector: 'h1' },
+      subtitle: { inputId: 'inp-subtitle', selector: '.subtitle' },
+      author: { inputId: 'inp-author', selector: '.meta' },
+    };
+    const visState = { label: true, title: true, subtitle: true, author: true };
+
+    function toggleVis(field) {
+      visState[field] = !visState[field];
+      const vis = visState[field];
+      const { inputId, selector } = VIS_MAP[field];
+      const btn = document.getElementById('toggle-' + field);
+      const input = document.getElementById(inputId);
+      const el = document.querySelector('#cover-main ' + selector);
+      btn.textContent = vis ? '隐藏' : '显示';
+      btn.classList.toggle('on', vis);
+      if (input) input.disabled = !vis;
+      if (el) el.style.display = vis ? '' : 'none';
+      scheduleSaveCover();
+    }
+
+    function syncColorSwatches(idx) {
+      const s = COLOR_SCHEMES[idx];
+      const [lh, sh, mh] = SCHEME_HEX[idx];
+      document.getElementById('clr-label').value = lh;
+      document.getElementById('clr-title').value =
+        (s.title && /^#[0-9a-fA-F]{6}$/.test(s.title)) ? s.title : '#ffffff';
+      document.getElementById('clr-subtitle').value = sh;
+      document.getElementById('clr-meta').value = mh;
+      // Clear any inline overrides so the scheme CSS vars take effect
+      const cover = document.getElementById('cover-main');
+      cover.querySelector('.label').style.color = '';
+      cover.querySelector('h1').style.color = '';
+      cover.querySelector('.subtitle').style.color = '';
+      cover.querySelector('.meta').style.color = '';
+    }
+
+    function applyColorScheme(idx) {
+      const s = COLOR_SCHEMES[idx];
+      const cover = document.getElementById('cover-main');
+      cover.style.setProperty('--c-bg', s.bg);
+      cover.style.setProperty('--c-glow1', s.glow1);
+      cover.style.setProperty('--c-glow2', s.glow2);
+      cover.style.setProperty('--c-blob', s.blob);
+      cover.style.setProperty('--c-label', s.label);
+      cover.style.setProperty('--c-title', s.title);
+      cover.style.setProperty('--c-subtitle', s.subtitle);
+      cover.style.setProperty('--c-meta', s.meta);
+      cover.style.setProperty('--c-meta-line', s.metaLine);
+      cover.style.setProperty('--c-accent', s.accent);
+      syncColorSwatches(idx);
+    }
+
+    // Color swatch → override inline style on cover element
+    const COLOR_SWATCH_MAP = [
+      ['clr-label', () => document.querySelector('#cover-main .label')],
+      ['clr-title', () => document.querySelector('#cover-main h1')],
+      ['clr-subtitle', () => document.querySelector('#cover-main .subtitle')],
+      ['clr-meta', () => document.querySelector('#cover-main .meta')],
+    ];
+
+    COLOR_SWATCH_MAP.forEach(([id, getEl]) => {
+      document.getElementById(id).addEventListener('input', e => {
+        getEl().style.color = e.target.value;
+        scheduleSaveCover();
+      });
+    });
+
+    document.getElementById('color-section').addEventListener('click', e => {
+      const btn = e.target.closest('.color-btn[data-scheme]');
+      if (!btn) return;
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyColorScheme(+btn.dataset.scheme);
+      scheduleSaveCover();
+    });
+
+    // ── Custom solid color ─────────────────────────────────────────────────
+    function applyCustomColor(hex) {
+      const cover = document.getElementById('cover-main');
+      cover.style.setProperty('--c-bg', hex);
+      cover.style.setProperty('--c-glow1', 'rgba(255,255,255,0.18)');
+      cover.style.setProperty('--c-glow2', 'rgba(255,255,255,0.12)');
+      cover.style.setProperty('--c-blob', 'rgba(255,255,255,0.22)');
+      cover.style.setProperty('--c-label', 'rgba(255,255,255,0.88)');
+      cover.style.setProperty('--c-title', '#ffffff');
+      cover.style.setProperty('--c-subtitle', 'rgba(255,255,255,0.80)');
+      cover.style.setProperty('--c-meta', 'rgba(255,255,255,0.70)');
+      cover.style.setProperty('--c-meta-line', 'rgba(255,255,255,0.40)');
+      cover.style.setProperty('--c-accent', 'rgba(255,255,255,0.75)');
+      // Sync text color swatches & clear any inline overrides
+      document.getElementById('clr-label').value = '#ffffff';
+      document.getElementById('clr-title').value = '#ffffff';
+      document.getElementById('clr-subtitle').value = '#ffffff';
+      document.getElementById('clr-meta').value = '#ffffff';
+      ['.label', 'h1', '.subtitle', '.meta'].forEach(sel => {
+        const el = cover.querySelector(sel);
+        if (el) el.style.color = '';
+      });
+    }
+
+    document.getElementById('inp-custom-bg').addEventListener('input', function () {
+      const hex = this.value;
+      const lbl = document.getElementById('btn-custom-bg');
+      // Show chosen color on the button, hide the "+" overlay
+      lbl.style.background = hex;
+      lbl.classList.add('has-custom');
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      lbl.classList.add('active');
+      applyCustomColor(hex);
+    });
+
+    // ── Ratio presets ──────────────────────────────────────────────────────
+    const RATIO_PRESETS = {
+      '1200/480': { labelSize: 2, titleSize: 5, subtitleSize: 2.4, authorSize: 1.9, width: 70, titleLH: 1.5, subtitleLH: 1.6, titleMT: 0, titleMB: 1.6, titleMax: 9, subtitleMax: 4, authorMax: 4, maxWidth: '' },
+      '3/4': { labelSize: 3.3, titleSize: 9.5, subtitleSize: 5.1, authorSize: 3.1, width: 95, titleLH: 1.6, subtitleLH: 1.6, titleMT: 6, titleMB: 6, titleMax: 16, subtitleMax: 7, authorMax: 7, maxWidth: '500px' },
+      '16/9': { labelSize: 2, titleSize: 5.5, subtitleSize: 2.4, authorSize: 1.9, width: 70, titleLH: 1.5, subtitleLH: 1.6, titleMT: 0, titleMB: 1.6, titleMax: 9, subtitleMax: 4, authorMax: 4, maxWidth: '' },
+      '2/1': { labelSize: 2, titleSize: 5.2, subtitleSize: 2.4, authorSize: 1.9, width: 70, titleLH: 1.5, subtitleLH: 1.6, titleMT: 0, titleMB: 1.6, titleMax: 9, subtitleMax: 4, authorMax: 4, maxWidth: '' },
+      '4/3': { labelSize: 2, titleSize: 6, subtitleSize: 2.6, authorSize: 2, width: 75, titleLH: 1.5, subtitleLH: 1.6, titleMT: 0, titleMB: 1.6, titleMax: 12, subtitleMax: 5, authorMax: 5, maxWidth: '' },
+      '1/1': { labelSize: 2, titleSize: 7, subtitleSize: 2.4, authorSize: 2.2, width: 80, titleLH: 1.4, subtitleLH: 1.5, titleMT: 0, titleMB: 1.6, titleMax: 14, subtitleMax: 6, authorMax: 6, maxWidth: '' },
+    };
+
+    // ── Decoration builders ────────────────────────────────────────────────
+    function makeDiv(...classes) {
+      const d = document.createElement('div');
+      d.className = ['deco-el', ...classes].join(' ');
+      return d;
+    }
+
+    function buildDecorations(style) {
+      const cover = document.getElementById('cover-main');
+      cover.querySelectorAll('.deco-el').forEach(el => el.remove());
+      cover.classList.remove('deco-classic', 'deco-clean', 'deco-cyberpunk', 'deco-sphere', 'deco-minimal');
+      cover.classList.add('deco-' + style);
+
+      const anchor = cover.querySelector('.cover-content');
+      const before = el => cover.insertBefore(el, anchor);
+
+      if (style === 'clean') {
+        /* 与极简几何相同版式，不插入网格/线/圆/点等装饰，仅保留封面渐变与文案 */
+      } else if (style === 'classic') {
+        before(makeDiv('deco-grid', 'classic'));
+        before(makeDiv('deco-line'));
+        before(makeDiv('deco-circle'));
+        before(makeDiv('deco-blob'));
+        const dots = makeDiv('deco-dots');
+        for (let i = 0; i < 20; i++) dots.appendChild(document.createElement('span'));
+        before(dots);
+
+      } else if (style === 'cyberpunk') {
+        before(makeDiv('deco-grid', 'cyberpunk'));
+        before(makeDiv('deco-scan'));
+        ['tl', 'tr', 'bl', 'br'].forEach(pos => before(makeDiv('deco-hud', `deco-hud-${pos}`)));
+        before(makeDiv('deco-line', 'cyberpunk'));
+        before(makeDiv('deco-circle', 'cyberpunk'));
+        before(makeDiv('deco-blob', 'cyberpunk'));
+        const code = makeDiv('deco-code');
+        code.innerHTML = 'const agent = new Hermes()<br>agent.init({ model: \'claude\' })<br>await agent.run(task)<br>// ✓ task completed<br>export default agent';
+        before(code);
+        const dots = makeDiv('deco-dots-cp');
+        for (let i = 0; i < 24; i++) dots.appendChild(document.createElement('span'));
+        before(dots);
+
+      } else if (style === 'sphere') {
+        before(makeDiv('deco-grid', 'sphere'));
+        before(makeDiv('deco-line'));
+        before(makeDiv('deco-ai-sphere'));
+        before(makeDiv('deco-blob'));
+        const circuit = makeDiv('deco-circuit');
+        [[6], [4], [8], [5], [7]].forEach(([h]) => {
+          const s = document.createElement('span'); s.style.height = h + 'cqi'; circuit.appendChild(s);
+        });
+        before(circuit);
+        const dots = makeDiv('deco-dots-sp');
+        for (let i = 0; i < 16; i++) dots.appendChild(document.createElement('span'));
+        before(dots);
+
+      } else if (style === 'minimal') {
+        // No shape elements — layout handled entirely by CSS class (centered text, ambient glow kept)
+      }
+    }
+
+    function applyDecoVis(newDeco) {
+      const wasMinimal = currentDeco === 'minimal';
+      const isMinimal = newDeco === 'minimal';
+      if (isMinimal && !wasMinimal) {
+        if (visState.subtitle) toggleVis('subtitle');
+        if (visState.author) toggleVis('author');
+      } else if (!isMinimal && wasMinimal) {
+        if (!visState.subtitle) toggleVis('subtitle');
+        if (!visState.author) toggleVis('author');
+      }
+    }
+
+    document.getElementById('deco-picker').addEventListener('click', e => {
+      const btn = e.target.closest('.deco-btn');
+      if (!btn) return;
+      document.querySelectorAll('.deco-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyDecoVis(btn.dataset.deco);
+      currentDeco = btn.dataset.deco;
+      buildDecorations(currentDeco);
+      scheduleSaveCover();
+    });
+
+    function initFontPicker() {
+      const select = document.getElementById('sel-font');
+      select.innerHTML = FONT_ORDER.map(id => `<option value="${id}">${FONT_OPTIONS[id].name}</option>`).join('');
+      select.value = DEFAULT_FONT;
+    }
+
+    function applyFontChoice(fontId) {
+      const cover = document.getElementById('cover-main');
+      const id = fontId in FONT_OPTIONS ? fontId : DEFAULT_FONT;
+      const choice = FONT_OPTIONS[id];
+      cover.style.setProperty('--c-font', choice.family);
+      cover.dataset.font = id;
+      if (choice.loadFamily && document.fonts?.load) {
+        const w = choice.loadWeight != null ? choice.loadWeight : 700;
+        document.fonts.load(`${w} 48px "${choice.loadFamily}"`).catch(() => { });
+      }
+    }
+
+    function getCurrentFontChoice() {
+      return document.getElementById('sel-font')?.value || DEFAULT_FONT;
+    }
+
+    document.getElementById('sel-font').addEventListener('change', e => {
+      applyFontChoice(e.target.value);
+      scheduleSaveCover();
+    });
+
+    // ── Content sync ──────────────────────────────────────────────────────
+    const DEFAULT = {
+      label: '不二的工具箱',
+      title: '一个用 Claude 做的封面工具，开箱即用，亦可自由迭代',
+      subtitle: '多次实践，数小时精心打磨',
+      author: '@buer · 不二',
+    };
+
+    function syncContent() {
+      const cover = document.getElementById('cover-main');
+      cover.querySelector('.label').textContent = document.getElementById('inp-label').value;
+      cover.querySelector('h1').textContent = document.getElementById('inp-title').value;
+      cover.querySelector('.subtitle').textContent = document.getElementById('inp-subtitle').value;
+      cover.querySelector('.meta').textContent = document.getElementById('inp-author').value;
+    }
+
+    ['inp-label', 'inp-title', 'inp-subtitle', 'inp-author'].forEach(id => {
+      document.getElementById(id).addEventListener('input', syncContent);
+    });
+
+
+    // ── Sliders ────────────────────────────────────────────────────────────
+    function syncAllSliders() {
+      const cover = document.getElementById('cover-main');
+      const h1 = cover.querySelector('h1');
+      const subtitle = cover.querySelector('.subtitle');
+      const label = cover.querySelector('.label');
+      const g = id => document.getElementById(id).value;
+
+      const labelSize = g('sld-label'), titleSize = g('sld-title'), subSize = g('sld-subtitle');
+      const authorSize = g('sld-author');
+      const width = g('sld-width'), titleLH = g('sld-title-lh'), subLH = g('sld-subtitle-lh');
+      const titleMT = g('sld-title-mt'), titleMB = g('sld-title-mb');
+      const meta = cover.querySelector('.meta');
+
+      label.style.fontSize = labelSize + 'cqi';
+      h1.style.fontSize = titleSize + 'cqi';
+      h1.style.maxWidth = width + 'cqi';
+      h1.style.lineHeight = titleLH;
+      h1.style.marginTop = titleMT + 'cqi';
+      h1.style.marginBottom = titleMB + 'cqi';
+      subtitle.style.fontSize = subSize + 'cqi';
+      subtitle.style.maxWidth = width + 'cqi';
+      subtitle.style.lineHeight = subLH;
+      meta.style.fontSize = authorSize + 'cqi';
+
+      document.getElementById('val-label').textContent = labelSize + ' cqi';
+      document.getElementById('val-title').textContent = titleSize + ' cqi';
+      document.getElementById('val-subtitle').textContent = subSize + ' cqi';
+      document.getElementById('val-author').textContent = authorSize + ' cqi';
+      document.getElementById('val-width').textContent = width + ' cqi';
+      document.getElementById('val-title-lh').textContent = titleLH;
+      document.getElementById('val-subtitle-lh').textContent = subLH;
+      document.getElementById('val-title-mt').textContent = titleMT + ' cqi';
+      document.getElementById('val-title-mb').textContent = titleMB + ' cqi';
+    }
+
+    ['sld-label', 'sld-title', 'sld-subtitle', 'sld-author', 'sld-width',
+      'sld-title-lh', 'sld-subtitle-lh', 'sld-title-mt', 'sld-title-mb'].forEach(id => {
+        document.getElementById(id).addEventListener('input', syncAllSliders);
+      });
+
+    // ── Ratio ──────────────────────────────────────────────────────────────
+    document.getElementById('ratio-picker').addEventListener('click', e => {
+      const btn = e.target.closest('.ratio-btn');
+      if (!btn) return;
+      document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cover = document.getElementById('cover-main');
+      cover.style.aspectRatio = btn.dataset.ratio;
+      document.getElementById('ratio-label').textContent = btn.dataset.label;
+      const p = RATIO_PRESETS[btn.dataset.ratio];
+      if (!p) return;
+      cover.style.maxWidth = p.maxWidth;
+      document.getElementById('sld-title').max = p.titleMax;
+      document.getElementById('sld-subtitle').max = p.subtitleMax;
+      document.getElementById('sld-author').max = p.authorMax;
+      const set = (id, v) => document.getElementById(id).value = v;
+      set('sld-label', p.labelSize); set('sld-title', p.titleSize);
+      set('sld-subtitle', p.subtitleSize); set('sld-author', p.authorSize);
+      set('sld-width', p.width);
+      set('sld-title-lh', p.titleLH); set('sld-subtitle-lh', p.subtitleLH);
+      set('sld-title-mt', p.titleMT); set('sld-title-mb', p.titleMB);
+      syncAllSliders();
+      scheduleSaveCover();
+    });
+
+    // ── Presets ────────────────────────────────────────────────────────────
+    const PRESETS = [
+      { name: '海蓝极简', scheme: 6, deco: 'classic', font: 'default' },
+      { name: '智核球体', scheme: 12, deco: 'sphere', font: 'default' },
+      { name: '翠绿球体', scheme: 7, deco: 'sphere', font: 'default' },
+      { name: '玫瑰极简', scheme: 9, deco: 'classic', font: 'misans' },
+      { name: '琥珀极简', scheme: 5, deco: 'classic', font: 'default' },
+      { name: '石墨简约', scheme: 4, deco: 'minimal', font: 'misans' },
+      { name: '琥珀简约', scheme: 5, deco: 'minimal', font: 'misans', vis: { label: false } },
+    ];
+
+    const DECO_LABELS = {
+      classic: '极简几何', clean: '极简净底', cyberpunk: '赛博朋克', sphere: 'AI 球体', minimal: '简约风',
+    };
+
+    function buildThumb(thumb, scheme, deco) {
+      const s = COLOR_SCHEMES[scheme];
+      thumb.style.background = s.bg;
+      const glow = document.createElement('div');
+      glow.style.cssText = `position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 15% 50%,${s.glow1} 0%,transparent 70%)`;
+      thumb.appendChild(glow);
+      if (deco === 'classic') {
+        const line = document.createElement('div'); line.className = 'thumb-line'; thumb.appendChild(line);
+        const circle = document.createElement('div'); circle.className = 'thumb-circle'; thumb.appendChild(circle);
+      } else if (deco === 'cyberpunk') {
+        const scan = document.createElement('div'); scan.className = 'thumb-scan'; thumb.appendChild(scan);
+        const tl = document.createElement('div'); tl.className = 'thumb-hud tl'; tl.style.color = s.accent; thumb.appendChild(tl);
+        const br = document.createElement('div'); br.className = 'thumb-hud br'; br.style.color = s.accent; thumb.appendChild(br);
+        const line = document.createElement('div'); line.className = 'thumb-line';
+        line.style.background = `linear-gradient(to bottom,transparent,${s.accent},transparent)`;
+        thumb.appendChild(line);
+      } else if (deco === 'sphere') {
+        const sphere = document.createElement('div'); sphere.className = 'thumb-sphere'; thumb.appendChild(sphere);
+        const line = document.createElement('div'); line.className = 'thumb-line'; thumb.appendChild(line);
+      } else if (deco === 'clean') {
+        /* 仅配色光晕，无几何示意 */
+      } else if (deco === 'minimal') {
+        const bar = document.createElement('div');
+        bar.style.cssText = 'position:absolute;left:20%;right:20%;top:50%;height:2px;margin-top:-1px;background:rgba(255,255,255,0.35);border-radius:1px';
+        thumb.appendChild(bar);
+      }
+    }
+
+    function getPresetVisibility(preset) {
+      return {
+        label: true,
+        title: true,
+        subtitle: preset.deco === 'minimal' ? false : true,
+        author: preset.deco === 'minimal' ? false : true,
+        ...(preset.vis || {})
+      };
+    }
+
+    function applyPreset(idx) {
+      const p = PRESETS[idx];
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.toggle('active', +b.dataset.scheme === p.scheme));
+      applyColorScheme(p.scheme);
+      document.querySelectorAll('.deco-btn').forEach(b => b.classList.toggle('active', b.dataset.deco === p.deco));
+      applyDecoVis(p.deco);
+      currentDeco = p.deco;
+      buildDecorations(p.deco);
+      const fontId = p.font && FONT_OPTIONS[p.font] ? p.font : DEFAULT_FONT;
+      document.getElementById('sel-font').value = fontId;
+      applyFontChoice(fontId);
+      const targetVis = getPresetVisibility(p);
+      Object.entries(targetVis).forEach(([field, show]) => {
+        if (visState[field] !== show) toggleVis(field);
+      });
+      syncContent();
+      syncAllSliders();
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.toggle('active', +c.dataset.preset === idx));
+      scheduleSaveCover();
+    }
+
+    function initPresets() {
+      const list = document.getElementById('presets-list');
+      PRESETS.forEach((p, i) => {
+        const card = document.createElement('button');
+        card.className = 'preset-card' + (i === 0 ? ' active' : '');
+        card.dataset.preset = i;
+        const thumb = document.createElement('div'); thumb.className = 'preset-thumb';
+        buildThumb(thumb, p.scheme, p.deco);
+        const info = document.createElement('div'); info.className = 'preset-info';
+        const name = document.createElement('span'); name.className = 'preset-name'; name.textContent = p.name;
+        const tags = document.createElement('span'); tags.className = 'preset-tags';
+        tags.textContent = COLOR_SCHEMES[p.scheme].name + ' · ' + DECO_LABELS[p.deco];
+        card.title = [p.name, COLOR_SCHEMES[p.scheme].name, DECO_LABELS[p.deco], FONT_OPTIONS[p.font || DEFAULT_FONT].name].join(' · ');
+        info.append(name, tags);
+        card.append(thumb, info);
+        card.addEventListener('click', () => applyPreset(i));
+        list.appendChild(card);
+      });
+    }
+
+    function normalizeHex(hex) {
+      return (hex || '').trim().toLowerCase();
+    }
+
+    function readNumber(id) {
+      return +document.getElementById(id).value;
+    }
+
+    function getActiveRatioButton() {
+      return document.querySelector('.ratio-btn.active') || document.querySelector('.ratio-btn');
+    }
+
+    function getActiveSchemeButton() {
+      return document.querySelector('.color-btn.active[data-scheme]');
+    }
+
+    function getCurrentBackgroundConfig() {
+      const customBtn = document.getElementById('btn-custom-bg');
+      if (customBtn.classList.contains('active')) {
+        return {
+          type: 'custom',
+          value: normalizeHex(document.getElementById('inp-custom-bg').value),
+        };
+      }
+
+      const activeSchemeBtn = getActiveSchemeButton();
+      const idx = activeSchemeBtn ? +activeSchemeBtn.dataset.scheme : DEFAULT_SCHEME;
+      return {
+        type: 'scheme',
+        index: idx,
+        name: COLOR_SCHEMES[idx].name,
+      };
+    }
+
+    function getDefaultTextColors(backgroundConfig) {
+      if (backgroundConfig.type === 'custom') {
+        return {
+          label: '#ffffff',
+          title: '#ffffff',
+          subtitle: '#ffffff',
+          meta: '#ffffff',
+        };
+      }
+
+      const idx = backgroundConfig.index;
+      const s = COLOR_SCHEMES[idx];
+      const [label, subtitle, meta] = SCHEME_HEX[idx];
+      const titleDefault =
+        (s.title && /^#[0-9a-fA-F]{6}$/.test(s.title)) ? normalizeHex(s.title) : '#ffffff';
+      return {
+        label: normalizeHex(label),
+        title: titleDefault,
+        subtitle: normalizeHex(subtitle),
+        meta: normalizeHex(meta),
+      };
+    }
+
+    // ── Local storage (本机浏览器) ─────────────────────────────────────────
+    const COVER_STORAGE_KEY = 'article-tools-cover-v1';
+    let coverSaveTimer = null;
+
+    function buildFullState() {
+      const ratioBtn = getActiveRatioButton();
+      const bg = getCurrentBackgroundConfig();
+      return {
+        v: 1,
+        ratio: ratioBtn?.dataset.ratio || DEFAULT_RATIO,
+        background: bg.type === 'scheme'
+          ? { type: 'scheme', index: bg.index }
+          : { type: 'custom', value: bg.value },
+        font: getCurrentFontChoice(),
+        deco: currentDeco,
+        content: {
+          label: document.getElementById('inp-label').value,
+          title: document.getElementById('inp-title').value,
+          subtitle: document.getElementById('inp-subtitle').value,
+          author: document.getElementById('inp-author').value,
+        },
+        visibility: { ...visState },
+        sliders: {
+          label: readNumber('sld-label'),
+          title: readNumber('sld-title'),
+          subtitle: readNumber('sld-subtitle'),
+          author: readNumber('sld-author'),
+          width: readNumber('sld-width'),
+          titleLH: readNumber('sld-title-lh'),
+          subtitleLH: readNumber('sld-subtitle-lh'),
+          titleMT: readNumber('sld-title-mt'),
+          titleMB: readNumber('sld-title-mb'),
+        },
+        textColors: {
+          label: normalizeHex(document.getElementById('clr-label').value),
+          title: normalizeHex(document.getElementById('clr-title').value),
+          subtitle: normalizeHex(document.getElementById('clr-subtitle').value),
+          meta: normalizeHex(document.getElementById('clr-meta').value),
+        },
+      };
+    }
+
+    function scheduleSaveCover() {
+      clearTimeout(coverSaveTimer);
+      coverSaveTimer = setTimeout(() => {
+        try {
+          localStorage.setItem(COVER_STORAGE_KEY, JSON.stringify(buildFullState()));
+          const hint = document.getElementById('local-save-hint');
+          if (hint) {
+            hint.style.color = '#16a34a';
+            setTimeout(() => hint.style.removeProperty('color'), 900);
+          }
+        } catch (e) {
+          console.warn('保存配置到本地失败', e);
+        }
+      }, 450);
+    }
+
+    function applyVisibilityFromState(v) {
+      const fields = ['label', 'title', 'subtitle', 'author'];
+      fields.forEach(field => {
+        const show = !v || v[field] !== false;
+        visState[field] = show;
+        const { inputId, selector } = VIS_MAP[field];
+        const btn = document.getElementById('toggle-' + field);
+        const input = document.getElementById(inputId);
+        const el = document.querySelector('#cover-main ' + selector);
+        btn.textContent = show ? '隐藏' : '显示';
+        btn.classList.toggle('on', show);
+        if (input) input.disabled = !show;
+        if (el) el.style.display = show ? '' : 'none';
+      });
+    }
+
+    function applyTextColorsFromState(tc) {
+      if (!tc) return;
+      const map = { label: 'clr-label', title: 'clr-title', subtitle: 'clr-subtitle', meta: 'clr-meta' };
+      const sel = { label: '.label', title: 'h1', subtitle: '.subtitle', meta: '.meta' };
+      Object.keys(map).forEach(k => {
+        if (!tc[k]) return;
+        const inp = document.getElementById(map[k]);
+        if (inp) inp.value = tc[k];
+        const node = document.querySelector('#cover-main ' + sel[k]);
+        if (node) node.style.color = tc[k];
+      });
+    }
+
+    function applyRatioFromState(ratio) {
+      const r = RATIO_PRESETS[ratio] ? ratio : DEFAULT_RATIO;
+      document.querySelectorAll('.ratio-btn').forEach(b => b.classList.toggle('active', b.dataset.ratio === r));
+      const btn = document.querySelector('.ratio-btn[data-ratio="' + r + '"]');
+      const cover = document.getElementById('cover-main');
+      if (!btn) return RATIO_PRESETS[DEFAULT_RATIO];
+      cover.style.aspectRatio = r;
+      document.getElementById('ratio-label').textContent = btn.dataset.label;
+      const p = RATIO_PRESETS[r];
+      cover.style.maxWidth = p.maxWidth || '';
+      document.getElementById('sld-title').max = p.titleMax;
+      document.getElementById('sld-subtitle').max = p.subtitleMax;
+      document.getElementById('sld-author').max = p.authorMax;
+      return p;
+    }
+
+    function applyBackgroundFromState(bg) {
+      const customLbl = document.getElementById('btn-custom-bg');
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      customLbl.classList.remove('active');
+      customLbl.classList.remove('has-custom');
+      customLbl.style.background = '';
+      if (!bg) {
+        document.querySelector('.color-btn[data-scheme="' + DEFAULT_SCHEME + '"]').classList.add('active');
+        applyColorScheme(DEFAULT_SCHEME);
+        return;
+      }
+      if (bg.type === 'custom' && bg.value) {
+        document.getElementById('inp-custom-bg').value = bg.value;
+        customLbl.style.background = bg.value;
+        customLbl.classList.add('has-custom');
+        customLbl.classList.add('active');
+        applyCustomColor(bg.value);
+        return;
+      }
+      const idx = typeof bg.index === 'number' ? bg.index : DEFAULT_SCHEME;
+      const safeIdx = Math.min(Math.max(0, idx), COLOR_SCHEMES.length - 1);
+      const schemeBtn = document.querySelector('.color-btn[data-scheme="' + safeIdx + '"]');
+      if (schemeBtn) schemeBtn.classList.add('active');
+      applyColorScheme(safeIdx);
+    }
+
+    function applySavedState(state) {
+      if (!state || state.v !== 1) return false;
+      const p = applyRatioFromState(state.ratio);
+      const sl = state.sliders || {};
+      const setN = (id, val, fb) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const n = val != null && val !== '' ? +val : NaN;
+        el.value = Number.isFinite(n) ? n : fb;
+      };
+      setN('sld-label', sl.label, p.labelSize);
+      setN('sld-title', sl.title, p.titleSize);
+      setN('sld-subtitle', sl.subtitle, p.subtitleSize);
+      setN('sld-author', sl.author, p.authorSize);
+      setN('sld-width', sl.width, p.width);
+      setN('sld-title-lh', sl.titleLH, p.titleLH);
+      setN('sld-subtitle-lh', sl.subtitleLH, p.subtitleLH);
+      setN('sld-title-mt', sl.titleMT, p.titleMT);
+      setN('sld-title-mb', sl.titleMB, p.titleMB);
+
+      applyBackgroundFromState(state.background);
+
+      const fontId = state.font && FONT_OPTIONS[state.font] ? state.font : DEFAULT_FONT;
+      document.getElementById('sel-font').value = fontId;
+      applyFontChoice(fontId);
+
+      const decoOk = ['classic', 'clean', 'cyberpunk', 'sphere', 'minimal'];
+      const deco = decoOk.includes(state.deco) ? state.deco : DEFAULT_DECO;
+      document.querySelectorAll('.deco-btn').forEach(b => b.classList.toggle('active', b.dataset.deco === deco));
+      currentDeco = deco;
+      buildDecorations(deco);
+
+      const c = state.content || {};
+      if (c.label != null) document.getElementById('inp-label').value = c.label;
+      if (c.title != null) document.getElementById('inp-title').value = c.title;
+      if (c.subtitle != null) document.getElementById('inp-subtitle').value = c.subtitle;
+      if (c.author != null) document.getElementById('inp-author').value = c.author;
+
+      applyVisibilityFromState(state.visibility);
+      applyTextColorsFromState(state.textColors);
+      syncContent();
+      syncAllSliders();
+      return true;
+    }
+
+    function tryLoadSavedCover() {
+      try {
+        const raw = localStorage.getItem(COVER_STORAGE_KEY);
+        if (!raw) return false;
+        return applySavedState(JSON.parse(raw));
+      } catch (e) {
+        console.warn('读取本地配置失败', e);
+        return false;
+      }
+    }
+
+    // ── Reset ──────────────────────────────────────────────────────────────
+    function resetAll() {
+      try {
+        localStorage.removeItem(COVER_STORAGE_KEY);
+      } catch (e) { /* ignore */ }
+      document.getElementById('inp-label').value = DEFAULT.label;
+      document.getElementById('inp-title').value = DEFAULT.title;
+      document.getElementById('inp-subtitle').value = DEFAULT.subtitle;
+      document.getElementById('inp-author').value = DEFAULT.author;
+      syncContent();
+      document.querySelectorAll('.ratio-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.toggle('active', +b.dataset.scheme === 6));
+      document.querySelectorAll('.deco-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+      document.querySelectorAll('.preset-card').forEach((c, i) => c.classList.toggle('active', i === 0));
+      const cover = document.getElementById('cover-main');
+      cover.style.aspectRatio = '1200/480';
+      cover.style.maxWidth = '';
+      document.getElementById('ratio-label').textContent = '5:2 · 1200×480';
+      applyColorScheme(6);
+      const customLbl = document.getElementById('btn-custom-bg');
+      customLbl.style.background = '';
+      customLbl.classList.remove('has-custom');
+      document.getElementById('inp-custom-bg').value = '#1d4ed8';
+      currentDeco = 'classic';
+      buildDecorations('classic');
+      const defaultPresetFont = PRESETS[0]?.font || DEFAULT_FONT;
+      document.getElementById('sel-font').value = defaultPresetFont;
+      applyFontChoice(defaultPresetFont);
+      Object.keys(visState).forEach(f => { if (!visState[f]) toggleVis(f); });
+      const p = RATIO_PRESETS['1200/480'];
+      document.getElementById('sld-title').max = p.titleMax;
+      document.getElementById('sld-subtitle').max = p.subtitleMax;
+      document.getElementById('sld-author').max = p.authorMax;
+      const set = (id, v) => document.getElementById(id).value = v;
+      set('sld-label', p.labelSize); set('sld-title', p.titleSize); set('sld-subtitle', p.subtitleSize);
+      set('sld-author', p.authorSize);
+      set('sld-width', p.width); set('sld-title-lh', p.titleLH); set('sld-subtitle-lh', p.subtitleLH);
+      set('sld-title-mt', p.titleMT); set('sld-title-mb', p.titleMB);
+      syncAllSliders();
+      scheduleSaveCover();
+    }
+
+    // ── Export ─────────────────────────────────────────────────────────────
+    function captureEl(fn) {
+      const el = document.getElementById('cover-main');
+      const prev = el.style.maxWidth;
+      el.style.maxWidth = 'none';
+      const rect = el.getBoundingClientRect();
+      const options = { pixelRatio: 2, width: Math.round(rect.width), height: Math.round(rect.height) };
+      const fontsReady = document.fonts?.ready || Promise.resolve();
+      return fontsReady
+        .then(() => fn(el, options))
+        .finally(() => { el.style.maxWidth = prev; });
+    }
+
+    function exportPng() {
+      captureEl(htmlToImage.toPng).then(url => {
+        const a = document.createElement('a'); a.download = 'cover.png'; a.href = url; a.click();
+      }).catch(err => alert('截图失败：' + err));
+    }
+
+    function copyImage() {
+      captureEl(htmlToImage.toBlob)
+        .then(blob => navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]))
+        .then(() => alert('已复制到剪贴板'))
+        .catch(err => alert('复制失败（若需复制图片，请使用 HTTPS 或 localhost，并允许剪贴板权限）：' + err));
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    initFontPicker();
+    initPresets();
+
+    const layoutRoot = document.querySelector('.layout');
+    if (layoutRoot) {
+      layoutRoot.addEventListener('input', scheduleSaveCover);
+      layoutRoot.addEventListener('change', scheduleSaveCover);
+    }
+
+    if (!tryLoadSavedCover()) {
+      document.getElementById('inp-label').value = DEFAULT.label;
+      document.getElementById('inp-title').value = DEFAULT.title;
+      document.getElementById('inp-subtitle').value = DEFAULT.subtitle;
+      document.getElementById('inp-author').value = DEFAULT.author;
+      syncContent();
+      syncAllSliders();
+      applyPreset(0);
+    } else {
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+    }
+  </script>
+</body>
+
+</html>
