@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公众号排版工作室 V6</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Noto Sans SC','PingFang SC',sans-serif;background:#0b0b0b;color:#e0e0e0;height:100vh;overflow:hidden;display:flex}
+#left{width:440px;min-width:400px;display:flex;flex-direction:column;border-right:1px solid #1e1e1e;background:#111;overflow:hidden}
+#right{flex:1;display:flex;flex-direction:column;align-items:center;overflow:hidden;background:#080808}
+.hdr{padding:14px 18px;border-bottom:1px solid #1e1e1e;flex-shrink:0;display:flex;align-items:center;gap:10px}
+.logo{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:900}
+.sec{padding:10px 18px;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+.sec-label{font-size:9px;color:#555;margin-bottom:6px;font-weight:700;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center}
+.sec-label .hint{color:#333;font-weight:400;letter-spacing:0;font-size:9px}
+
+/* 风格按钮 */
+.grp{margin-bottom:6px}
+.grp:last-child{margin-bottom:0}
+.grp-title{font-size:9px;color:#3a3a3a;margin-bottom:4px;font-weight:700;letter-spacing:1.5px}
+.grp-row{display:flex;flex-wrap:wrap;gap:4px}
+.sbtn{background:transparent;border:1px solid #1e1e1e;border-radius:14px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.sbtn.act{background:#222}
+.sbtn .dot{width:6px;height:6px;border-radius:50%}
+.sbtn span{font-size:11px;color:#666;font-weight:400}
+.sbtn.act span{color:#fff;font-weight:600}
+
+/* 品牌色 */
+.color-row{display:flex;align-items:center;gap:6px}
+.color-row label{font-size:9px;color:#555;font-weight:700;letter-spacing:1px;flex-shrink:0}
+.color-row input[type=color]{width:24px;height:24px;border:none;border-radius:4px;cursor:pointer;background:transparent;padding:0}
+.color-row input[type=text]{flex:1;background:#1a1a1a;border:1px solid #222;border-radius:5px;padding:4px 8px;color:#888;font-size:11px;outline:none;font-family:monospace}
+.color-row button{background:#1e1e1e;border:none;border-radius:4px;padding:3px 7px;color:#666;font-size:9px;cursor:pointer}
+
+/* 图片台 */
+#img-bay{max-height:200px;overflow-y:auto}
+#img-bay::-webkit-scrollbar{width:4px}
+#img-bay::-webkit-scrollbar-thumb{background:#222;border-radius:2px}
+.img-add{width:100%;background:#161616;border:1px dashed #2a2a2a;border-radius:6px;padding:10px;cursor:pointer;color:#555;font-size:11px;text-align:center;transition:all .15s}
+.img-add:hover{border-color:#3a3a3a;color:#777;background:#1a1a1a}
+.img-add.dragover{border-color:#4a90e2;color:#4a90e2;background:#1a2230}
+.img-list{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.img-item{display:flex;align-items:center;gap:8px;background:#161616;border:1px solid #1e1e1e;border-radius:6px;padding:6px 8px;font-size:11px}
+.img-thumb{width:32px;height:32px;border-radius:4px;object-fit:cover;flex-shrink:0;background:#222}
+.img-meta{flex:1;min-width:0}
+.img-num{color:#888;font-weight:700;font-family:monospace}
+.img-name{color:#666;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.img-role{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:3px;color:#888;font-size:10px;padding:2px 5px;outline:none;cursor:pointer}
+.img-cap{width:100%;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:3px;color:#777;font-size:10px;padding:3px 6px;outline:none;margin-top:3px;font-family:inherit}
+.img-del{background:transparent;border:none;color:#444;cursor:pointer;font-size:14px;padding:2px 4px}
+.img-del:hover{color:#888}
+
+/* 插入按钮 */
+.insert-row{display:flex;flex-wrap:wrap;gap:4px}
+.ins-btn{background:#161616;border:1px solid #1e1e1e;border-radius:12px;padding:4px 10px;cursor:pointer;color:#777;font-size:10px;transition:all .15s}
+.ins-btn:hover{background:#1e1e1e;color:#aaa;border-color:#2a2a2a}
+.ins-btn.ins-img{color:#5a8fa0;border-color:#1f2a30}
+.ins-btn.ins-img:hover{color:#7eb6c8;border-color:#2a3a45;background:#16222a}
+.img-insert{background:#1a3a45;border:1px solid #2a4a5a;border-radius:4px;color:#7eb6c8;font-size:10px;padding:3px 8px;cursor:pointer;margin-right:4px;font-weight:600}
+.img-insert:hover{background:#234a5a;color:#9bc8da}
+
+/* 编辑器 */
+#editor-wrap{flex:1;display:flex;flex-direction:column;padding:8px 18px;min-height:0}
+.ed-label{font-size:9px;color:#555;margin-bottom:5px;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between}
+#editor{flex:1;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:8px;padding:12px;color:#aaa;font-size:12px;line-height:1.75;resize:none;outline:none;font-family:'SF Mono','Fira Code',monospace;min-height:120px}
+
+/* 复制 */
+#copy-wrap{padding:8px 18px 12px;border-top:1px solid #1e1e1e;flex-shrink:0}
+#copy-btn{width:100%;padding:11px;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all .3s;letter-spacing:1px}
+#copy-hint{font-size:9px;color:#333;text-align:center;margin:5px 0 0;line-height:1.5}
+
+/* 右侧预览 */
+.prev-bar{width:100%;padding:8px 18px;border-bottom:1px solid #131313;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.prev-bar .pl{font-size:10px;color:#2a2a2a;letter-spacing:1px}
+.style-tag{font-size:10px;color:#444;background:#131313;padding:3px 10px;border-radius:8px}
+.style-tag .tdot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:5px;vertical-align:middle}
+#phone-wrap{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:16px;overflow:auto;width:100%}
+#phone{width:375px;background:#1a1a1a;border-radius:40px;padding:12px;box-shadow:0 4px 80px rgba(0,0,0,.6);flex-shrink:0}
+.phone-top{border-radius:30px 30px 0 0;overflow:hidden}
+.notch{display:flex;justify-content:center;padding:8px 0 6px}
+.notch-bar{width:72px;height:22px;background:#1a1a1a;border-radius:11px}
+.wx-bar{padding:6px 0;text-align:center;font-size:13px;font-weight:600;letter-spacing:.5px}
+#article{padding:16px 18px 36px;min-height:480px;overflow-y:auto;max-height:calc(100vh - 200px)}
+#article::-webkit-scrollbar{width:4px}
+#article::-webkit-scrollbar-thumb{background:#0003;border-radius:2px}
+.phone-bot{border-radius:0 0 30px 30px;padding:12px 0;text-align:center}
+.home-bar{width:100px;height:4px;opacity:.1;border-radius:2px;margin:0 auto}
+
+/* 折叠区域 */
+.collapsible{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:4px}
+.collapsible::after{content:"▾";color:#444;font-size:8px;transition:transform .2s;display:inline-block}
+.collapsible.collapsed::after{transform:rotate(-90deg)}
+</style>
+</head>
+<body>
+
+<div id="left">
+  <div class="hdr">
+    <div class="logo" id="logo-icon">文</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#fff">公众号排版工作室</div>
+      <div style="font-size:9px;color:#444;margin-top:1px">V6 · 12 风格 · 图片系统</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">风格预设</div>
+    <div id="style-panel"></div>
+  </div>
+
+  <div class="sec">
+    <div class="color-row">
+      <label>品牌色</label>
+      <input type="color" id="bc-picker" value="#7ea8b8">
+      <input type="text" id="bc-text" placeholder="#HEX">
+      <button id="bc-reset" style="display:none">×</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">
+      <span class="collapsible" id="img-toggle">图片台</span>
+      <span class="hint" id="img-count">0 张</span>
+    </div>
+    <div class="col-content">
+      <div class="img-add" id="img-add">＋ 拖入图片 / 点击上传<br><span style="font-size:9px;color:#444">上传后点「插入」按钮放入文章</span></div>
+      <input type="file" id="img-input" accept="image/*" multiple style="display:none">
+      <div class="img-list" id="img-list"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">
+      <span>快捷插入</span>
+      <span class="hint">点击插入到光标位置</span>
+    </div>
+    <div class="insert-row">
+      <button class="ins-btn" data-ins="lead">导语</button>
+      <button class="ins-btn" data-ins="tip">提示</button>
+      <button class="ins-btn" data-ins="note">注意</button>
+      <button class="ins-btn" data-ins="warn">警告</button>
+      <button class="ins-btn" data-ins="pull">金句</button>
+      <button class="ins-btn" data-ins="table">表格</button>
+      <button class="ins-btn" data-ins="sign">落款</button>
+      <button class="ins-btn ins-img" data-ins="fig">＋配图</button>
+      <button class="ins-btn ins-img" data-ins="cover">＋封面图</button>
+      <button class="ins-btn ins-img" data-ins="quote">＋引用图</button>
+      <button class="ins-btn ins-img" data-ins="duo">＋双图</button>
+      <button class="ins-btn ins-img" data-ins="trio">＋三图</button>
+    </div>
+  </div>
+
+  <div id="editor-wrap">
+    <div class="ed-label"><span>文章内容（Markdown）</span><span id="char-count" style="color:#333"></span></div>
+    <textarea id="editor" placeholder="粘贴文章内容..."></textarea>
+  </div>
+
+  <div id="copy-wrap">
+    <button id="copy-btn">复制全文 → 粘贴到公众号</button>
+    <p id="copy-hint">粘贴到公众号后，点击图片占位卡槽即可插入实际图片</p>
+  </div>
+</div>
+
+<div id="right">
+  <div class="prev-bar"><span class="pl">实时预览</span><span class="style-tag" id="style-tag"></span></div>
+  <div id="phone-wrap">
+    <div id="phone">
+      <div class="phone-top" id="phone-top">
+        <div class="notch"><div class="notch-bar"></div></div>
+        <div class="wx-bar" id="wx-bar">公众号文章</div>
+      </div>
+      <div id="article"></div>
+      <div class="phone-bot" id="phone-bot"><div class="home-bar" id="home-bar"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// 风格定义 — V6 增加 imgBorder（图片框） / imgCap（图注） / codeStyle
+// ═══════════════════════════════════════════════
+const S={
+  elegant:{name:"素雅书卷",dot:"#7ea8b8",bg:"#f8f7f5",text:"#3d3d3d",hd:"#2b2b2b",ac:"#7ea8b8",al:"#edf3f6",mu:"#999",dv:"#ddd8d0",code:"light"},
+  business:{name:"商务克制",dot:"#2b5ea7",bg:"#fff",text:"#333",hd:"#1a1a1a",ac:"#2b5ea7",al:"#eef3fa",mu:"#888",dv:"#e5e5e5",code:"light"},
+  warm:{name:"文艺温暖",dot:"#c47d5a",bg:"#faf6f1",text:"#4a4a4a",hd:"#3a3a3a",ac:"#c47d5a",al:"#f5ece4",mu:"#a09080",dv:"#e5ddd3",code:"light"},
+  sunrise:{name:"清晨日光",dot:"#e8913a",bg:"#fffcf7",text:"#42392e",hd:"#2c2318",ac:"#e8913a",al:"#fff4e6",mu:"#a08c70",dv:"#efe5d6",code:"light"},
+  tech:{name:"科技极简",dot:"#0ea5e9",bg:"#fff",text:"#1a1a1a",hd:"#000",ac:"#0ea5e9",al:"#f0f9ff",mu:"#6b7280",dv:"#e5e7eb",code:"dark"},
+  chinese:{name:"国风雅韵",dot:"#b5453a",bg:"#f9f5ef",text:"#4a3f35",hd:"#2d2419",ac:"#b5453a",al:"#f0e9df",mu:"#9a8e7f",dv:"#d9cfc2",sub:"#8b7355",code:"light"},
+  magazine:{name:"潮流杂志",dot:"#ff4757",bg:"#fff",text:"#1a1a1a",hd:"#000",ac:"#ff4757",al:"#fff5f5",mu:"#777",dv:"#eee",sub:"#ffc312",code:"light"},
+  forest:{name:"知性墨绿",dot:"#2d6a4f",bg:"#f7faf8",text:"#3a3a3a",hd:"#1b3a2a",ac:"#2d6a4f",al:"#eaf5ee",mu:"#7a9485",dv:"#d4e4da",code:"light"},
+  aurora:{name:"星辰旷野",dot:"#0891b2",bg:"#f0f4f8",text:"#334155",hd:"#0f172a",ac:"#0891b2",al:"#e0f7fa",mu:"#64748b",dv:"#cbd5e1",sub:"#7c3aed",code:"dark"},
+  morandi:{name:"莫兰迪灰",dot:"#b8a9a0",bg:"#f4f0ec",text:"#6b6560",hd:"#4a4540",ac:"#b8a9a0",al:"#ece6e0",mu:"#a09890",dv:"#ddd5cc",code:"light"},
+  mint:{name:"薄荷清新",dot:"#10b981",bg:"#f7fdfb",text:"#334155",hd:"#0f172a",ac:"#10b981",al:"#ecfdf5",mu:"#64748b",dv:"#d1fae5",code:"light"},
+  neon:{name:"电子玫瑰",dot:"#ec4899",bg:"#fdf2f8",text:"#3b2040",hd:"#1e1030",ac:"#ec4899",al:"#fce7f3",mu:"#9a7bab",dv:"#f3d0e8",sub:"#8b5cf6",code:"dark"},
+};
+
+const groups=[
+  {label:"经典",keys:["elegant","business","warm","sunrise"]},
+  {label:"专业",keys:["tech","chinese","magazine","forest"]},
+  {label:"创意",keys:["aurora","morandi","mint","neon"]}
+];
+
+// 全局状态
+let curKey="elegant", brandColor="";
+let images=[]; // {id, name, dataUrl, role, caption}
+let imgIdCounter=1;
+
+// ═══════════════════════════════════════════════
+// Markdown 解析器 — 扩展支持新元素
+// ═══════════════════════════════════════════════
+function parseMD(text){
+  const lines=text.split("\n");
+  const tokens=[];
+  let i=0;
+  while(i<lines.length){
+    const l=lines[i];
+    if(!l.trim()){i++;continue;}
+
+    // 代码块
+    if(l.trim().startsWith("```")){
+      const lang=l.trim().slice(3).trim();
+      const c=[];i++;
+      while(i<lines.length&&!lines[i].trim().startsWith("```")){c.push(lines[i]);i++;}
+      tokens.push({t:"code",c:c.join("\n"),lang});i++;continue;
+    }
+
+    // 提示框 !!! type 标题
+    const callMatch=l.match(/^!!!\s+(tip|note|warn|info)(?:\s+(.+))?/);
+    if(callMatch){
+      const type=callMatch[1];
+      const title=callMatch[2]||"";
+      const c=[];i++;
+      while(i<lines.length&&!lines[i].trim().startsWith("!!!")){c.push(lines[i]);i++;}
+      tokens.push({t:"callout",ctype:type,title,c:c.join("\n").trim()});
+      if(i<lines.length)i++;
+      continue;
+    }
+
+    // 落款 --- 开头但内容里有 "作者" 或 "公众号"
+    if(/^---\s*作者[:：]/.test(l)||/^---\s*signature/i.test(l)){
+      tokens.push({t:"sign",c:l.replace(/^---\s*/,"").trim()});
+      i++;continue;
+    }
+
+    // 普通分隔线
+    if(/^(-{3,}|\*{3,}|_{3,})$/.test(l.trim())){tokens.push({t:"hr"});i++;continue;}
+
+    // 导语 >>> 内容
+    if(l.trim().startsWith(">>> ")){
+      const q=[];
+      while(i<lines.length&&lines[i].trim().startsWith(">>> ")){
+        q.push(lines[i].trim().slice(4));i++;
+      }
+      tokens.push({t:"lead",c:q.join(" ")});continue;
+    }
+
+    // 标题
+    const h=l.match(/^(#{1,3})\s+(.+)/);
+    if(h){tokens.push({t:"h"+h[1].length,c:h[2].trim()});i++;continue;}
+
+    // 引用：支持 > / >  / 多段（空行写为单独一行 >），与 CommonMark 块引用一致
+    if(/^\s*>/.test(l)){
+      const q=[];
+      while(i<lines.length){
+        const m=lines[i].match(/^\s*>\s?(.*)$/);
+        if(!m)break;
+        q.push(m[1]);
+        i++;
+      }
+      tokens.push({t:"bq",c:q.join("\n")});continue;
+    }
+
+    // 金句 ‖ 内容 ‖
+    const pullMatch=l.match(/^‖\s*(.+?)\s*‖$/);
+    if(pullMatch){tokens.push({t:"pull",c:pullMatch[1]});i++;continue;}
+
+    // 表格
+    if(l.includes("|")&&i+1<lines.length&&/^[\s|:-]+$/.test(lines[i+1])){
+      const headers=l.split("|").map(s=>s.trim()).filter(Boolean);
+      i+=2;
+      const rows=[];
+      while(i<lines.length&&lines[i].includes("|")){
+        rows.push(lines[i].split("|").map(s=>s.trim()).filter(Boolean));
+        i++;
+      }
+      tokens.push({t:"table",headers,rows});continue;
+    }
+
+    // 图片占位 ![[1]] 或 ![[1|cover]] 或 ![[1,2|duo]]
+    const imgPlace=l.trim().match(/^!\[\[([0-9,\s]+)(?:\|(\w+))?\]\]$/);
+    if(imgPlace){
+      const ids=imgPlace[1].split(",").map(s=>parseInt(s.trim())).filter(n=>!isNaN(n));
+      let role=imgPlace[2]||"fig";
+      if(!imgPlace[2]){
+        if(ids.length===2)role="duo";
+        else if(ids.length===3)role="trio";
+      }
+      tokens.push({t:"img",ids,role});i++;continue;
+    }
+
+    // 标准 Markdown 图片 ![alt](url "caption")
+    const stdImg=l.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/);
+    if(stdImg){
+      tokens.push({t:"imgUrl",alt:stdImg[1],url:stdImg[2],cap:stdImg[3]||""});i++;continue;
+    }
+
+    // 列表
+    if(/^\s*[-*+]\s+/.test(l)){
+      const a=[];
+      while(i<lines.length&&/^\s*[-*+]\s+/.test(lines[i])){a.push(lines[i].replace(/^\s*[-*+]\s+/,""));i++;}
+      tokens.push({t:"ul",items:a});continue;
+    }
+    if(/^\s*\d+\.\s+/.test(l)){
+      const a=[];
+      while(i<lines.length&&/^\s*\d+\.\s+/.test(lines[i])){a.push(lines[i].replace(/^\s*\d+\.\s+/,""));i++;}
+      tokens.push({t:"ol",items:a});continue;
+    }
+
+    // 段落
+    const p=[];
+    while(i<lines.length&&lines[i].trim()!==""&&
+          !lines[i].trim().startsWith("#")&&
+          !/^\s*>/.test(lines[i])&&
+          !lines[i].trim().startsWith(">>>")&&
+          !lines[i].trim().startsWith("```")&&
+          !lines[i].trim().startsWith("!!!")&&
+          !lines[i].trim().startsWith("---")&&
+          !/^(-{3,}|\*{3,}|_{3,})$/.test(lines[i].trim())&&
+          !/^\s*[-*+]\s+/.test(lines[i])&&
+          !/^\s*\d+\.\s+/.test(lines[i])&&
+          !/^!\[/.test(lines[i].trim())&&
+          !/^‖/.test(lines[i].trim())){
+      p.push(lines[i]);i++;
+    }
+    if(p.length)tokens.push({t:"p",c:p.join(" ")});
+  }
+  return tokens;
+}
+
+// 由 render() 在每次渲染前设置：preview=可点链接，export=复制到公众号时改为「文案 url」纯文本
+let inlLinkMode = 'preview';
+function inl(t,s){
+  let h=t;
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong style="color:'+s.ac+';font-weight:700">$1</strong>');
+  h=h.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g,'<em style="font-style:italic">$1</em>');
+  h=h.replace(/==(.+?)==/g,function(_,m){return '<span style="border-bottom:2px solid '+s.ac+';font-weight:600;color:'+s.hd+';padding-bottom:1px">'+m+'</span>';});
+  h=h.replace(/`(.+?)`/g,'<code style="background:'+s.al+';color:'+s.ac+';padding:2px 6px;border-radius:3px;font-size:13px">$1</code>');
+  if(inlLinkMode==='export'){
+    h=h.replace(/\[(.+?)\]\((.+?)\)/g,function(_,text,url){return text+' '+url;});
+  }else{
+    h=h.replace(/\[(.+?)\]\((.+?)\)/g,'<a style="color:'+s.ac+';text-decoration:none;border-bottom:1px solid '+s.ac+'">$1</a>');
+  }
+  return h;
+}
+
+// ═══════════════════════════════════════════════
+// H2 标题 (沿用 V5)
+// ═══════════════════════════════════════════════
+const H2={
+  elegant:(c,s)=>'<section style="margin:36px 0 20px;background:'+s.al+';border-left:4px solid '+s.ac+';padding:12px 18px"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6;letter-spacing:1px">'+inl(c,s)+'</h2></section>',
+  business:(c,s)=>'<section style="margin:36px 0 20px;border-bottom:1px solid '+s.dv+';padding-bottom:12px"><section style="border-left:3px solid '+s.ac+';padding-left:4px"><section style="border-left:3px solid '+s.ac+'44;padding-left:12px"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6">'+inl(c,s)+'</h2></section></section></section>',
+  warm:(c,s)=>'<section style="margin:40px 0 20px;text-align:center"><section style="border-top:1px solid '+s.ac+'88;padding-top:16px"><h2 style="font-size:17px;font-weight:700;color:'+s.ac+';margin:0;line-height:1.6;letter-spacing:3px">'+inl(c,s)+'</h2></section><section style="border-bottom:1px solid '+s.ac+'88;margin-top:16px"></section></section>',
+  sunrise:(c,s)=>'<section style="margin:36px 0 20px;background:'+s.al+';border-left:5px solid '+s.ac+';padding:12px 18px"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6;letter-spacing:1px">'+inl(c,s)+'</h2></section>',
+  tech:(c,s)=>'<section style="margin:36px 0 20px;padding-bottom:10px;border-bottom:2px solid '+s.ac+'"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6">'+inl(c,s)+'</h2></section>',
+  chinese:(c,s)=>{const dc=s.sub||"#8b7355";return '<section style="margin:40px 0 20px;text-align:center"><p style="font-size:11px;color:'+dc+';letter-spacing:10px;margin:0 0 8px">━━━━</p><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6;letter-spacing:4px">'+inl(c,s)+'</h2><p style="font-size:11px;color:'+dc+';letter-spacing:10px;margin:8px 0 0">━━━━</p></section>';},
+  magazine:(c,s)=>'<section style="margin:36px 0 20px"><h2 style="font-size:20px;font-weight:900;color:'+s.hd+';margin:0 0 8px;line-height:1.4;letter-spacing:1px">'+inl(c,s)+'</h2><section style="width:40px;border-top:4px solid '+s.ac+'"></section></section>',
+  forest:(c,s)=>'<section style="margin:36px 0 20px;background:'+s.al+';border-left:5px solid '+s.ac+';padding:12px 18px"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6;letter-spacing:1px">'+inl(c,s)+'</h2></section>',
+  aurora:(c,s)=>'<section style="margin:36px 0 20px"><h2 style="font-size:17px;font-weight:700;color:'+s.hd+';margin:0 0 10px;line-height:1.6;letter-spacing:1px">'+inl(c,s)+'</h2><section style="display:flex"><section style="height:3px;background:'+s.ac+';flex:3"></section><section style="height:3px;background:'+(s.sub||"#7c3aed")+';flex:2"></section></section></section>',
+  morandi:(c,s)=>'<section style="margin:36px 0 20px;text-align:center"><section style="display:flex;align-items:center"><section style="flex:1;height:1px;background:'+s.dv+'"></section><section style="width:5px;height:5px;border-radius:50%;background:'+s.ac+';margin:0 14px;flex-shrink:0"></section><h2 style="font-size:16px;font-weight:600;color:'+s.hd+';margin:0;line-height:1.6;letter-spacing:2px;white-space:nowrap;flex-shrink:0">'+inl(c,s)+'</h2><section style="width:5px;height:5px;border-radius:50%;background:'+s.ac+';margin:0 14px;flex-shrink:0"></section><section style="flex:1;height:1px;background:'+s.dv+'"></section></section></section>',
+  mint:(c,s)=>'<section style="margin:36px 0 20px;padding-bottom:10px;border-bottom:2px solid '+s.al+'"><section style="display:flex;align-items:center;gap:10px"><section style="width:8px;height:8px;border-radius:50%;background:'+s.ac+';flex-shrink:0"></section><h2 style="font-size:16px;font-weight:700;color:'+s.hd+';margin:0;line-height:1.6">'+inl(c,s)+'</h2></section></section>',
+  neon:(c,s)=>'<section style="margin:36px 0 20px"><h2 style="font-size:17px;font-weight:700;color:'+s.ac+';margin:0 0 10px;line-height:1.6;letter-spacing:1px">'+inl(c,s)+'</h2><section style="display:flex"><section style="height:2px;background:'+s.ac+';flex:1"></section><section style="height:2px;background:'+(s.sub||"#8b5cf6")+';flex:1"></section></section></section>',
+};
+
+// ═══════════════════════════════════════════════
+// 引用块 (沿用 V5)
+// ═══════════════════════════════════════════════
+function bqPs(c,s,pStyle){
+  const parts=c.split(/\n{2,}/).map(function(x){return x.trim();}).filter(Boolean);
+  if(!parts.length)return '';
+  return parts.map(function(part,i){
+    const mt=i>0?';margin-top:0.75em':'';
+    return '<p style="'+pStyle+mt+'">'+inl(part,s)+'</p>';
+  }).join('');
+}
+const BQ={
+  elegant:(c,s)=>'<section style="margin:24px 0;padding:18px 20px 18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+'">'+bqPs(c,s,'color:#666;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  business:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+'"><section style="display:flex;gap:10px;align-items:flex-start"><section style="color:'+s.ac+';font-size:28px;font-weight:900;line-height:1;flex-shrink:0;font-family:Georgia,serif;opacity:.4">❝</section><section style="flex:1;min-width:0">'+bqPs(c,s,'color:#555;font-size:14px;line-height:1.8;margin:0')+'</section></section></section>',
+  warm:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+'">'+bqPs(c,s,'color:#6a5a4a;font-size:14px;line-height:1.8;margin:0;font-style:italic')+'</section>',
+  sunrise:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:4px solid '+s.ac+'">'+bqPs(c,s,'color:#5a4a38;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  tech:(c,s)=>'<section style="margin:24px 0;padding:16px 20px;background:'+s.al+';border-left:3px solid '+s.ac+'">'+bqPs(c,s,'color:#445;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  chinese:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+'">'+bqPs(c,s,'color:#5a4f44;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  magazine:(c,s)=>'<section style="margin:28px 0;padding:18px 0;border-top:3px solid #000;border-bottom:3px solid #000">'+bqPs(c,s,'color:'+s.ac+';font-size:15px;font-weight:700;line-height:1.6;margin:0')+'</section>',
+  forest:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:4px solid '+s.ac+'">'+bqPs(c,s,'color:#4a6a55;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  aurora:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+';border-right:3px solid '+(s.sub||"#7c3aed")+'">'+bqPs(c,s,'color:#475569;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  morandi:(c,s)=>'<section style="margin:28px 0;padding:16px 0;border-top:1px solid '+s.dv+';border-bottom:1px solid '+s.dv+';text-align:center">'+bqPs(c,s,'color:'+s.mu+';font-size:14px;line-height:1.8;margin:0;font-style:italic')+'</section>',
+  mint:(c,s)=>'<section style="margin:24px 0;padding:16px 20px;background:'+s.al+';border-left:4px solid '+s.ac+'">'+bqPs(c,s,'color:#475569;font-size:14px;line-height:1.8;margin:0')+'</section>',
+  neon:(c,s)=>'<section style="margin:24px 0;padding:18px 22px;background:'+s.al+';border-left:3px solid '+s.ac+';border-right:3px solid '+(s.sub||"#8b5cf6")+'">'+bqPs(c,s,'color:#5a3e6a;font-size:14px;line-height:1.8;margin:0')+'</section>',
+};
+
+// 分隔符 — 统一为线条，便于在预览与公众号中识别
+const HR={
+  elegant:s=>'<section style="margin:32px 0;border-top:1px solid '+s.dv+'"></section>',
+  business:s=>'<section style="margin:36px auto;width:72px;border-top:2px solid '+s.ac+'"></section>',
+  warm:s=>'<section style="margin:36px 0;border-top:1px solid '+s.ac+'66"></section>',
+  sunrise:s=>'<section style="margin:32px 0;border-top:2px solid '+s.ac+'"></section>',
+  tech:s=>'<section style="margin:36px 0;border-top:1px dashed '+s.dv+'"></section>',
+  chinese:s=>'<section style="margin:36px 0;border-top:1px solid '+(s.sub||"#8b7355")+'55"></section>',
+  magazine:s=>'<section style="margin:36px 0;border-top:3px solid #000"></section>',
+  forest:s=>'<section style="margin:32px 0;border-top:2px solid '+s.ac+'"></section>',
+  aurora:s=>'<section style="margin:32px 0;display:flex"><section style="height:2px;background:'+s.ac+';flex:3"></section><section style="height:2px;background:'+(s.sub||"#7c3aed")+';flex:2"></section></section>',
+  morandi:s=>'<section style="margin:32px 0;border-top:1px solid '+s.dv+'"></section>',
+  mint:s=>'<section style="margin:32px 0;border-top:2px solid '+s.ac+'"></section>',
+  neon:s=>'<section style="margin:32px 0;display:flex"><section style="height:2px;background:'+s.ac+';flex:1"></section><section style="height:2px;background:'+(s.sub||"#8b5cf6")+';flex:1"></section></section>',
+};
+
+// 列表
+function renderUL(items,s,k){
+  const bp='color:'+s.text+';font-size:15px;line-height:2;letter-spacing:1px';
+  const sq=k==="magazine"||k==="tech";
+  return '<section style="margin:0 0 24px">'+items.map(it=>'<section style="display:flex;margin-bottom:8px"><section style="width:6px;height:6px;'+(sq?'border-radius:1px':'border-radius:50%')+';background:'+s.ac+';margin-right:10px;flex-shrink:0;margin-top:14px"></section><p style="'+bp+';margin:0">'+inl(it,s)+'</p></section>').join("")+'</section>';
+}
+function renderOL(items,s){
+  const bp='color:'+s.text+';font-size:15px;line-height:2;letter-spacing:1px';
+  return '<section style="margin:0 0 24px">'+items.map((it,i)=>'<section style="display:flex;margin-bottom:10px;align-items:flex-start"><section style="min-width:20px;height:20px;background:'+s.ac+';color:#fff;border-radius:50%;font-size:11px;font-weight:700;text-align:center;line-height:20px;margin-right:10px;flex-shrink:0;margin-top:9px">'+(i+1)+'</section><p style="'+bp+';margin:0;flex:1">'+inl(it,s)+'</p></section>').join("")+'</section>';
+}
+
+// ═══════════════════════════════════════════════
+// 图片系统 V6 — 12 风格 × 5 角色
+// ═══════════════════════════════════════════════
+// 每个风格定义一套图片样式变量，5 种角色用同一套变量套出
+// 样式变量：frame(框样式), capStyle(图注样式), gap(双图间距)
+
+const IMG={
+  // 素雅书卷：细线框紧贴图片
+  elegant:{
+    frame:s=>'border:1px solid '+s.ac+'b3;padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:8px 0 0;letter-spacing:1px;line-height:1.6',
+    capPrefix:'— ',capSuffix:' —',
+    gap:'8px',gapColor:'transparent',
+  },
+  // 商务克制：顶部细线 + FIG.编号
+  business:{
+    frame:s=>'border-top:2px solid '+s.ac+';padding-top:8px;font-size:0;line-height:0',
+    cap:s=>'text-align:left;color:'+s.mu+';font-size:12px;margin:8px 0 0;letter-spacing:.5px;line-height:1.6',
+    capPrefix:'',capSuffix:'',capNum:true,
+    gap:'10px',gapColor:'transparent',
+  },
+  // 文艺温暖：暖色细线紧贴
+  warm:{
+    frame:s=>'border:1px solid '+s.ac+'b3;padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:10px 0 0;font-style:italic;letter-spacing:1px;line-height:1.6',
+    capPrefix:'',capSuffix:'',
+    gap:'10px',gapColor:'transparent',
+  },
+  // 清晨日光：暖色细线圆角紧贴
+  sunrise:{
+    frame:s=>'border:1px solid '+s.ac+'99;padding:0;border-radius:4px;overflow:hidden;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:8px 0 0;line-height:1.6',
+    capPrefix:'◈ ',capSuffix:'',
+    gap:'8px',gapColor:'transparent',
+  },
+  // 科技极简：顶部蓝色短线
+  tech:{
+    frame:s=>'border-top:2px solid '+s.ac+';padding-top:0;margin-top:0;font-size:0;line-height:0',
+    cap:s=>'text-align:left;color:'+s.mu+';font-size:11px;margin:8px 0 0;font-family:Menlo,Monaco,monospace;letter-spacing:.5px;line-height:1.6',
+    capPrefix:'',capSuffix:'',capNum:true,capNumFmt:'FIG. ',
+    gap:'4px',gapColor:'transparent',
+  },
+  // 国风雅韵：朱砂色细线紧贴
+  chinese:{
+    frame:s=>'border:1px solid '+s.ac+';padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:10px 0 0;letter-spacing:2px;line-height:1.6',
+    capPrefix:'◇ ',capSuffix:' ◇',
+    gap:'10px',gapColor:'transparent',
+  },
+  // 潮流杂志：4px 黑色粗框紧贴
+  magazine:{
+    frame:s=>'border:3px solid #000;padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:left;color:'+s.ac+';font-size:13px;font-weight:700;margin:10px 0 0;letter-spacing:.5px;line-height:1.6',
+    capPrefix:'',capSuffix:'',capNum:true,capNumFmt:'',capBigNum:true,
+    gap:'4px',gapColor:'#000',
+  },
+  // 知性墨绿：墨绿细线紧贴
+  forest:{
+    frame:s=>'border:1px solid '+s.ac+'99;padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:8px 0 0;letter-spacing:1px;line-height:1.6',
+    capPrefix:'',capSuffix:'',
+    gap:'8px',gapColor:'transparent',
+  },
+  // 星辰旷野：双色边框（青+紫）
+  aurora:{
+    frame:s=>'border-top:2px solid '+s.ac+';border-bottom:2px solid '+(s.sub||'#7c3aed')+';padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:8px 0 0;letter-spacing:1px;line-height:1.6',
+    capPrefix:'',capSuffix:'',
+    gap:'8px',gapColor:'transparent',
+  },
+  // 莫兰迪灰：无边框
+  morandi:{
+    frame:s=>'padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:11px;margin:12px 0 0;letter-spacing:2px;opacity:.7;font-style:italic;line-height:1.6',
+    capPrefix:'',capSuffix:'',
+    gap:'12px',gapColor:'transparent',
+  },
+  // 薄荷清新：圆角紧贴
+  mint:{
+    frame:s=>'border:1px solid '+s.ac+'8c;padding:0;border-radius:8px;overflow:hidden;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.mu+';font-size:12px;margin:8px 0 0;line-height:1.6',
+    capPrefix:'✿ ',capSuffix:'',
+    gap:'8px',gapColor:'transparent',
+  },
+  // 电子玫瑰：双色边框（粉+紫）
+  neon:{
+    frame:s=>'border-left:3px solid '+s.ac+';border-right:3px solid '+(s.sub||'#8b5cf6')+';padding:0;font-size:0;line-height:0',
+    cap:s=>'text-align:center;color:'+s.ac+';font-size:12px;margin:8px 0 0;font-weight:600;letter-spacing:.5px;line-height:1.6',
+    capPrefix:'',capSuffix:'',
+    gap:'6px',gapColor:'transparent',
+  },
+};
+
+// ═══════════════════════════════════════════════
+// SVG 占位图生成 - 关键技术：用 SVG data URI 作为 <img> 的 src
+// 公众号编辑器会识别 <img> 并允许用户点击替换，替换时外层样式保留
+// ═══════════════════════════════════════════════
+function svgPlaceholder(label, num, accent, bgColor, isQuote, isCover){
+  const w = 800;
+  const h = isCover ? 450 : 600;
+  const ac = accent.replace("#","");
+  const bg = (bgColor || "#f5f5f5").replace("#","");
+
+  // 关键：SVG 内部统一用单引号，避免与外层 HTML 的 src="..." 冲突
+  let labelMark = "";
+  if(isQuote){
+    labelMark = "<rect x='40' y='40' width='130' height='44' rx='4' fill='#"+ac+"'/><text x='105' y='71' font-family='-apple-system,sans-serif' font-size='22' font-weight='700' fill='white' text-anchor='middle'>QUOTE</text>";
+  }else if(isCover){
+    labelMark = "<rect x='40' y='40' width='150' height='44' rx='4' fill='#"+ac+"'/><text x='115' y='71' font-family='-apple-system,sans-serif' font-size='22' font-weight='700' fill='white' text-anchor='middle'>COVER</text>";
+  }
+
+  const cx = w/2;
+  const cy = h/2;
+
+  // 相机图标 + 文字提示
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 "+w+" "+h+"'>"
+    + "<rect width='"+w+"' height='"+h+"' fill='#"+bg+"'/>"
+    + labelMark
+    // 相机图标外框
+    + "<rect x='"+(cx-70)+"' y='"+(cy-90)+"' width='140' height='100' rx='8' fill='none' stroke='#"+ac+"' stroke-width='4'/>"
+    // 相机镜头
+    + "<circle cx='"+cx+"' cy='"+(cy-40)+"' r='28' fill='none' stroke='#"+ac+"' stroke-width='4'/>"
+    + "<circle cx='"+cx+"' cy='"+(cy-40)+"' r='12' fill='#"+ac+"' fill-opacity='0.3'/>"
+    // 相机顶部小凸起
+    + "<rect x='"+(cx-20)+"' y='"+(cy-100)+"' width='40' height='14' rx='3' fill='#"+ac+"'/>"
+    // 主标题：角色 + 编号
+    + "<text x='"+cx+"' y='"+(cy+60)+"' font-family='-apple-system,PingFang SC,sans-serif' font-size='38' font-weight='700' fill='#"+ac+"' text-anchor='middle'>"+label+" "+num+"</text>"
+    // 副标题：操作提示
+    + "<text x='"+cx+"' y='"+(cy+105)+"' font-family='-apple-system,PingFang SC,sans-serif' font-size='22' fill='#"+ac+"' fill-opacity='0.65' text-anchor='middle'>点击此处替换为图片</text>"
+    + "</svg>";
+
+  // URL 编码：把 # 等特殊字符全部转义，保证 data URI 在 HTML src 里安全
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+// ═══════════════════════════════════════════════
+// 图片渲染 - 三种角色的差异化样式
+// ═══════════════════════════════════════════════
+
+// 配图（默认） - 带风格化边框 + 图注
+function renderFig(s, k, img, num, mode){
+  const cfg = IMG[k] || IMG.elegant;
+  const frame = cfg.frame(s);
+  let imgSrc;
+  if(mode==="preview" && img && img.dataUrl){
+    imgSrc = img.dataUrl;
+  }else{
+    imgSrc = svgPlaceholder("配图", num, s.ac, s.al, false, false);
+  }
+  let html = '<section style="margin:24px 0">';
+  html += '<section style="' + frame + '"><img src="' + imgSrc + '" style="display:block;width:100%;height:auto" /></section>';
+  const cap = img && img.caption ? img.caption : "";
+  if(cap){
+    let prefix = cfg.capPrefix || "";
+    let suffix = cfg.capSuffix || "";
+    if(cfg.capNum){
+      const n = cfg.capNumFmt!==undefined ? cfg.capNumFmt + (num<10?'0'+num:num) + '  ' : (num<10?'0'+num:num) + '.  ';
+      prefix = n + prefix;
+    }
+    html += '<p style="' + cfg.cap(s) + '">' + prefix + cap + suffix + '</p>';
+  }
+  html += '</section>';
+  return html;
+}
+
+// 封面图 - 全宽大图，无边框，更醒目
+function renderCoverImg(s, k, img, num, mode){
+  let imgSrc;
+  if(mode==="preview" && img && img.dataUrl){
+    imgSrc = img.dataUrl;
+  }else{
+    imgSrc = svgPlaceholder("封面图", num, s.ac, s.al, false, true);
+  }
+  // 封面图样式：全宽，无边框（或极简边框），上下留白更多
+  let html = '<section style="margin:8px 0 32px">';
+  html += '<img src="' + imgSrc + '" style="display:block;width:100%;height:auto" />';
+  if(img && img.caption){
+    html += '<p style="text-align:center;color:' + s.mu + ';font-size:12px;margin:10px 0 0;letter-spacing:1px;font-weight:600">' + img.caption + '</p>';
+  }
+  html += '</section>';
+  return html;
+}
+
+// 引用图 - 在配图基础上加引用标识：左侧粗色条 + "引用"标签
+function renderQuoteImg(s, k, img, num, mode){
+  const cfg = IMG[k] || IMG.elegant;
+  let imgSrc;
+  if(mode==="preview" && img && img.dataUrl){
+    imgSrc = img.dataUrl;
+  }else{
+    imgSrc = svgPlaceholder("引用图", num, s.ac, s.al, true, false);
+  }
+  // 引用图样式：左侧粗色条 + 浅底 + 顶部带"引用"小标签
+  let html = '<section style="margin:24px 0;background:' + s.al + ';border-left:4px solid ' + s.ac + ';padding:14px">';
+  html += '<section style="display:flex;align-items:center;margin-bottom:10px;gap:6px"><span style="display:inline-block;width:14px;height:2px;background:' + s.ac + '"></span><span style="color:' + s.ac + ';font-size:11px;font-weight:700;letter-spacing:2px">QUOTE · 引用</span></section>';
+  html += '<section style="background:#fff;padding:4px"><img src="' + imgSrc + '" style="display:block;width:100%;height:auto" /></section>';
+  const cap = img && img.caption ? img.caption : "";
+  if(cap){
+    html += '<p style="text-align:left;color:' + s.mu + ';font-size:12px;margin:10px 0 0;font-style:italic">— ' + cap + '</p>';
+  }
+  html += '</section>';
+  return html;
+}
+
+// 多图组合（双图/三图）
+function renderMultiImg(s, k, imgs, startNum, cap, count, mode){
+  const cfg = IMG[k] || IMG.elegant;
+  const frame = cfg.frame(s);
+  const gap = cfg.gap || "8px";
+  const gapColor = cfg.gapColor || "transparent";
+
+  let html = '<section style="margin:24px 0">';
+  html += '<section style="display:flex;gap:' + gap + ';background:' + gapColor + '">';
+
+  for(let i=0; i<count; i++){
+    const img = imgs[i];
+    const num = startNum + i;
+    let imgSrc;
+    if(mode==="preview" && img && img.dataUrl){
+      imgSrc = img.dataUrl;
+    }else{
+      imgSrc = svgPlaceholder("图", num, s.ac, s.al, false, false);
+    }
+    html += '<section style="flex:1;' + frame + '"><img src="' + imgSrc + '" style="display:block;width:100%;height:auto" /></section>';
+  }
+
+  html += '</section>';
+  if(cap){
+    html += '<p style="' + cfg.cap(s) + '">' + cap + '</p>';
+  }
+  html += '</section>';
+  return html;
+}
+
+// ═══════════════════════════════════════════════
+// 新增元素：导语 / 提示框 / 金句 / 表格 / 落款
+// ═══════════════════════════════════════════════
+
+// 导语
+function renderLead(c,s,k){
+  const styles={
+    elegant:'border-top:1px solid '+s.dv+';border-bottom:1px solid '+s.dv+';padding:18px 4px;margin:24px 0;color:'+s.mu+';font-size:14px;line-height:1.9;text-align:center;letter-spacing:.5px;font-style:italic',
+    business:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#555;font-size:14px;line-height:1.9;border-left:3px solid '+s.ac,
+    warm:'text-align:center;padding:18px 24px;margin:24px 0;color:'+s.mu+';font-size:14px;line-height:1.9;font-style:italic;letter-spacing:.5px',
+    sunrise:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#5a4a38;font-size:14px;line-height:1.9;border-left:3px solid '+s.ac,
+    tech:'border-left:3px solid '+s.ac+';padding:6px 0 6px 16px;margin:24px 0;color:'+s.mu+';font-size:14px;line-height:1.8;font-family:Menlo,Monaco,sans-serif',
+    chinese:'text-align:center;padding:18px 24px;margin:24px 0;color:'+s.mu+';font-size:14px;line-height:1.9;letter-spacing:1px;border-top:1px solid '+s.dv+';border-bottom:1px solid '+s.dv,
+    magazine:'border-top:3px solid #000;border-bottom:1px solid #000;padding:16px 4px;margin:24px 0;color:#333;font-size:15px;line-height:1.8;font-weight:600',
+    forest:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#4a6a55;font-size:14px;line-height:1.9;border-left:3px solid '+s.ac,
+    aurora:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#475569;font-size:14px;line-height:1.9',
+    morandi:'text-align:center;padding:24px 24px;margin:24px 0;color:'+s.mu+';font-size:14px;line-height:1.9;letter-spacing:1px;font-style:italic',
+    mint:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#475569;font-size:14px;line-height:1.9;border-left:3px solid '+s.ac,
+    neon:'background:'+s.al+';padding:18px 22px;margin:24px 0;color:#5a3e6a;font-size:14px;line-height:1.9;border-left:3px solid '+s.ac,
+  };
+  return '<section style="'+(styles[k]||styles.elegant)+'">'+inl(c,s)+'</section>';
+}
+
+// 提示框 4 种类型
+const calloutColors={
+  tip:{bg:'#ecfdf5',border:'#10b981',title:'#059669',label:'TIP · 小贴士',icon:'💡'},
+  note:{bg:'#eff6ff',border:'#3b82f6',title:'#2563eb',label:'NOTE · 注意',icon:'📌'},
+  warn:{bg:'#fef3c7',border:'#f59e0b',title:'#d97706',label:'WARN · 警告',icon:'⚠️'},
+  info:{bg:'#f1f5f9',border:'#64748b',title:'#475569',label:'INFO · 信息',icon:'ℹ️'},
+};
+
+function renderCallout(type,title,content,s,k){
+  const c=calloutColors[type]||calloutColors.info;
+  // 国风/潮流杂志/科技极简 用风格的点缀色而不是默认颜色
+  let bg=c.bg,border=c.border,titleColor=c.title;
+  if(k==="chinese"||k==="magazine"){
+    bg=s.al;border=s.ac;titleColor=s.ac;
+  }
+  let html='<section style="margin:24px 0;background:'+bg+';border-left:4px solid '+border+';padding:14px 18px">';
+  html+='<section style="display:flex;align-items:center;margin-bottom:8px"><span style="font-size:14px;margin-right:6px">'+c.icon+'</span><span style="color:'+titleColor+';font-size:12px;font-weight:700;letter-spacing:1px">'+(title||c.label)+'</span></section>';
+  html+='<p style="color:#444;font-size:14px;line-height:1.8;margin:0">'+inl(content,s)+'</p>';
+  html+='</section>';
+  return html;
+}
+
+// 金句（pull quote）
+function renderPull(c,s,k){
+  const styles={
+    elegant:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.hd+';font-size:18px;line-height:1.6;font-weight:700;letter-spacing:1px;border-top:1px solid '+s.ac+';border-bottom:1px solid '+s.ac,
+    business:'text-align:center;padding:20px 16px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.5;font-weight:700;border-top:2px solid '+s.ac+';border-bottom:2px solid '+s.ac,
+    warm:'text-align:center;padding:24px 20px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;font-style:italic;font-weight:700;letter-spacing:2px',
+    sunrise:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;font-weight:700;border-top:2px solid '+s.ac+';border-bottom:2px solid '+s.ac,
+    tech:'padding:20px 0 20px 20px;margin:32px 0;color:'+s.hd+';font-size:18px;line-height:1.5;font-weight:700;border-left:4px solid '+s.ac,
+    chinese:'text-align:center;padding:24px 20px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;letter-spacing:4px;font-weight:700',
+    magazine:'text-align:center;padding:24px 16px;margin:32px 0;color:#000;font-size:22px;line-height:1.4;font-weight:900;letter-spacing:1px;border-top:4px solid #000;border-bottom:4px solid #000',
+    forest:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;font-weight:700;letter-spacing:1px;border-top:1px solid '+s.ac+';border-bottom:1px solid '+s.ac,
+    aurora:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.hd+';font-size:18px;line-height:1.6;font-weight:700',
+    morandi:'text-align:center;padding:32px 24px;margin:32px 0;color:'+s.hd+';font-size:17px;line-height:1.7;letter-spacing:2px;font-weight:600',
+    mint:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;font-weight:700',
+    neon:'text-align:center;padding:24px 16px;margin:32px 0;color:'+s.ac+';font-size:18px;line-height:1.6;font-weight:700;letter-spacing:1px',
+  };
+  let html='<section style="'+(styles[k]||styles.elegant)+'">';
+  if(k==="aurora"||k==="mint"||k==="neon"){
+    html+='<section style="display:flex;justify-content:center;margin-bottom:12px"><section style="width:24px;height:3px;background:'+s.ac+'"></section></section>';
+  }
+  html+=inl(c,s);
+  if(k==="aurora"||k==="mint"||k==="neon"){
+    html+='<section style="display:flex;justify-content:center;margin-top:12px"><section style="width:24px;height:3px;background:'+s.ac+'"></section></section>';
+  }
+  html+='</section>';
+  return html;
+}
+
+// 表格
+function renderTable(headers,rows,s,k){
+  const b='1px solid '+s.dv;
+  let html='<section style="margin:24px 0;overflow-x:auto">';
+  html+='<table style="width:100%;border-collapse:collapse;font-size:14px;border:'+b+'">';
+  html+='<thead><tr>';
+  headers.forEach(h=>{
+    html+='<th style="background:'+s.ac+';color:#fff;padding:10px 14px;text-align:left;font-weight:700;font-size:13px;border:'+b+'">'+inl(h,s)+'</th>';
+  });
+  html+='</tr></thead><tbody>';
+  rows.forEach((row,ri)=>{
+    const bg=ri%2===0?s.bg:s.al;
+    html+='<tr>';
+    row.forEach(cell=>{
+      html+='<td style="padding:10px 14px;background:'+bg+';color:'+s.text+';border:'+b+';line-height:1.6">'+inl(cell,s)+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table></section>';
+  return html;
+}
+
+// 落款
+function renderSign(c,s,k){
+  return '<section style="margin:40px 0 0;padding-top:20px;border-top:1px solid '+s.dv+';text-align:center"><p style="color:'+s.mu+';font-size:12px;margin:0;line-height:1.8;letter-spacing:1px">'+inl(c,s)+'</p></section>';
+}
+
+// 代码块内 HTML：公众号编辑器常忽略 <p> 内真实换行且丢弃 white-space:pre-wrap，粘贴后挤成一行。
+// 做法：& < > 转义后按行拆分，行首空格/Tab 改为 &nbsp;，行与行用 <br/> 显式断行（与 editor 类工具一致）。
+function renderCodeForWeixin(raw){
+  var esc=raw.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return esc.split("\n").map(function(line){
+    var i=0;
+    while(i<line.length&&(line[i]===" "||line[i]==="\t"))i++;
+    var lead=line.slice(0,i).replace(/ /g,"&nbsp;").replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+    return lead+line.slice(i);
+  }).join("<br/>");
+}
+
+// 代码块（按风格 light/dark 区分）
+function renderCode(c,s,k){
+  var inner=renderCodeForWeixin(c);
+  var pBase='font-size:13px;line-height:1.7;font-family:Menlo,Monaco,Consolas,monospace;margin:0;word-wrap:break-word;word-break:break-word';
+  if(s.code==="dark"){
+    return '<section style="background:#1e293b;padding:16px 20px;margin:0 0 24px;border-radius:6px"><p style="color:#e2e8f0;'+pBase+'">'+inner+'</p></section>';
+  }
+  return '<section style="background:'+s.al+';border-left:3px solid '+s.ac+';padding:14px 18px;margin:0 0 24px;border-radius:0 4px 4px 0"><p style="color:'+s.text+';'+pBase+'">'+inner+'</p></section>';
+}
+
+// ═══════════════════════════════════════════════
+// 主渲染函数
+// mode: "preview" 中控台预览（显示真实图）  "export" 复制时（占位卡槽）
+// ═══════════════════════════════════════════════
+function render(tokens,s,k,mode){
+  inlLinkMode = mode === 'export' ? 'export' : 'preview';
+  const bp='color:'+s.text+';font-size:15px;line-height:2;letter-spacing:1px;margin:0 0 20px';
+  return tokens.map(function(tok){
+    switch(tok.t){
+      case "h1":return '<h1 style="font-size:22px;font-weight:700;color:'+s.hd+';text-align:center;margin:0 0 6px;line-height:1.6;letter-spacing:2px">'+inl(tok.c,s)+'</h1>';
+      case "h2":return (H2[k]||H2.elegant)(tok.c,s);
+      case "h3":return k==="chinese"
+        ?'<section style="margin:28px 0 14px"><h3 style="font-size:15px;font-weight:700;color:'+s.ac+';margin:0;line-height:1.6;letter-spacing:1px">◇ '+inl(tok.c,s)+'</h3></section>'
+        :'<section style="margin:28px 0 14px"><h3 style="font-size:15px;font-weight:700;color:'+s.ac+';margin:0;line-height:1.6;letter-spacing:1px">'+inl(tok.c,s)+'</h3></section>';
+      case "p":return '<p style="'+bp+'">'+inl(tok.c,s)+'</p>';
+      case "bq":return (BQ[k]||BQ.elegant)(tok.c,s);
+      case "ul":return renderUL(tok.items,s,k);
+      case "ol":return renderOL(tok.items,s);
+      case "code":return renderCode(tok.c,s,k);
+      case "hr":return (HR[k]||HR.elegant)(s);
+      case "lead":return renderLead(tok.c,s,k);
+      case "callout":return renderCallout(tok.ctype,tok.title,tok.c,s,k);
+      case "pull":return renderPull(tok.c,s,k);
+      case "table":return renderTable(tok.headers,tok.rows,s,k);
+      case "sign":return renderSign(tok.c,s,k);
+
+      case "img":{
+        const ids=tok.ids;
+        const role=tok.role;
+        if(role==="cover"){
+          const img=images.find(im=>im.id===ids[0]);
+          return renderCoverImg(s,k,img,ids[0],mode);
+        }
+        if(role==="quote"){
+          const img=images.find(im=>im.id===ids[0]);
+          return renderQuoteImg(s,k,img,ids[0],mode);
+        }
+        if(role==="duo"||role==="trio"){
+          const imgs=ids.map(id=>images.find(im=>im.id===id));
+          const cap=imgs[0]&&imgs[0].caption?imgs[0].caption:"";
+          const count=role==="duo"?2:3;
+          return renderMultiImg(s,k,imgs,ids[0],cap,count,mode);
+        }
+        // 默认 fig
+        const img=images.find(im=>im.id===ids[0]);
+        return renderFig(s,k,img,ids[0],mode);
+      }
+
+      case "imgUrl":{
+        // 标准 markdown 图片，模拟成 fig 角色
+        const fakeImg={dataUrl:tok.url,caption:tok.cap};
+        return renderFig(s,k,fakeImg,"?",mode);
+      }
+
+      default:return "";
+    }
+  }).join("\n");
+}
+
+function applyBrand(st,color){
+  if(!color||!/^#[0-9a-fA-F]{6}$/.test(color))return st;
+  const r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16);
+  const l='rgb('+Math.round(r*.08+255*.92)+','+Math.round(g*.08+255*.92)+','+Math.round(b*.08+255*.92)+')';
+  return Object.assign({},st,{dot:color,ac:color,al:l});
+}
+
+// ═══════════════════════════════════════════════
+// 默认示例 — 展示所有新元素
+// ═══════════════════════════════════════════════
+const DEMO=`# 为什么你应该开始写作
+
+>>> 写作不只是记录文字。它是一种思考方式，一种与自己对话的工具，更是一种==重塑认知==的力量。
+
+![[1|cover]]
+
+## 写作改变认知
+
+当我们把脑海中模糊的想法转化为文字时，思维被迫变得**精确**和**有序**。这个过程本身就是一次深度思考。
+
+### 元素示例：多行引用、行内代码与代码块
+
+行内代码：解析入口是 \`parseMD\`，渲染为 \`render(tokens, s, k, mode)\`；复制到公众号时，\`inlLinkMode === 'export'\` 下链接会变成「文案 url」纯文本。
+
+> 多行引用第一段：同一块内可写多句，**加粗**仍生效。
+>
+> 第二段：中间单独一行只写 \`>\` 表示分段，仍属于同一引用样式。
+
+\`\`\`javascript
+// 围栏代码块（工作室按当前风格套用代码主题）
+function loadDemo(md) {
+  const tokens = parseMD(md);
+  return tokens.map(function (t) {
+    return t.t + ":" + (t.c ? "…" : "");
+  });
+}
+\`\`\`
+
+> 写作是把网状的思考，用树状的结构，体现在线性展开的语句里。
+
+很多人说"我没什么好写的"，但真相恰恰相反——你有太多值得写的东西，只是还没有开始。
+
+![[2]]
+
+‖ 写作的本质，是把模糊变清晰。 ‖
+
+## 三个简单的开始方式
+
+1. **晨间日记**：每天早上写三页，不需要任何主题
+2. **读书笔记**：把读到的好内容用自己的话重新表达
+3. **观察日志**：记录你今天注意到的一件小事
+
+!!! tip 小贴士
+不要追求每天写多少字。先追求"每天都写"这个动作本身。坚持比数量重要得多。
+!!!
+
+## 别追求完美
+
+第一稿永远是糟糕的。这不是缺陷，而是写作的本质规律。
+
+![[3,4|duo]]
+
+- 先完成，再完美
+- 允许自己写出垃圾
+- 修改才是真正的写作
+
+!!! warn 警告
+不要在第一稿时就开始反复修改。这会让你陷入"完美主义陷阱"，永远写不完任何东西。
+!!!
+
+## 工具推荐
+
+| 工具 | 用途 | 推荐指数 |
+|------|------|---------|
+| Notion | 笔记/大纲 | ★★★★★ |
+| Obsidian | 双链笔记 | ★★★★☆ |
+| Bear | 简洁写作 | ★★★★ |
+
+---
+
+最重要的一步，永远是**现在就开始**。
+
+--- 作者：不二 / 公众号：不二编程`;
+
+// ═══════════════════════════════════════════════
+// UI 逻辑
+// ═══════════════════════════════════════════════
+function getCur(){return applyBrand(S[curKey],brandColor);}
+
+function buildStylePanel(){
+  let html="";
+  groups.forEach(function(g){
+    html+='<div class="grp"><div class="grp-title">'+g.label+'</div><div class="grp-row">';
+    g.keys.forEach(function(k){
+      const v=S[k];const act=k===curKey?" act":"";
+      html+='<button class="sbtn'+act+'" data-key="'+k+'" style="'+(act?'border-color:'+v.dot+'55':'')+'">';
+      html+='<div class="dot" style="background:'+v.dot+'"></div>';
+      html+='<span>'+v.name+'</span></button>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById("style-panel").innerHTML=html;
+  document.querySelectorAll(".sbtn").forEach(function(btn){
+    btn.onclick=function(){curKey=this.dataset.key;refresh();}
+  });
+}
+
+function buildImageList(){
+  const list=document.getElementById("img-list");
+  if(images.length===0){list.innerHTML="";document.getElementById("img-count").textContent="0 张";return;}
+  document.getElementById("img-count").textContent=images.length+" 张";
+  list.innerHTML=images.map(function(img){
+    return '<div class="img-item">'+
+      '<img class="img-thumb" src="'+img.dataUrl+'" />'+
+      '<div class="img-meta">'+
+        '<div style="display:flex;align-items:center;gap:6px"><span class="img-num">#'+img.id+'</span><span class="img-name">'+img.name+'</span></div>'+
+        '<input class="img-cap" placeholder="图注（可选）" value="'+(img.caption||"").replace(/"/g,"&quot;")+'" data-id="'+img.id+'" />'+
+      '</div>'+
+      '<button class="img-insert" data-id="'+img.id+'" title="插入到光标位置">插入</button>'+
+      '<button class="img-del" data-id="'+img.id+'" title="删除">×</button>'+
+    '</div>';
+  }).join("");
+
+  // 图注输入
+  list.querySelectorAll(".img-cap").forEach(function(input){
+    input.addEventListener("input",function(){
+      const id=parseInt(this.dataset.id);
+      const img=images.find(im=>im.id===id);
+      if(img){img.caption=this.value;refresh();}
+    });
+  });
+
+  // 插入按钮
+  list.querySelectorAll(".img-insert").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      const id=parseInt(this.dataset.id);
+      insertAtCursor("![["+id+"]]\n\n");
+    });
+  });
+
+  // 删除按钮
+  list.querySelectorAll(".img-del").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      const id=parseInt(this.dataset.id);
+      images=images.filter(im=>im.id!==id);
+      buildImageList();refresh();
+    });
+  });
+}
+
+function addImageFile(file){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const id=imgIdCounter++;
+    images.push({id,name:file.name,dataUrl:e.target.result,role:"fig",caption:""});
+    buildImageList();refresh();
+  };
+  reader.readAsDataURL(file);
+}
+
+// 更新风格按钮的激活状态（不重建 DOM，避免打断输入法）
+function updateStyleButtons(){
+  document.querySelectorAll(".sbtn").forEach(function(btn){
+    const k=btn.dataset.key;
+    const v=S[k];
+    if(k===curKey){
+      btn.classList.add("act");
+      btn.style.borderColor=v.dot+"55";
+    }else{
+      btn.classList.remove("act");
+      btn.style.borderColor="";
+    }
+  });
+}
+
+function refresh(){
+  const s=getCur();
+  const ed=document.getElementById("editor");
+  const tokens=parseMD(ed.value);
+  const html=render(tokens,s,curKey,"preview");
+  document.getElementById("article").innerHTML=html;
+  document.getElementById("article").style.background=s.bg;
+  document.getElementById("phone-top").style.background=s.bg;
+  document.getElementById("phone-bot").style.background=s.bg;
+  document.getElementById("wx-bar").style.color=s.hd;
+  document.getElementById("wx-bar").style.borderBottom="1px solid "+(s.bg==="#fff"||s.bg==="#ffffff"?"#f0f0f0":"#ebe6de");
+  document.getElementById("home-bar").style.background=s.hd;
+  document.getElementById("logo-icon").style.background=s.ac;
+  document.getElementById("copy-btn").style.background=s.ac;
+  document.getElementById("bc-picker").value=brandColor||s.ac;
+  document.getElementById("style-tag").innerHTML='<span class="tdot" style="background:'+s.ac+'"></span>'+s.name;
+  document.getElementById("char-count").textContent=ed.value.length+"字";
+  updateStyleButtons();
+}
+
+// 插入元素到光标位置
+// 智能选择图片 ID — 优先用图片台里的，没有则用占位数字
+function smartImgIds(count){
+  if(images.length>=count){
+    return images.slice(0,count).map(im=>im.id).join(",");
+  }
+  // 不足时，已有的 + 占位
+  const ids=images.map(im=>im.id);
+  let next=imgIdCounter;
+  while(ids.length<count){ids.push(next++);}
+  return ids.join(",");
+}
+
+const insertSnippets={
+  lead:">>> 在这里写一段导语，引出文章主题\n\n",
+  tip:"!!! tip 小贴士\n这里是提示内容\n!!!\n\n",
+  note:"!!! note 注意\n这里是注意事项\n!!!\n\n",
+  warn:"!!! warn 警告\n这里是警告内容\n!!!\n\n",
+  pull:"‖ 在这里写一句金句 ‖\n\n",
+  table:"| 列1 | 列2 | 列3 |\n|-----|-----|-----|\n| 内容 | 内容 | 内容 |\n| 内容 | 内容 | 内容 |\n\n",
+  sign:"\n--- 作者：你的名字 / 公众号：你的公众号"
+};
+
+// 图片快捷插入 — 动态生成
+function getImgSnippet(role){
+  if(role==="fig"){const id=images[0]?images[0].id:1;return "![["+id+"]]\n\n";}
+  if(role==="cover"){const id=images[0]?images[0].id:1;return "![["+id+"|cover]]\n\n";}
+  if(role==="quote"){const id=images[0]?images[0].id:1;return "![["+id+"|quote]]\n\n";}
+  if(role==="duo"){return "![["+smartImgIds(2)+"]]\n\n";}
+  if(role==="trio"){return "![["+smartImgIds(3)+"]]\n\n";}
+  return "";
+}
+
+function insertAtCursor(text){
+  const ed=document.getElementById("editor");
+  const start=ed.selectionStart;
+  const end=ed.selectionEnd;
+  ed.value=ed.value.slice(0,start)+text+ed.value.slice(end);
+  ed.selectionStart=ed.selectionEnd=start+text.length;
+  ed.focus();
+  refresh();
+}
+
+// ═══════════════════════════════════════════════
+// 初始化
+// ═══════════════════════════════════════════════
+document.getElementById("editor").value=DEMO;
+buildStylePanel();
+refresh();
+
+// 编辑器输入事件 - 处理中文输入法（IME）合成状态
+let isComposing=false;
+const editorEl=document.getElementById("editor");
+editorEl.addEventListener("compositionstart",function(){isComposing=true;});
+editorEl.addEventListener("compositionend",function(){isComposing=false;refresh();});
+editorEl.addEventListener("input",function(){if(!isComposing)refresh();});
+
+// 品牌色
+document.getElementById("bc-picker").addEventListener("input",function(e){brandColor=e.target.value;document.getElementById("bc-text").value=brandColor;document.getElementById("bc-reset").style.display="inline";refresh();});
+document.getElementById("bc-text").addEventListener("input",function(e){
+  const v=e.target.value;
+  if(v===""||/^#?[0-9a-fA-F]{0,6}$/.test(v)){
+    brandColor=v.startsWith("#")||v===""?v:"#"+v;
+    if(/^#[0-9a-fA-F]{6}$/.test(brandColor)){document.getElementById("bc-reset").style.display="inline";refresh();}
+    if(v===""){brandColor="";document.getElementById("bc-reset").style.display="none";refresh();}
+  }
+});
+document.getElementById("bc-reset").addEventListener("click",function(){brandColor="";document.getElementById("bc-text").value="";this.style.display="none";refresh();});
+
+// 图片台
+const imgAdd=document.getElementById("img-add");
+const imgInput=document.getElementById("img-input");
+imgAdd.addEventListener("click",()=>imgInput.click());
+imgInput.addEventListener("change",function(e){
+  Array.from(e.target.files).forEach(addImageFile);
+  this.value="";
+});
+imgAdd.addEventListener("dragover",function(e){e.preventDefault();this.classList.add("dragover");});
+imgAdd.addEventListener("dragleave",function(){this.classList.remove("dragover");});
+imgAdd.addEventListener("drop",function(e){
+  e.preventDefault();this.classList.remove("dragover");
+  Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith("image/")).forEach(addImageFile);
+});
+
+// 折叠
+document.getElementById("img-toggle").addEventListener("click",function(){
+  this.classList.toggle("collapsed");
+  // 折叠/展开图片台内容
+  const content=this.closest(".sec").querySelector(".col-content");
+  if(content){content.style.display=this.classList.contains("collapsed")?"none":"block";}
+});
+
+// 快捷插入
+document.querySelectorAll(".ins-btn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    const key=this.dataset.ins;
+    if(["fig","cover","quote","duo","trio"].indexOf(key)!==-1){
+      insertAtCursor(getImgSnippet(key));
+    }else if(insertSnippets[key]){
+      insertAtCursor(insertSnippets[key]);
+    }
+  });
+});
+
+// 复制
+// 复制按钮 - 使用稳定的降级方案
+function showCopySuccess(){
+  const btn=document.getElementById("copy-btn");
+  const s=getCur();
+  btn.textContent="✓ 已复制 — 粘贴到公众号后点击图片占位即可替换";
+  btn.style.background="#16a34a";
+  setTimeout(function(){
+    btn.textContent="复制全文 → 粘贴到公众号";
+    btn.style.background=s.ac;
+  },3500);
+}
+
+function showCopyFail(msg){
+  const btn=document.getElementById("copy-btn");
+  const s=getCur();
+  btn.textContent="✗ "+(msg||"复制失败，请重试");
+  btn.style.background="#dc2626";
+  setTimeout(function(){
+    btn.textContent="复制全文 → 粘贴到公众号";
+    btn.style.background=s.ac;
+  },3500);
+}
+
+// 降级方案：用临时元素 + execCommand
+function fallbackCopy(htmlContent){
+  const tmp=document.createElement("div");
+  tmp.contentEditable="true";
+  tmp.innerHTML=htmlContent;
+  // 必须可见才能被选中，但放到屏幕外
+  tmp.style.position="fixed";
+  tmp.style.left="-9999px";
+  tmp.style.top="0";
+  tmp.style.opacity="0";
+  document.body.appendChild(tmp);
+
+  try{
+    const range=document.createRange();
+    range.selectNodeContents(tmp);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const ok=document.execCommand("copy");
+    sel.removeAllRanges();
+    document.body.removeChild(tmp);
+    return ok;
+  }catch(err){
+    document.body.removeChild(tmp);
+    console.error("Fallback copy failed:",err);
+    return false;
+  }
+}
+
+document.getElementById("copy-btn").addEventListener("click",function(){
+  const s=getCur();
+  const tokens=parseMD(document.getElementById("editor").value);
+  const renderedHtml=render(tokens,s,curKey,"export");
+  const full='<section style="max-width:578px;margin:0 auto;padding:24px 16px">'+renderedHtml+'</section>';
+
+  // 优先使用现代 Clipboard API（带 .catch 处理 Promise 错误）
+  if(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem){
+    try{
+      const blob=new Blob([full],{type:"text/html"});
+      const item=new ClipboardItem({"text/html":blob});
+      navigator.clipboard.write([item]).then(function(){
+        showCopySuccess();
+      }).catch(function(err){
+        console.warn("Clipboard API failed, trying fallback:",err);
+        // Promise 失败 → 走降级
+        if(fallbackCopy(full)){
+          showCopySuccess();
+        }else{
+          showCopyFail("复制失败，请检查浏览器权限");
+        }
+      });
+    }catch(err){
+      console.warn("ClipboardItem creation failed, trying fallback:",err);
+      if(fallbackCopy(full)){
+        showCopySuccess();
+      }else{
+        showCopyFail("复制失败");
+      }
+    }
+  }else{
+    // 浏览器不支持 Clipboard API → 直接降级
+    if(fallbackCopy(full)){
+      showCopySuccess();
+    }else{
+      showCopyFail("浏览器不支持复制，请手动选择");
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>
