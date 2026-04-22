@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鹏飞的收藏夹</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .category {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .category h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category h2 .icon {
+            font-size: 1.2rem;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            background: #fafafa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .link-item:hover {
+            background: #f0f7ff;
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        .link-item .favicon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .link-item span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #999;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 鹏飞的收藏夹</h1>
+            <p>共 159 个收藏链接</p>
+        </header>
+        
+        <div class="category">
+            <h2><span class="icon">🤖</span> AI 对话</h2>
+            <div class="links">
+                <a href="https://chat.deepseek.com/" class="link-item"><span>DeepSeek Chat</span></a>
+                <a href="https://www.aishort.top/" class="link-item"><span>AI Short</span></a>
+                <a href="https://chatapi.littlewheat.com/" class="link-item"><span>Little Wheat</span></a>
+                <a href="https://lobechatone.zeabur.app/chat" class="link-item"><span>LobeChat</span></a>
+                <a href="https://metaso.cn/" class="link-item"><span>Metaso</span></a>
+                <a href="https://www.bookai.top/" class="link-item"><span>BookAI</span></a>
+                <a href="https://ai.gptprompt.cn/" class="link-item"><span>GPT Prompt</span></a>
+                <a href="https://gqqbj.vip/ai/" class="link-item"><span>AI Tools</span></a>
+                <a href="https://ollama.com/search" class="link-item"><span>Ollama</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">🎨</span> AI 绘画</h2>
+            <div class="links">
+                <a href="https://www.liblib.art/sd" class="link-item"><span>LibLib AI</span></a>
+                <a href="https://jpghd.com/" class="link-item"><span>JPG HD</span></a>
+                <a href="https://myaiforce.com.cn/dalle-3-use-cases/" class="link-item"><span>AI Force</span></a>
+                <a href="https://www.waifu2x.net/" class="link-item"><span>Waifu2x</span></a>
+                <a href="https://www.magiceraser.io/" class="link-item"><span>Magic Eraser</span></a>
+                <a href="https://dreamina.jianying.com/ai-tool/home" class="link-item"><span>Dreamina</span></a>
+                <a href="https://www.logosc.cn/design/templates/" class="link-item"><span>Logosc</span></a>
+                <a href="https://fish.audio/zh-CN/" class="link-item"><span>Fish Audio</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">💼</span> 工作平台</h2>
+            <div class="links">
+                <a href="https://home.code-nav.cn/" class="link-item"><span>开发者导航</span></a>
+                <a href="https://www.yuque.com/" class="link-item"><span>语雀</span></a>
+                <a href="https://www.kdocs.cn/" class="link-item"><span>金山文档</span></a>
+                <a href="https://portal.kylinos.cn/" class="link-item"><span>麒麟 Portal</span></a>
+                <a href="https://www.bt.cn/bbs/thread-137157-1-1.html" class="link-item"><span>宝塔论坛</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">💰</span> 淘客联盟</h2>
+            <div class="links">
+                <a href="https://www.xiguazhu.cn/" class="link-item"><span>西瓜猪</span></a>
+                <a href="https://pub.xiguazhu.com/" class="link-item"><span>西瓜猪平台</span></a>
+                <a href="https://pub.jutuike.com/" class="link-item"><span>巨推客</span></a>
+                <a href="https://www.yuque.com/yztaoke/huanxi" class="link-item"><span>淘客素材</span></a>
+                <a href="https://www.xiguazhu.cn/" class="link-item"><span>西瓜猪</span></a>
+                <a href="https://jinbao.pinduoduo.com/" class="link-item"><span>拼多多金宝</span></a>
+                <a href="https://www.vip.com/" class="link-item"><span>唯品会</span></a>
+                <a href="https://union.meituan.com/" class="link-item"><span>美团联盟</span></a>
+                <a href="https://union.jd.com/" class="link-item"><span>京东联盟</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">🔧</span> 开发工具</h2>
+            <div class="links">
+                <a href="https://platform.deepseek.com/usage" class="link-item"><span>DeepSeek API</span></a>
+                <a href="https://www.ps.gaoding.com/" class="link-item"><span>在线PS</span></a>
+                <a href="https://www.liantu.com/" class="link-item"><span>联图二维码</span></a>
+                <a href="https://foxirj.com/" class="link-item"><span>FOXRJ</span></a>
+                <a href="https://hifly.cc/" class="link-item"><span>HiFly</span></a>
+                <a href="https://at.alicdn.com/" class="link-item"><span>阿里图标</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">🌐</span> 云文档</h2>
+            <div class="links">
+                <a href="https://jrnoijjrwm.feishu.cn/docx/" class="link-item"><span>飞书文档</span></a>
+                <a href="https://shengcaiyoushu01.feishu.cn/" class="link-item"><span>生财有术</span></a>
+                <a href="https://zyf4pciaqe.feishu.cn/" class="link-item"><span>飞书知识库</span></a>
+                <a href="https://www.yuque.com/dashboard" class="link-item"><span>语雀仪表盘</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">🛠</span> 实用工具</h2>
+            <div class="links">
+                <a href="https://mp.weixin.qq.com/" class="link-item"><span>微信公众号</span></a>
+                <a href="https://www.weidian.com/" class="link-item"><span>微店</span></a>
+                <a href="https://www.kuaizhan.com/" class="link-item"><span>快站</span></a>
+                <a href="https://cover.weixin.qq.com/" class="link-item"><span>微信封面</span></a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="icon">📁</span> 其他</h2>
+            <div class="links">
+                <a href="https://blog.csdn.net/" class="link-item"><span>CSDN</span></a>
+                <a href="https://www.jspang.com/" class="link-item"><span>技术博客</span></a>
+                <a href="https://www.jianshu.com/" class="link-item"><span>简书</span></a>
+                <a href="https://mp.weixin.qq.com/s" class="link-item"><span>微信文章</span></a>
+            </div>
+        </div>
+
+        <footer>
+            <p>📌 数据来源：moonlight.imoons.cn/daohang/</p>
+        </footer>
+    </div>
+</body>
+</html>
