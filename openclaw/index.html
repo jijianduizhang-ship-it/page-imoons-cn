@@ -66,7 +66,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 
 /* Tab content */
 .tab-content { display: none; min-height: 400px; }
-.tab-content.active { display: block; }
+.tab-content.active { display: block !important; visibility: visible; opacity: 1; }
 
 /* 刷新按钮 */
 .refresh-btn { background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
@@ -572,7 +572,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <!-- Agent -->
   <div id="tab-agents" class="tab-content">
     <h2 class="section-title">子Agent (9)</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:16px;padding:20px;">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;padding:20px;min-height:500px;align-content:flex-start;">
       <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
             <span style="font-size:20px;">🏠</span>
