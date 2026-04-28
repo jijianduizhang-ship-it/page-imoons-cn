@@ -85,7 +85,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 <header class="header">
   <h1>OpenClaw 管控台</h1>
   <div>
-    <span class="updated">最后更新: <span id="lastUpdated">2026/4/28 18:57:54</span></span>
+    <span class="updated">最后更新: <span id="lastUpdated">2026/4/28 19:08:38</span></span>
     <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
   </div>
 </header>
@@ -96,6 +96,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <button onclick="switchTab('skills')">技能 (97)</button>
   <button onclick="switchTab('scripts')">脚本 (36)</button>
   <button onclick="switchTab('projects')">项目 (20)</button>
+  <button onclick="switchTab('agents')">Agent (9)</button>
 </nav>
 
 <div class="container">
@@ -347,7 +348,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td>generate-openclaw-dashboard.js</td>
       <td class="desc">!/usr/bin/env node</td>
-      <td>16.5KB</td>
+      <td>19.8KB</td>
       <td>2026/4/28</td>
     </tr><tr>
       <td>gh-push.py</td>
@@ -568,12 +569,144 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr></tbody>
       </table>
     </div>
+  <!-- Agent -->
+  <div id="tab-agents" class="tab-content">
+    <h2 class="section-title">子Agent (9)</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🏠</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">main</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">(default)</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">0个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">1正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🤖</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">creator</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-creator</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">3个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/25 08:53</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🤖</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">canmou</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-canmou</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">1个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/23 08:54</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🤖</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">yunying</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-yunying</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">0个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">📝</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">jinhua</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-jinhua</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">13个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">4个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/28 09:32</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">📊</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">jiaoyi</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-jiaoyi</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">16个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/27 23:04</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">11正常</span> <span style="color:#ef4444;">1异常</span></div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🤖</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">shequ</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-shequ</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">0个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">🤖</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">kylin</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-kylin</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">2个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/8 13:53</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
+          </div>
+        </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:20px;">👔</span>
+            <span style="font-weight:600;font-size:16px;color:#f8fafc;">ceo</span>
+            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-ceo</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
+            <div>📁 memory文件: <span style="color:#38bdf8;">0个</span></div>
+            <div>🛠️ 技能: <span style="color:#38bdf8;">0个</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> <span style="color:#ef4444;">2异常</span></div>
+          </div>
+        </div>
+    </div>
   </div>
 
 </div>
 
 <footer class="footer">
-  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/28 18:57:54
+  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/28 19:08:38
 </footer>
 
 <script>
