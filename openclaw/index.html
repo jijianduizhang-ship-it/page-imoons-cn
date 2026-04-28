@@ -91,11 +91,11 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </header>
 
 <nav class="nav" style="display:flex;gap:4px;border-bottom:1px solid #334155;">
-  <a href="#tab-overview" class="navtab active" onclick="switchTab('overview');return false;">总览</a>
-  <a href="#tab-cron" class="navtab" onclick="switchTab('cron');return false;">定时任务 (17)</a>
-  <a href="#tab-skills" class="navtab" onclick="switchTab('skills');return false;">技能 (97)</a>
-  <a href="#tab-scripts" class="navtab" onclick="switchTab('scripts');return false;">脚本 (36)</a>
-  <a href="#tab-projects" class="navtab" onclick="switchTab('projects');return false;">项目 (20)</a>
+  <a href="#tab-overview" class="navtab active" onclick="switchTab(\'overview\', this)">总览</a>
+  <a href="#tab-cron" class="navtab" onclick="switchTab(\'cron\', this)">定时任务 (17)</a>
+  <a href="#tab-skills" class="navtab" onclick="switchTab(\'skills\', this)">技能 (97)</a>
+  <a href="#tab-scripts" class="navtab" onclick="switchTab(\'scripts\', this)">脚本 (36)</a>
+  <a href="#tab-projects" class="navtab" onclick="switchTab(\'projects\', this)">项目 (20)</a>
 </nav>
 
 <div class="container">
@@ -700,11 +700,17 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </footer>
 
 <script>
-function switchTab(id) {
+function switchTab(id, el) {
   var tabs = document.querySelectorAll(".tab-content");
-  for (var i = 0; i < tabs.length; i++) { tabs[i].style.display = "none"; tabs[i].style.visibility = "hidden"; }
+  for (var i = 0; i < tabs.length; i++) { tabs[i].style.display = "none"; }
   var btns = document.querySelectorAll(".navtab");
-  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); btns[j].style.borderBottom = "2px solid transparent"; btns[j].style.color = "#94a3b8"; }
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); btns[j].style.color = "#94a3b8"; btns[j].style.borderBottom = "2px solid transparent"; }
+  if (el) { el.classList.add("active"); el.style.color = "#38bdf8"; el.style.borderBottom = "2px solid #38bdf8"; }
+  var target = document.getElementById("tab-" + id);
+  if (target) { target.style.display = "block"; }
+}
+  var btns = document.querySelectorAll(".navtab");
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); btns[j].style.borderBottom = "2px solid transparent"; btns[j].style.color = "#94a3b8"; btns[j].style.borderBottom = "2px solid transparent"; }
   for (var k = 0; k < btns.length; k++) { if (btns[k].getAttribute("onclick").indexOf(id) > -1) { btns[k].classList.add("active"); btns[k].style.borderBottom = "2px solid #38bdf8"; btns[k].style.color = "#38bdf8"; break; } }
   var target = document.getElementById("tab-" + id);
   if (target) { target.style.display = "block"; target.style.visibility = "visible"; target.style.minHeight = "600px"; }
