@@ -85,14 +85,14 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 <header class="header">
   <h1>OpenClaw 管控台</h1>
   <div>
-    <span class="updated">最后更新: <span id="lastUpdated">2026/4/28 17:52:15</span></span>
+    <span class="updated">最后更新: <span id="lastUpdated">2026/4/28 18:57:54</span></span>
     <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
   </div>
 </header>
 
 <nav class="nav">
   <button class="active" onclick="switchTab('overview')">总览</button>
-  <button onclick="switchTab('cron')">定时任务 (16)</button>
+  <button onclick="switchTab('cron')">定时任务 (17)</button>
   <button onclick="switchTab('skills')">技能 (97)</button>
   <button onclick="switchTab('scripts')">脚本 (36)</button>
   <button onclick="switchTab('projects')">项目 (20)</button>
@@ -106,10 +106,10 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <div class="stat-card">
         <div class="num ok">14</div>
         <div class="label">正常运行</div>
-        <div class="sub">共 16 个任务</div>
+        <div class="sub">共 17 个任务</div>
       </div>
       <div class="stat-card">
-        <div class="num error">2</div>
+        <div class="num error">3</div>
         <div class="label">异常任务</div>
         <div class="sub">需要关注</div>
       </div>
@@ -133,20 +133,25 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     
     <div class="panel" style="margin-bottom: 20px; border-color: #ef444444;">
       <div class="panel-header">
-        <h2>🔴 异常任务 (2)</h2>
+        <h2>🔴 异常任务 (3)</h2>
       </div>
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>Agent</th><th>状态</th></tr></thead>
         <tbody>
           <tr>
             <td><code>7363e5ef...</code></td>
-            <td>CEO健康检查 cron 0 5 * * * @ Asia/Shangha... in 11h</td>
+            <td>CEO健康检查</td>
             <td><span class="tag agent-tag">ceo</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
           </tr><tr>
             <td><code>ba65cf47...</code></td>
-            <td>晨间简报 cron 5 8 * * 1-5 (exact) in 14h</td>
+            <td>晨间简报</td>
             <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>c2c2e3db...</code></td>
+            <td>CEO周检</td>
+            <td><span class="tag agent-tag">ceo</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
           </tr>
         </tbody>
@@ -162,101 +167,107 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>调度</th><th>Agent</th><th>状态</th></tr></thead>
         <tbody><tr>
-      <td><code>9b734da7...</code></td>
-      <td>旧衣回收订单-0 18 * * * cron 0 18 * * * @ Asia/Shangh... in 8m</td>
-      <td><span class="tag">0 18 * * *</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
-      <td><code>f16dc359...</code></td>
-      <td>西瓜猪订单推送-下午 cron 0 18 * * * @ Asia/Shangh... in 8m</td>
-      <td><span class="tag">0 18 * * *</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
       <td><code>b906d1d9...</code></td>
-      <td>副业项目推送-晚 cron 0 21 * * 1-5 @ Asia/Shan... in 3h</td>
-      <td><span class="tag">0 21 * * 1-5</span></td>
+      <td>副业项目推送-晚</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>7987d5f7...</code></td>
-      <td>晚间复盘提醒 cron 30 21 * * 1-5 @ Asia/Sha... in 4h</td>
-      <td><span class="tag">30 21 * * 1-5</span></td>
+      <td>晚间复盘提醒</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>buer-dai...</code></td>
-      <td>不二网站-每日内容更新 cron 49 23 * * * @ Asia/Shang... in 6h</td>
-      <td><span class="tag">49 23 * * *</span></td>
+      <td></td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">system</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>6b375240...</code></td>
-      <td>每日反思发布 cron 5 3 * * * (exact) in 9h</td>
-      <td><span class="tag">cron</span></td>
+      <td>每日反思发布</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">main</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>7363e5ef...</code></td>
-      <td>CEO健康检查 cron 0 5 * * * @ Asia/Shangha... in 11h</td>
-      <td><span class="tag">0 5 * * *</span></td>
+      <td>CEO健康检查</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">ceo</span></td>
       <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
       <td><code>129338e0...</code></td>
-      <td>每日天气推送 cron 10 7 * * * @ Asia/Shangh... in 13h</td>
-      <td><span class="tag">10 7 * * *</span></td>
+      <td>每日天气推送</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>ba65cf47...</code></td>
-      <td>晨间简报 cron 5 8 * * 1-5 (exact) in 14h</td>
-      <td><span class="tag">cron</span></td>
+      <td>晨间简报</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
       <td><code>f5a5e051...</code></td>
-      <td>副业项目推送-早 cron 10 8 * * 1-5 (exact) in 14h</td>
-      <td><span class="tag">cron</span></td>
+      <td>副业项目推送-早</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>d5dbba2a...</code></td>
-      <td>旧衣回收订单-0 9 * * * cron 0 9 * * * @ Asia/Shangha... in 15h</td>
-      <td><span class="tag">0 9 * * *</span></td>
+      <td>旧衣回收订单-0 9 * * *</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>fe166eb3...</code></td>
-      <td>学习计划每日提醒 cron 15 9 * * * (exact) in 15h</td>
-      <td><span class="tag">cron</span></td>
+      <td>学习计划每日提醒</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">system</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>f61ba5d8...</code></td>
-      <td>西瓜猪订单推送-上午 cron 0 10 * * * @ Asia/Shangh... in 16h</td>
-      <td><span class="tag">0 10 * * *</span></td>
+      <td>西瓜猪订单推送-上午</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>f70364b0...</code></td>
-      <td>旧衣回收订单-0 11 * * * cron 0 11 * * * @ Asia/Shangh... in 17h</td>
-      <td><span class="tag">0 11 * * *</span></td>
+      <td>旧衣回收订单-0 11 * * *</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>dddcba4a...</code></td>
-      <td>基金操作提醒 cron 30 14 * * 1-5 (exact) in 21h</td>
-      <td><span class="tag">cron</span></td>
+      <td>基金操作提醒</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>9eb8f619...</code></td>
-      <td>旧衣回收订单-0 15 * * * cron 0 15 * * * @ Asia/Shangh... in 21h</td>
-      <td><span class="tag">0 15 * * *</span></td>
+      <td>旧衣回收订单-0 15 * * *</td>
+      <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>9b734da7...</code></td>
+      <td>旧衣回收订单-0 18 * * *</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>f16dc359...</code></td>
+      <td>西瓜猪订单推送-下午</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>c2c2e3db...</code></td>
+      <td>CEO周检</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">ceo</span></td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr></tbody>
       </table>
     </div>
@@ -336,7 +347,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td>generate-openclaw-dashboard.js</td>
       <td class="desc">!/usr/bin/env node</td>
-      <td>16.4KB</td>
+      <td>16.5KB</td>
       <td>2026/4/28</td>
     </tr><tr>
       <td>gh-push.py</td>
@@ -346,7 +357,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td>gh-upload.js</td>
       <td class="desc">!/usr/bin/env node</td>
-      <td>2.7KB</td>
+      <td>2.2KB</td>
       <td>2026/4/28</td>
     </tr><tr>
       <td>hotnews_direct.py</td>
@@ -562,7 +573,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </div>
 
 <footer class="footer">
-  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/28 17:52:15
+  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/28 18:57:54
 </footer>
 
 <script>
