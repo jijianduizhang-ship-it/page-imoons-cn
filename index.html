@@ -7,460 +7,103 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f5f6fa;
-    color: #1a1a2e;
-    min-height: 100vh;
-    padding: 0;
-  }
-  .header {
-    background: linear-gradient(135deg, #3366ff 0%, #5b8cff 100%);
-    color: white;
-    padding: 48px 20px 40px;
-    text-align: center;
-  }
-  .header h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: #fff;
-  }
-  .header .subtitle {
-    color: rgba(255,255,255,0.8);
-    font-size: 0.9rem;
-    margin-bottom: 24px;
-  }
-  .search-box {
-    max-width: 520px;
-    margin: 0 auto;
-    position: relative;
-  }
-  .search-box input {
-    width: 100%;
-    padding: 14px 20px 14px 48px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 50px;
-    background: rgba(255,255,255,0.95);
-    color: #333;
-    outline: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
-  .search-box input::placeholder { color: #999; }
-  .search-box .search-icon {
-    position: absolute;
-    left: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.1rem;
-    color: #999;
-    pointer-events: none;
-  }
-  .main { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
-  .quick-links {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 36px;
-  }
-  .quick-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: #fff;
-    border: 1.5px solid #e0e4f0;
-    border-radius: 50px;
-    text-decoration: none;
-    color: #3366ff;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  .quick-link:hover {
-    background: #3366ff;
-    color: #fff;
-    border-color: #3366ff;
-    transform: translateY(-1px);
-  }
-  .section { margin-bottom: 40px; }
-  .section-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #8c8c9a;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 14px;
-    padding-left: 4px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-  }
-  .card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 18px 16px 14px;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.18s, box-shadow 0.18s;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    border: 1px solid rgba(0,0,0,0.06);
-  }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(51,102,255,0.12);
-    border-color: rgba(51,102,255,0.3);
-  }
-  .card-name { font-weight: 600; font-size: 0.95rem; color: #111; }
-  .card-desc { font-size: 0.78rem; color: #8c8c9a; line-height: 1.5; }
-  .card-url { font-size: 0.72rem; color: #b0b0be; margin-top: auto; word-break: break-all; }
-  .card.ext { border-left: 3px solid #ff6633; }
-  .footer { text-align: center; color: #c0c0cc; font-size: 0.78rem; padding: 0 20px 30px; }
-  .no-result { display: none; text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
-  .no-result.show { display: block; }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#4f8ef7;--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--muted:#8888a0;--sh:0 2px 12px rgba(0,0,0,0.06);--sh2:0 8px 32px rgba(79,142,247,0.18)}
+body{font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px}
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.06);padding:0 16px;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;gap:2px}
+.top-nav::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:14px 14px 13px;font-size:0.88rem;font-weight:500;color:var(--muted);text-decoration:none;border-bottom:2.5px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:var(--blue)}.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab svg{width:16px;height:16px;flex-shrink:0}
+.c{max-width:1080px;margin:0 auto;padding:24px 20px 0}
+.sb{position:relative;margin-bottom:24px}
+.sb input{width:100%;padding:13px 20px 13px 48px;font-size:1rem;border:2px solid #e4e7f0;border-radius:50px;background:var(--card);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+.sb input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(79,142,247,0.1)}
+.sb input::placeholder{color:#b4b8cc}
+.sb svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#b4b8cc;pointer-events:none}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sh svg{width:20px;height:20px;flex-shrink:0}.sh h2{font-size:1rem;font-weight:700}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:32px}
+.card{background:var(--card);border-radius:14px;padding:18px 16px 14px;text-decoration:none;color:inherit;border:1px solid rgba(0,0,0,0.06);box-shadow:var(--sh);transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;gap:6px}
+.card:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:rgba(79,142,247,0.25)}
+.ci{width:38px;height:38px;border-radius:10px;background:#f0f4ff;display:flex;align-items:center;justify-content:center;margin-bottom:2px}
+.ci svg{width:20px;height:20px}
+.cn{font-weight:600;font-size:0.9rem;color:#111}
+.cd{font-size:0.75rem;color:var(--muted);line-height:1.55;flex:1}
+.cu{font-size:0.7rem;color:#c8ccd8;margin-top:auto;padding-top:2px;word-break:break-all;display:none}
+.card.ext{border-left:3px solid #ff7744}.card.ext .ci{background:#fff4ee}
+.qg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.ql{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:#fff;border:1.5px solid #e4e7f0;border-radius:50px;text-decoration:none;color:var(--blue);font-size:0.85rem;font-weight:500;transition:all .2s}
+.ql:hover{background:var(--blue);color:#fff;border-color:var(--blue);transform:translateY(-1px)}
+.nr{display:none;text-align:center;padding:60px 20px;color:var(--muted);font-size:0.95rem}.nr.show{display:block}
+.ft{text-align:center;color:#c8ccd8;font-size:0.78rem;padding:40px 20px 20px}
+[data-tab]{display:none}[data-tab].show{display:block}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>🛠️ 工具导航</h1>
-  <p class="subtitle">page.imoons.cn · 精选工具收藏</p>
-  <div class="search-box">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="搜索工具..." autocomplete="off">
-  </div>
+<nav class="top-nav">
+  <button class="tab active" data-t="home" onclick="showTab('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>首页</button>
+  <button class="tab" data-t="tool" onclick="showTab('tool')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>全能王</button>
+  <button class="tab" data-t="ai" onclick="showTab('ai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>AI 工具</button>
+  <button class="tab" data-t="project" onclick="showTab('project')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>独立项目</button>
+  <button class="tab" data-t="ext" onclick="showTab('ext')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>外部</button>
+  <button class="tab" data-t="test" onclick="showTab('test')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>测试</button>
+</nav>
+<div class="c">
+  <div class="sb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#b4b8cc;pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="searchInput" placeholder="搜索工具或项目..." autocomplete="off"></div>
+  <div data-tab="home" class="show"><div class="qg" id="quick-links"></div></div>
+  <div data-tab="tool"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><h2>全能王工具箱</h2></div><div class="g" id="tool-grid"></div></div>
+  <div data-tab="ai"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><h2>AI 工具集</h2></div><div class="g" id="ai-grid"></div></div>
+  <div data-tab="project"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><h2>独立项目</h2></div><div class="g" id="project-grid"></div></div>
+  <div data-tab="ext"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="#ff7744" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg><h2>外部链接</h2></div><div class="g" id="ext-grid"></div></div>
+  <div data-tab="test"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg><h2>测试项目</h2></div><div class="g" id="test-grid"></div></div>
+  <div class="nr" id="noResult">没有找到匹配的工具</div>
 </div>
-
-<div class="main">
-
-  <!-- 快捷入口 -->
-  <div class="quick-links">
-    <a class="quick-link" href="/openclaw/">🤖 AI 助手</a>
-    <a class="quick-link" href="/about/">👤 关于</a>
-    <a class="quick-link" href="/dungeon/">🏰 地牢</a>
-    <a class="quick-link" href="/tool/">🛠️ 全能王</a>
-    <a class="quick-link" href="/tools/ai/">🧠 AI工具</a>
-    <a class="quick-link" href="/tools/ai-answer/">📷 答题</a>
-    <a class="quick-link" href="/tools/ai-image/">🎨 绘图</a>
-    <a class="quick-link" href="/tools/ai-manga/">🎭 转漫画</a>
-    <a class="quick-link" href="/tools/cover/">🖼️ 封面</a>
-    <a class="quick-link" href="/tools/studio/">📰 排版</a>
-    <a class="quick-link" href="/tools/markdown/">📝 MD编辑</a>
-    <a class="quick-link" href="/tools/mj-prompt/">💬 提示词</a>
-    <a class="quick-link" href="/tools/bookmarks/">📚 收藏</a>
-    <a class="quick-link" href="https://blog.imoons.cn" target="_blank">📝 博客</a>
-    <a class="quick-link" href="https://moonlight.imoons.cn/moonlight" target="_blank">💰 副业</a>
-  </div>
-
-  <!-- 全能王工具箱 -->
-  <div class="section">
-    <div class="section-title">🛠️ 全能王工具箱</div>
-    <div class="grid">
-      <a class="card" href="/tool/">
-        <span class="card-name">🏠 全能王首页</span>
-        <span class="card-desc">一站式图像处理工具集合</span>
-        <span class="card-url">/tool/</span>
-      </a>
-      <a class="card" href="/tool/compress/">
-        <span class="card-name">🖼️ 图片压缩</span>
-        <span class="card-desc">本地压缩，保护隐私</span>
-        <span class="card-url">/tool/compress/</span>
-      </a>
-      <a class="card" href="/tool/image2pdf/">
-        <span class="card-name">📄 图片转PDF</span>
-        <span class="card-desc">多图合并为一份 PDF</span>
-        <span class="card-url">/tool/image2pdf/</span>
-      </a>
-      <a class="card" href="/tool/photo-id/">
-        <span class="card-name">📸 证件照制作</span>
-        <span class="card-desc">在线制作证件照</span>
-        <span class="card-url">/tool/photo-id/</span>
-      </a>
-      <a class="card" href="/tool/qrcode/">
-        <span class="card-name">📱 二维码生成</span>
-        <span class="card-desc">文字链接快速生成二维码</span>
-        <span class="card-url">/tool/qrcode/</span>
-      </a>
-      <a class="card" href="/tool/qrcode-decode/">
-        <span class="card-name">🔍 二维码解析</span>
-        <span class="card-desc">扫描识别二维码内容</span>
-        <span class="card-url">/tool/qrcode-decode/</span>
-      </a>
-      <a class="card" href="/tool/resize/">
-        <span class="card-name">📐 调整大小</span>
-        <span class="card-desc">批量修改图片尺寸</span>
-        <span class="card-url">/tool/resize/</span>
-      </a>
-      <a class="card" href="/tool/format/">
-        <span class="card-name">🔄 格式转换</span>
-        <span class="card-desc">图片格式互相转换</span>
-        <span class="card-url">/tool/format/</span>
-      </a>
-      <a class="card" href="/tool/cover/">
-        <span class="card-name">🎨 封面生成</span>
-        <span class="card-desc">快速生成文章封面图</span>
-        <span class="card-url">/tool/cover/</span>
-      </a>
-      <a class="card" href="/tool/markdown/">
-        <span class="card-name">📝 Markdown 编辑</span>
-        <span class="card-desc">转公众号富文本格式</span>
-        <span class="card-url">/tool/markdown/</span>
-      </a>
-      <a class="card" href="/tool/studio/">
-        <span class="card-name">📰 公众号排版</span>
-        <span class="card-desc">一键美化文章排版</span>
-        <span class="card-url">/tool/studio/</span>
-      </a>
-      <a class="card" href="/tool/image-compress/">
-        <span class="card-name">🗜️ 图片压缩2</span>
-        <span class="card-desc">另源图片压缩工具</span>
-        <span class="card-url">/tool/image-compress/</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- AI工具集 -->
-  <div class="section">
-    <div class="section-title">🧰 AI 工具集</div>
-    <div class="grid">
-      <a class="card" href="/tools/ai/">
-        <span class="card-name">🤖 AI 助手</span>
-        <span class="card-desc">智能对话助手</span>
-        <span class="card-url">/tools/ai/</span>
-      </a>
-      <a class="card" href="/tools/ai-answer/">
-        <span class="card-name">📷 AI 拍照答题</span>
-        <span class="card-desc">拍照识别答案</span>
-        <span class="card-url">/tools/ai-answer/</span>
-      </a>
-      <a class="card" href="/tools/ai-image/">
-        <span class="card-name">🎨 AI 图片生成</span>
-        <span class="card-desc">双通道 AI 绘图</span>
-        <span class="card-url">/tools/ai-image/</span>
-      </a>
-      <a class="card" href="/tools/ai-manga/">
-        <span class="card-name">🎭 图片转漫画</span>
-        <span class="card-desc">一键将照片变艺术作品</span>
-        <span class="card-url">/tools/ai-manga/</span>
-      </a>
-      <a class="card" href="/tools/ai-avatar/">
-        <span class="card-name">👤 AI 虚拟形象</span>
-        <span class="card-desc">AI 全息交互界面</span>
-        <span class="card-url">/tools/ai-avatar/</span>
-      </a>
-      <a class="card" href="/tools/ai-palette/">
-        <span class="card-name">🎨 AI 配色方案</span>
-        <span class="card-desc">智能生成配色方案</span>
-        <span class="card-url">/tools/ai-palette/</span>
-      </a>
-      <a class="card" href="/tools/flower/">
-        <span class="card-name">🌸 识花</span>
-        <span class="card-desc">拍照识别花草植物</span>
-        <span class="card-url">/tools/flower/</span>
-      </a>
-      <a class="card" href="/tools/id-photo/">
-        <span class="card-name">📸 证件照换底色</span>
-        <span class="card-desc">快速更换证件照背景</span>
-        <span class="card-url">/tools/id-photo/</span>
-      </a>
-      <a class="card" href="/tools/link-card/">
-        <span class="card-name">🔗 网站卡片生成</span>
-        <span class="card-desc">生成网站预览卡片</span>
-        <span class="card-url">/tools/link-card/</span>
-      </a>
-      <a class="card" href="/tools/meme/">
-        <span class="card-name">😄 表情包制作</span>
-        <span class="card-desc">在线制作表情包</span>
-        <span class="card-url">/tools/meme/</span>
-      </a>
-      <a class="card" href="/tools/mj-prompt/">
-        <span class="card-name">💬 MJ 提示词</span>
-        <span class="card-desc">Midjourney 提示词生成</span>
-        <span class="card-url">/tools/mj-prompt/</span>
-      </a>
-      <a class="card" href="/tools/xhs-cover/">
-        <span class="card-name">📕 小红书封面</span>
-        <span class="card-desc">生成小红书风格封面</span>
-        <span class="card-url">/tools/xhs-cover/</span>
-      </a>
-      <a class="card" href="/tools/bookmarks/">
-        <span class="card-name">📚 收藏夹</span>
-        <span class="card-desc">鹏飞的工具收藏</span>
-        <span class="card-url">/tools/bookmarks/</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- 独立项目 -->
-  <div class="section">
-    <div class="section-title">📁 独立项目</div>
-    <div class="grid">
-      <a class="card" href="/about/">
-        <span class="card-name">👤 关于</span>
-        <span class="card-desc">站长的个人介绍</span>
-        <span class="card-url">/about/</span>
-      </a>
-      <a class="card" href="/openclaw/">
-        <span class="card-name">🤖 AI 管控台</span>
-        <span class="card-desc">OpenClaw 管理界面</span>
-        <span class="card-url">/openclaw/</span>
-      </a>
-      <a class="card" href="/user/">
-        <span class="card-name">👥 用户中心</span>
-        <span class="card-desc">互联网创业探索者</span>
-        <span class="card-url">/user/</span>
-      </a>
-      <a class="card" href="/dungeon/">
-        <span class="card-name">🏰 地牢游戏</span>
-        <span class="card-desc">用 AI 攻略每一个副业副本</span>
-        <span class="card-url">/dungeon/</span>
-      </a>
-      <a class="card" href="/clothesjiaoyou/">
-        <span class="card-name">🔄 旧衣交易</span>
-        <span class="card-desc">旧衣服买卖对接平台</span>
-        <span class="card-url">/clothesjiaoyou/</span>
-      </a>
-      <a class="card" href="/express/">
-        <span class="card-name">📦 快递查询</span>
-        <span class="card-desc">寄件队长 · 便捷寄快递</span>
-        <span class="card-url">/express/</span>
-      </a>
-      <a class="card" href="/family-tree/">
-        <span class="card-name">🌳 家谱生成</span>
-        <span class="card-desc">杨氏天衢公支系族谱</span>
-        <span class="card-url">/family-tree/</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- 外部链接 -->
-  <div class="section">
-    <div class="section-title">🔗 外部链接</div>
-    <div class="grid">
-      <a class="card ext" href="https://blog.imoons.cn" target="_blank">
-        <span class="card-name">📝 博客</span>
-        <span class="card-desc">个人博客文章</span>
-        <span class="card-url">https://blog.imoons.cn</span>
-      </a>
-      <a class="card ext" href="https://read.imoons.cn" target="_blank">
-        <span class="card-name">📖 读书笔记</span>
-        <span class="card-desc">阅读记录与思考</span>
-        <span class="card-url">https://read.imoons.cn</span>
-      </a>
-      <a class="card ext" href="https://moonlight.imoons.cn/moonlight" target="_blank">
-        <span class="card-name">💰 副业统计</span>
-        <span class="card-desc">副业收入记录</span>
-        <span class="card-url">https://moonlight.imoons.cn/moonlight</span>
-      </a>
-      <a class="card ext" href="https://moonlight.imoons.cn/prompt" target="_blank">
-        <span class="card-name">🎨 AI绘图提示词</span>
-        <span class="card-desc">生成绘图提示词</span>
-        <span class="card-url">https://moonlight.imoons.cn/prompt</span>
-      </a>
-      <a class="card ext" href="https://moonlight.imoons.cn/bzqm" target="_blank">
-        <span class="card-name">🧒 智能起名</span>
-        <span class="card-desc">八字五行起名分析</span>
-        <span class="card-url">https://moonlight.imoons.cn/bzqm</span>
-      </a>
-      <a class="card ext" href="https://tools.imoons.cn" target="_blank">
-        <span class="card-name">🧰 不二工具箱</span>
-        <span class="card-desc">精选工具集合</span>
-        <span class="card-url">https://tools.imoons.cn</span>
-      </a>
-      <a class="card ext" href="https://moonlight.imoons.cn/recycle" target="_blank">
-        <span class="card-name">👕 旧衣数据</span>
-        <span class="card-desc">旧衣回收数据中心</span>
-        <span class="card-url">https://moonlight.imoons.cn/recycle</span>
-      </a>
-      <a class="card ext" href="https://moonlight.imoons.cn/time" target="_blank">
-        <span class="card-name">⏱️ 时间追踪</span>
-        <span class="card-desc">记录每天重要时刻</span>
-        <span class="card-url">https://moonlight.imoons.cn/time</span>
-      </a>
-      <a class="card ext" href="https://fenxi.imoons.cn/" target="_blank">
-        <span class="card-name">💻 DSA 工具</span>
-        <span class="card-desc">数据结构与算法练习</span>
-        <span class="card-url">https://fenxi.imoons.cn/</span>
-      </a>
-      <a class="card ext" href="https://funds.imoons.cn" target="_blank">
-        <span class="card-name">💹 基金导航</span>
-        <span class="card-desc">基金投资工具导航</span>
-        <span class="card-url">https://funds.imoons.cn</span>
-      </a>
-      <a class="card ext" href="https://buer.imoons.cn" target="_blank">
-        <span class="card-name">🗂️ 布尔工具</span>
-        <span class="card-desc">第三方工具导航</span>
-        <span class="card-url">https://buer.imoons.cn</span>
-      </a>
-      <a class="card ext" href="https://imoons.cn" target="_blank">
-        <span class="card-name">🏠 imoons 官网</span>
-        <span class="card-desc">主站入口</span>
-        <span class="card-url">https://imoons.cn</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- 测试项目 -->
-  <div class="section">
-    <div class="section-title">🧪 测试项目</div>
-    <div class="grid">
-      <a class="card" href="/test/clothes/">
-        <span class="card-name">👕 旧衣回收</span>
-        <span class="card-desc">查询最优旧衣回收平台</span>
-        <span class="card-url">/test/clothes/</span>
-      </a>
-      <a class="card" href="/test/clothesdb/">
-        <span class="card-name">🗃️ 旧衣数据库</span>
-        <span class="card-desc">旧衣回收价格数据查询</span>
-        <span class="card-url">/test/clothesdb/</span>
-      </a>
-      <a class="card" href="/test/ewm/">
-        <span class="card-name">📱 联系客服</span>
-        <span class="card-desc">联系官方客服二维码</span>
-        <span class="card-url">/test/ewm/</span>
-      </a>
-      <a class="card" href="/test/xcx/">
-        <span class="card-name">📲 小程序工具</span>
-        <span class="card-desc">微信小程序开发制作</span>
-        <span class="card-url">/test/xcx/</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="no-result" id="noResult">没有找到匹配的工具 😢</div>
-</div>
-
-<div class="footer">page.imoons.cn · 不二出品</div>
-
+<div class="ft">page.imoons.cn · 不二出品</div>
 <script>
-  const input = document.getElementById('searchInput');
-  const cards = document.querySelectorAll('.card');
-  const noResult = document.getElementById('noResult');
-  input.addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
-    let count = 0;
-    cards.forEach(card => {
-      const name = card.querySelector('.card-name').textContent.toLowerCase();
-      const desc = card.querySelector('.card-desc').textContent.toLowerCase();
-      const match = !q || name.includes(q) || desc.includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) count++;
-    });
-    noResult.classList.toggle('show', count === 0 && q.length > 0);
-    document.querySelectorAll('.quick-link').forEach(link => {
-      const text = link.textContent.toLowerCase();
-      link.style.display = !q || text.includes(q) ? '' : 'none';
-    });
-  });
-</script>
+var SVG_icon={tools:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',compress:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,14 10,14 10,20"/><polyline points="20,10 14,10 14,4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>',pdf:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',qr:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>',resize:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>',refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><polyline points="1,20 1,14 7,14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>',image:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>',edit:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',chat:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',flower:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a3 3 0 00-3 3c0 1.5 1 3 3 4.5M12 22a3 3 0 003-3c0-1.5-1-3-3-4.5M2 12a3 3 0 003 3c1.5 0 3-1 4.5-3M22 12a3 3 0 00-3-3c-1.5 0-3 1-4.5 3"/></svg>',palette:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="7" r="1.5" fill="#4f8ef7" stroke="none"/><circle cx="7.5" cy="11" r="1.5" fill="#4f8ef7" stroke="none"/><circle cx="16.5" cy="11" r="1.5" fill="#4f8ef7" stroke="none"/></svg>',meme:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',prompt:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',bookmark:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>',book:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',money:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',package:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',tree:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-7"/><path d="M9 12l3-3 3 3"/><path d="M5 22h14"/><path d="M5 9l7-7 7 7"/><circle cx="12" cy="5" r="2"/></svg>',game:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="6" y2="12.01"/><line x1="18" y1="12" x2="18" y2="12.01"/><path d="M4 12h16a2 2 0 012 2v1H2v-1a2 2 0 012-2z"/><path d="M2 15h20"/></svg>',clothes:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>',globe:'<svg viewBox="0 0 24 24" fill="none" stroke="#ff7744" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',lightning:'<svg viewBox="0 0 24 24" fill="none" stroke="#ff7744" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>',user:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',ai:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',card:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',camera:'<svg viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',xhs:'<svg viewBox="0 0 24 24" fill="none" stroke="#ff6633" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="12" y2="15"/></svg>'};
 
+function mkCard(n,d,u,i,ext){
+  return '<a class="card'+(ext?' ext':'')+'" href="'+u+'"><div class="ci">'+i+'</div><div class="cn">'+n+'</div><div class="cd">'+d+'</div></a>';
+}
+
+var QL=[['AI 助手','/openclaw/'],['关于','/about/'],['地牢','/dungeon/'],['全能王','/tool/'],['AI工具','/tools/ai/'],['答题','/tools/ai-answer/'],['绘图','/tools/ai-image/'],['漫画','/tools/ai-manga/'],['封面','/tool/cover/'],['排版','/tool/studio/'],['MD','/tool/markdown/'],['提示词','/tools/mj-prompt/'],['收藏','/tools/bookmarks/'],['博客','https://blog.imoons.cn'],['副业','https://moonlight.imoons.cn/moonlight']];
+document.getElementById('quick-links').innerHTML=QL.map(function(q){return'<a class="ql" href="'+q[1]+'">'+q[0]+'</a>';}).join('');
+
+var TOOL=[['全能王首页','一站式图像处理工具集合','/tool/'],['图片压缩','本地压缩保护隐私','/tool/compress/'],['图片转PDF','多图合并为PDF','/tool/image2pdf/'],['证件照制作','在线制作证件照','/tool/photo-id/'],['二维码生成','文字链接生成二维码','/tool/qrcode/'],['二维码解析','扫描识别二维码','/tool/qrcode-decode/'],['调整大小','批量修改图片尺寸','/tool/resize/'],['格式转换','图片格式互相转换','/tool/format/'],['封面生成','快速生成文章封面图','/tool/cover/'],['Markdown编辑','转公众号富文本','/tool/markdown/'],['公众号排版','一键美化文章排版','/tool/studio/'],['图片压缩2','另源图片压缩','/tool/image-compress/']];
+document.getElementById('tool-grid').innerHTML=TOOL.map(function(t){return mkCard(t[0],t[1],t[2],SVG_icon.tools,false);}).join('');
+
+var AI=[['AI助手','智能对话助手','/tools/ai/'],['AI拍照答题','拍照识别答案','/tools/ai-answer/'],['AI图片生成','双通道AI绘图','/tools/ai-image/'],['图片转漫画','一键将照片变艺术','/tools/ai-manga/'],['AI虚拟形象','AI全息交互界面','/tools/ai-avatar/'],['AI配色方案','智能生成配色方案','/tools/ai-palette/'],['识花','拍照识别花草植物','/tools/flower/'],['证件照换底色','快速更换证件照背景','/tools/id-photo/'],['网站卡片生成','生成网站预览卡片','/tools/link-card/'],['表情包制作','在线制作表情包','/tools/meme/'],['MJ提示词','Midjourney提示词生成','/tools/mj-prompt/'],['小红书封面','生成小红书风格封面','/tools/xhs-cover/'],['收藏夹','鹏飞的工具收藏','/tools/bookmarks/']];
+document.getElementById('ai-grid').innerHTML=AI.map(function(a){return mkCard(a[0],a[1],a[2],SVG_icon.ai,false);}).join('');
+
+var PROJ=[['关于','站长的个人介绍','/about/'],['AI管控台','OpenClaw管理界面','/openclaw/'],['用户中心','互联网创业探索者','/user/'],['地牢游戏','用AI攻略副业副本','/dungeon/'],['旧衣交易','旧衣服买卖对接平台','/clothesjiaoyou/'],['快递查询','寄件队长便捷快递','/express/'],['家谱生成','杨氏天衢公支系族谱','/family-tree/']];
+document.getElementById('project-grid').innerHTML=PROJ.map(function(p){return mkCard(p[0],p[1],p[2],SVG_icon.user,false);}).join('');
+
+var EXT=[['博客','个人博客文章','https://blog.imoons.cn'],['读书笔记','阅读记录与思考','https://read.imoons.cn'],['副业统计','副业收入记录','https://moonlight.imoons.cn/moonlight'],['AI绘图提示词','生成绘图提示词','https://moonlight.imoons.cn/prompt'],['智能起名','八字五行起名分析','https://moonlight.imoons.cn/bzqm'],['旧衣数据','旧衣回收数据中心','https://moonlight.imoons.cn/recycle'],['时间追踪','记录每天重要时刻','https://moonlight.imoons.cn/time'],['DSA工具','数据结构与算法练习','https://fenxi.imoons.cn/'],['基金导航','基金投资工具导航','https://funds.imoons.cn'],['不二工具箱','精选工具集合','https://tools.imoons.cn'],['布尔工具','第三方工具导航','https://buer.imoons.cn'],['imoons官网','主站入口','https://imoons.cn']];
+document.getElementById('ext-grid').innerHTML=EXT.map(function(e){return mkCard(e[0],e[1],e[2],SVG_icon.globe,true);}).join('');
+
+var TEST=[['旧衣回收','查询最优旧衣回收平台','/test/clothes/'],['旧衣数据库','旧衣回收价格数据查询','/test/clothesdb/'],['联系客服','联系官方客服二维码','/test/ewm/'],['小程序工具','微信小程序开发制作','/test/xcx/']];
+document.getElementById('test-grid').innerHTML=TEST.map(function(t){return mkCard(t[0],t[1],t[2],SVG_icon.clothes,false);}).join('');
+
+function showTab(id){
+  document.querySelectorAll('[data-tab]').forEach(function(el){el.classList.remove('show');});
+  document.querySelectorAll('.tab').forEach(function(el){el.classList.remove('active');});
+  document.querySelector('[data-tab="'+id+'"]').classList.add('show');
+  document.querySelector('[data-t="'+id+'"]').classList.add('active');
+}
+
+document.getElementById('searchInput').addEventListener('input',function(){
+  var q=this.value.trim().toLowerCase();
+  var cards=document.querySelectorAll('.card');
+  var count=0;
+  cards.forEach(function(card){
+    var match=!q||card.querySelector('.cn').textContent.toLowerCase().indexOf(q)!==-1||card.querySelector('.cd').textContent.toLowerCase().indexOf(q)!==-1;
+    card.style.display=match?'':'none';
+    if(match) count++;
+  });
+  document.getElementById('noResult').classList.toggle('show',count===0&&q.length>0);
+  document.querySelectorAll('.ql').forEach(function(l){l.style.display=!q||l.textContent.toLowerCase().indexOf(q)!==-1?'':'none';});
+});
+</script>
 </body>
 </html>
