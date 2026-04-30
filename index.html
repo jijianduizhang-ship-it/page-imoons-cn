@@ -15,7 +15,6 @@
     min-height: 100vh;
     padding: 0;
   }
-  /* 头部 */
   .header {
     background: linear-gradient(135deg, #3366ff 0%, #5b8cff 100%);
     color: white;
@@ -33,7 +32,6 @@
     font-size: 0.9rem;
     margin-bottom: 24px;
   }
-  /* 搜索框 */
   .search-box {
     max-width: 520px;
     margin: 0 auto;
@@ -60,9 +58,7 @@
     color: #999;
     pointer-events: none;
   }
-  /* 主内容 */
   .main { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
-  /* 快捷入口 */
   .quick-links {
     display: flex;
     gap: 10px;
@@ -90,7 +86,6 @@
     border-color: #3366ff;
     transform: translateY(-1px);
   }
-  /* 区块 */
   .section { margin-bottom: 40px; }
   .section-title {
     font-size: 0.85rem;
@@ -101,7 +96,6 @@
     margin-bottom: 14px;
     padding-left: 4px;
   }
-  /* 卡片网格 */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -110,7 +104,7 @@
   .card {
     background: #fff;
     border-radius: 12px;
-    padding: 18px 16px 16px;
+    padding: 18px 16px 14px;
     text-decoration: none;
     color: inherit;
     transition: transform 0.18s, box-shadow 0.18s;
@@ -125,32 +119,11 @@
     box-shadow: 0 8px 24px rgba(51,102,255,0.12);
     border-color: rgba(51,102,255,0.3);
   }
-  .card-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #111;
-  }
-  .card-desc {
-    font-size: 0.78rem;
-    color: #8c8c9a;
-    line-height: 1.5;
-  }
-  .card-url {
-    font-size: 0.72rem;
-    color: #b0b0be;
-    margin-top: 2px;
-    word-break: break-all;
-  }
-  /* 第三方外链特殊样式 */
+  .card-name { font-weight: 600; font-size: 0.95rem; color: #111; }
+  .card-desc { font-size: 0.78rem; color: #8c8c9a; line-height: 1.5; }
+  .card-url { font-size: 0.72rem; color: #b0b0be; margin-top: auto; word-break: break-all; }
   .card.ext { border-left: 3px solid #ff6633; }
-  /* 底部 */
-  .footer {
-    text-align: center;
-    color: #c0c0cc;
-    font-size: 0.78rem;
-    padding: 0 20px 30px;
-  }
-  /* 隐藏搜索无结果提示 */
+  .footer { text-align: center; color: #c0c0cc; font-size: 0.78rem; padding: 0 20px 30px; }
   .no-result { display: none; text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
   .no-result.show { display: block; }
 </style>
@@ -167,262 +140,246 @@
 </div>
 
 <div class="main">
+
   <!-- 快捷入口 -->
   <div class="quick-links">
     <a class="quick-link" href="/openclaw/">🤖 AI 助手</a>
-    <a class="quick-link" href="/about/">👤 关于本站</a>
-    <a class="quick-link" href="/clothes/">👕 旧衣回收</a>
-    <a class="quick-link" href="/tools/aii/">🧠 AI 工具集</a>
-    <a class="quick-link" href="/tools/aidt/">📷 拍照答题</a>
-    <a class="quick-link" href="/tools/express/">📦 快递查询</a>
-    <a class="quick-link" href="/tools/family-tree/">🌳 家谱生成</a>
-    <a class="quick-link" href="/tools/hua/">🌸 画图识花</a>
-    <a class="quick-link" href="/image-compress/">🖼️ 图片压缩</a>
-    <a class="quick-link" href="/qrcode/">📱 二维码</a>
-    <a class="quick-link" href="/tools/tsc/">💬 台词导出</a>
+    <a class="quick-link" href="/about/">👤 关于</a>
+    <a class="quick-link" href="/dungeon/">🏰 地牢</a>
+    <a class="quick-link" href="/tool/">🛠️ 全能王</a>
+    <a class="quick-link" href="/tools/ai/">🧠 AI工具</a>
+    <a class="quick-link" href="/tools/ai-answer/">📷 答题</a>
+    <a class="quick-link" href="/tools/ai-image/">🎨 绘图</a>
+    <a class="quick-link" href="/tools/ai-manga/">🎭 转漫画</a>
+    <a class="quick-link" href="/tools/cover/">🖼️ 封面</a>
+    <a class="quick-link" href="/tools/studio/">📰 排版</a>
+    <a class="quick-link" href="/tools/markdown/">📝 MD编辑</a>
+    <a class="quick-link" href="/tools/mj-prompt/">💬 提示词</a>
+    <a class="quick-link" href="/tools/bookmarks/">📚 收藏</a>
     <a class="quick-link" href="https://blog.imoons.cn" target="_blank">📝 博客</a>
-    <a class="quick-link" href="https://read.imoons.cn" target="_blank">📖 读书</a>
-    <a class="quick-link" href="https://moonlight.imoons.cn/moonlight" target="_blank">💰 副业统计</a>
-    <a class="quick-link" href="https://tools.imoons.cn" target="_blank">🧰 不二工具箱</a>
+    <a class="quick-link" href="https://moonlight.imoons.cn/moonlight" target="_blank">💰 副业</a>
   </div>
 
+  <!-- 全能王工具箱 -->
   <div class="section">
-    <div class="section-title">📁 原创项目</div>
+    <div class="section-title">🛠️ 全能王工具箱</div>
     <div class="grid">
-      <a class="card" href="/openclaw/">
+      <a class="card" href="/tool/">
+        <span class="card-name">🏠 全能王首页</span>
+        <span class="card-desc">一站式图像处理工具集合</span>
+        <span class="card-url">/tool/</span>
+      </a>
+      <a class="card" href="/tool/compress/">
+        <span class="card-name">🖼️ 图片压缩</span>
+        <span class="card-desc">本地压缩，保护隐私</span>
+        <span class="card-url">/tool/compress/</span>
+      </a>
+      <a class="card" href="/tool/image2pdf/">
+        <span class="card-name">📄 图片转PDF</span>
+        <span class="card-desc">多图合并为一份 PDF</span>
+        <span class="card-url">/tool/image2pdf/</span>
+      </a>
+      <a class="card" href="/tool/photo-id/">
+        <span class="card-name">📸 证件照制作</span>
+        <span class="card-desc">在线制作证件照</span>
+        <span class="card-url">/tool/photo-id/</span>
+      </a>
+      <a class="card" href="/tool/qrcode/">
+        <span class="card-name">📱 二维码生成</span>
+        <span class="card-desc">文字链接快速生成二维码</span>
+        <span class="card-url">/tool/qrcode/</span>
+      </a>
+      <a class="card" href="/tool/qrcode-decode/">
+        <span class="card-name">🔍 二维码解析</span>
+        <span class="card-desc">扫描识别二维码内容</span>
+        <span class="card-url">/tool/qrcode-decode/</span>
+      </a>
+      <a class="card" href="/tool/resize/">
+        <span class="card-name">📐 调整大小</span>
+        <span class="card-desc">批量修改图片尺寸</span>
+        <span class="card-url">/tool/resize/</span>
+      </a>
+      <a class="card" href="/tool/format/">
+        <span class="card-name">🔄 格式转换</span>
+        <span class="card-desc">图片格式互相转换</span>
+        <span class="card-url">/tool/format/</span>
+      </a>
+      <a class="card" href="/tool/cover/">
+        <span class="card-name">🎨 封面生成</span>
+        <span class="card-desc">快速生成文章封面图</span>
+        <span class="card-url">/tool/cover/</span>
+      </a>
+      <a class="card" href="/tool/markdown/">
+        <span class="card-name">📝 Markdown 编辑</span>
+        <span class="card-desc">转公众号富文本格式</span>
+        <span class="card-url">/tool/markdown/</span>
+      </a>
+      <a class="card" href="/tool/studio/">
+        <span class="card-name">📰 公众号排版</span>
+        <span class="card-desc">一键美化文章排版</span>
+        <span class="card-url">/tool/studio/</span>
+      </a>
+      <a class="card" href="/tool/image-compress/">
+        <span class="card-name">🗜️ 图片压缩2</span>
+        <span class="card-desc">另源图片压缩工具</span>
+        <span class="card-url">/tool/image-compress/</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- AI工具集 -->
+  <div class="section">
+    <div class="section-title">🧰 AI 工具集</div>
+    <div class="grid">
+      <a class="card" href="/tools/ai/">
         <span class="card-name">🤖 AI 助手</span>
-        <span class="card-desc">个人 AI 助手，找我聊天、问问题</span>
-        <span class="card-url">/openclaw/</span>
+        <span class="card-desc">智能对话助手</span>
+        <span class="card-url">/tools/ai/</span>
       </a>
+      <a class="card" href="/tools/ai-answer/">
+        <span class="card-name">📷 AI 拍照答题</span>
+        <span class="card-desc">拍照识别答案</span>
+        <span class="card-url">/tools/ai-answer/</span>
+      </a>
+      <a class="card" href="/tools/ai-image/">
+        <span class="card-name">🎨 AI 图片生成</span>
+        <span class="card-desc">双通道 AI 绘图</span>
+        <span class="card-url">/tools/ai-image/</span>
+      </a>
+      <a class="card" href="/tools/ai-manga/">
+        <span class="card-name">🎭 图片转漫画</span>
+        <span class="card-desc">一键将照片变艺术作品</span>
+        <span class="card-url">/tools/ai-manga/</span>
+      </a>
+      <a class="card" href="/tools/ai-avatar/">
+        <span class="card-name">👤 AI 虚拟形象</span>
+        <span class="card-desc">AI 全息交互界面</span>
+        <span class="card-url">/tools/ai-avatar/</span>
+      </a>
+      <a class="card" href="/tools/ai-palette/">
+        <span class="card-name">🎨 AI 配色方案</span>
+        <span class="card-desc">智能生成配色方案</span>
+        <span class="card-url">/tools/ai-palette/</span>
+      </a>
+      <a class="card" href="/tools/flower/">
+        <span class="card-name">🌸 识花</span>
+        <span class="card-desc">拍照识别花草植物</span>
+        <span class="card-url">/tools/flower/</span>
+      </a>
+      <a class="card" href="/tools/id-photo/">
+        <span class="card-name">📸 证件照换底色</span>
+        <span class="card-desc">快速更换证件照背景</span>
+        <span class="card-url">/tools/id-photo/</span>
+      </a>
+      <a class="card" href="/tools/link-card/">
+        <span class="card-name">🔗 网站卡片生成</span>
+        <span class="card-desc">生成网站预览卡片</span>
+        <span class="card-url">/tools/link-card/</span>
+      </a>
+      <a class="card" href="/tools/meme/">
+        <span class="card-name">😄 表情包制作</span>
+        <span class="card-desc">在线制作表情包</span>
+        <span class="card-url">/tools/meme/</span>
+      </a>
+      <a class="card" href="/tools/mj-prompt/">
+        <span class="card-name">💬 MJ 提示词</span>
+        <span class="card-desc">Midjourney 提示词生成</span>
+        <span class="card-url">/tools/mj-prompt/</span>
+      </a>
+      <a class="card" href="/tools/xhs-cover/">
+        <span class="card-name">📕 小红书封面</span>
+        <span class="card-desc">生成小红书风格封面</span>
+        <span class="card-url">/tools/xhs-cover/</span>
+      </a>
+      <a class="card" href="/tools/bookmarks/">
+        <span class="card-name">📚 收藏夹</span>
+        <span class="card-desc">鹏飞的工具收藏</span>
+        <span class="card-url">/tools/bookmarks/</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 独立项目 -->
+  <div class="section">
+    <div class="section-title">📁 独立项目</div>
+    <div class="grid">
       <a class="card" href="/about/">
-        <span class="card-name">👤 关于本站</span>
-        <span class="card-desc">站长的个人介绍和联系方式</span>
-      </a>
+        <span class="card-name">👤 关于</span>
+        <span class="card-desc">站长的个人介绍</span>
         <span class="card-url">/about/</span>
       </a>
-
-      <a class="card" href="/clothes/">
-        <span class="card-name">👕 旧衣回收</span>
-        <span class="card-desc">查询最优旧衣回收平台</span>
+      <a class="card" href="/openclaw/">
+        <span class="card-name">🤖 AI 管控台</span>
+        <span class="card-desc">OpenClaw 管理界面</span>
+        <span class="card-url">/openclaw/</span>
       </a>
-        <span class="card-url">/clothes/</span>
-      </a>
-
-      <a class="card" href="/clothesdb/">
-        <span class="card-name">🗃️ 旧衣数据库</span>
-        <span class="card-desc">旧衣回收价格数据查询</span>
-      </a>
-        <span class="card-url">/clothesdb/</span>
-      </a>
-
-      <a class="card" href="/clothesjiaoyou/">
-        <span class="card-name">🔄 旧衣交易</span>
-        <span class="card-desc">旧衣服买卖对接平台</span>
-      </a>
-        <span class="card-url">/clothesjiaoyou/</span>
-      </a>
-
-      <a class="card" href="/dungeon/">
-        <span class="card-name">🏰 地牢游戏</span>
-        <span class="card-desc">用 AI 攻略每一个副业副本</span>
-      </a>
-        <span class="card-url">/dungeon/</span>
-      </a>
-
       <a class="card" href="/user/">
         <span class="card-name">👥 用户中心</span>
         <span class="card-desc">互联网创业探索者</span>
-      </a>
         <span class="card-url">/user/</span>
       </a>
-
-      <a class="card" href="/cover/">
-        <span class="card-name">🎨 封面生成器</span>
-        <span class="card-desc">快速生成文章封面图</span>
+      <a class="card" href="/dungeon/">
+        <span class="card-name">🏰 地牢游戏</span>
+        <span class="card-desc">用 AI 攻略每一个副业副本</span>
+        <span class="card-url">/dungeon/</span>
       </a>
-        <span class="card-url">/cover/</span>
+      <a class="card" href="/clothesjiaoyou/">
+        <span class="card-name">🔄 旧衣交易</span>
+        <span class="card-desc">旧衣服买卖对接平台</span>
+        <span class="card-url">/clothesjiaoyou/</span>
       </a>
-
-      <a class="card" href="/md/">
-        <span class="card-name">📝 Markdown 编辑器</span>
-        <span class="card-desc">转公众号富文本格式</span>
-      </a>
-        <span class="card-url">/md/</span>
-      </a>
-
-      <a class="card" href="/studio/">
-        <span class="card-name">📰 公众号排版</span>
-        <span class="card-desc">一键美化公众号文章排版</span>
-      </a>
-        <span class="card-url">/studio/</span>
-      </a>
-
-      <a class="card" href="/image-compress/">
-        <span class="card-name">🖼️ 图片压缩</span>
-        <span class="card-desc">本地压缩，保护隐私</span>
-      </a>
-        <span class="card-url">/image-compress/</span>
-      </a>
-
-      <a class="card" href="/qrcode/">
-        <span class="card-name">📱 二维码工具</span>
-        <span class="card-desc">生成和解析二维码</span>
-      </a>
-        <span class="card-url">/qrcode/</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">🛠️ 工具集合</div>
-    <div class="grid">
-      <a class="card" href="/tools/aii/">
-        <span class="card-name">🧠 AI 助手</span>
-        <span class="card-desc">智能对话助手</span>
-      </a>
-        <span class="card-url">/tools/aii/</span>
-      </a>
-
-      <a class="card" href="/tools/aidt/">
-        <span class="card-name">📷 AI 拍照答题</span>
-        <span class="card-desc">拍照识别答案</span>
-      </a>
-        <span class="card-url">/tools/aidt/</span>
-      </a>
-
-      <a class="card" href="/tools/express/">
+      <a class="card" href="/express/">
         <span class="card-name">📦 快递查询</span>
-        <span class="card-desc">便捷寄快递</span>
+        <span class="card-desc">寄件队长 · 便捷寄快递</span>
+        <span class="card-url">/express/</span>
       </a>
-        <span class="card-url">/tools/express/</span>
-      </a>
-
-      <a class="card" href="/tools/family-tree/">
+      <a class="card" href="/family-tree/">
         <span class="card-name">🌳 家谱生成</span>
-        <span class="card-desc">族谱在线生成</span>
+        <span class="card-desc">杨氏天衢公支系族谱</span>
+        <span class="card-url">/family-tree/</span>
       </a>
-        <span class="card-url">/tools/family-tree/</span>
-      </a>
-
-      <a class="card" href="/tools/hua/">
-        <span class="card-name">🌸 画图识花</span>
-        <span class="card-desc">拍照识别花草植物</span>
-      </a>
-        <span class="card-url">/tools/hua/</span>
-      </a>
-
-      <a class="card" href="/tools/imge/">
-        <span class="card-name">🎭 图片工具</span>
-        <span class="card-desc">照片变艺术作品</span>
-      </a>
-        <span class="card-url">/tools/imge/</span>
-      </a>
-
-      <a class="card" href="/tools/tool/xcx/">
-        <span class="card-name">📲 小程序工具</span>
-        <span class="card-desc">微信小程序开发制作</span>
-      </a>
-        <span class="card-url">/tools/tool/xcx/</span>
-      </a>
-
-      <a class="card" href="/tools/tsc/">
-        <span class="card-name">💬 台词导出</span>
-        <span class="card-desc">MJ 提示词生成器</span>
-      </a>
-        <span class="card-url">/tools/tsc/</span>
-      </a>
-
     </div>
   </div>
 
+  <!-- 外部链接 -->
   <div class="section">
     <div class="section-title">🔗 外部链接</div>
     <div class="grid">
       <a class="card ext" href="https://blog.imoons.cn" target="_blank">
         <span class="card-name">📝 博客</span>
         <span class="card-desc">个人博客文章</span>
-      </a>
         <span class="card-url">https://blog.imoons.cn</span>
       </a>
-
       <a class="card ext" href="https://read.imoons.cn" target="_blank">
         <span class="card-name">📖 读书笔记</span>
         <span class="card-desc">阅读记录与思考</span>
-      </a>
         <span class="card-url">https://read.imoons.cn</span>
       </a>
-
       <a class="card ext" href="https://moonlight.imoons.cn/moonlight" target="_blank">
         <span class="card-name">💰 副业统计</span>
         <span class="card-desc">副业收入记录</span>
-      </a>
         <span class="card-url">https://moonlight.imoons.cn/moonlight</span>
       </a>
-
-      <a class="card ext" href="https://moonlight.imoons.cn/recycle" target="_blank">
-        <span class="card-name">👕 旧衣数据</span>
-        <span class="card-desc">旧衣回收数据中心</span>
-      </a>
-        <span class="card-url">https://moonlight.imoons.cn/recycle</span>
-      </a>
-
       <a class="card ext" href="https://moonlight.imoons.cn/prompt" target="_blank">
         <span class="card-name">🎨 AI绘图提示词</span>
         <span class="card-desc">生成绘图提示词</span>
-      </a>
         <span class="card-url">https://moonlight.imoons.cn/prompt</span>
       </a>
-
       <a class="card ext" href="https://moonlight.imoons.cn/bzqm" target="_blank">
         <span class="card-name">🧒 智能起名</span>
         <span class="card-desc">八字五行起名分析</span>
-      </a>
         <span class="card-url">https://moonlight.imoons.cn/bzqm</span>
       </a>
-
-      <a class="card ext" href="https://moonlight.imoons.cn/time" target="_blank">
-        <span class="card-name">⏱️ 时间追踪</span>
-        <span class="card-desc">记录每天重要时刻</span>
-      </a>
-        <span class="card-url">https://moonlight.imoons.cn/time</span>
-      </a>
-
-      <a class="card ext" href="https://fenxi.imoons.cn/" target="_blank">
-        <span class="card-name">💻 DSA 工具</span>
-        <span class="card-desc">算法在线练习</span>
-      </a>
-        <span class="card-url">https://fenxi.imoons.cn/</span>
-      </a>
-
-      <a class="card ext" href="https://funds.imoons.cn" target="_blank">
-        <span class="card-name">💹 基金导航</span>
-        <span class="card-desc">基金投资工具</span>
-      </a>
-        <span class="card-url">https://funds.imoons.cn</span>
-      </a>
-
       <a class="card ext" href="https://tools.imoons.cn" target="_blank">
         <span class="card-name">🧰 不二工具箱</span>
         <span class="card-desc">精选工具集合</span>
-      </a>
         <span class="card-url">https://tools.imoons.cn</span>
       </a>
-
-      <a class="card ext" href="https://buer.imoons.cn" target="_blank">
-        <span class="card-name">🗂️ 布尔工具</span>
-        <span class="card-desc">第三方工具导航</span>
-      </a>
-        <span class="card-url">https://buer.imoons.cn</span>
-      </a>
-
       <a class="card ext" href="https://imoons.cn" target="_blank">
         <span class="card-name">🏠 imoons 官网</span>
         <span class="card-desc">主站入口</span>
-      </a>
         <span class="card-url">https://imoons.cn</span>
       </a>
-
     </div>
   </div>
 
@@ -432,11 +389,9 @@
 <div class="footer">page.imoons.cn · 不二出品</div>
 
 <script>
-  // 搜索功能
   const input = document.getElementById('searchInput');
   const cards = document.querySelectorAll('.card');
   const noResult = document.getElementById('noResult');
-
   input.addEventListener('input', function() {
     const q = this.value.trim().toLowerCase();
     let count = 0;
@@ -448,7 +403,6 @@
       if (match) count++;
     });
     noResult.classList.toggle('show', count === 0 && q.length > 0);
-    // 隐藏快捷链接中的匹配
     document.querySelectorAll('.quick-link').forEach(link => {
       const text = link.textContent.toLowerCase();
       link.style.display = !q || text.includes(q) ? '' : 'none';
