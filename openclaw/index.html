@@ -15,9 +15,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .header .updated span { color: #94a3b8; }
 
 .nav { background: #1e293b; padding: 0 32px; display: flex; gap: 4px; border-bottom: 1px solid #334155; }
-.nav button { background: none; border: none; color: #94a3b8; padding: 14px 16px; cursor: pointer; font-size: 14px; border-bottom: 2px solid transparent; transition: all 0.2s; }
-.nav button:hover { color: #f8fafc; }
-.nav button.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+.navtab { background: none; border: none; color: #94a3b8; padding: 14px 16px; cursor: pointer; font-size: 14px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.navtab:hover { color: #f8fafc; }
+.navtab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
 
 .container { padding: 28px 32px; max-width: 1400px; }
 
@@ -65,8 +65,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 .modal-close:hover { color: #f8fafc; }
 
 /* Tab content */
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.tab-content { display: none; position: absolute; width: 100%; min-height: 400px; }
 
 /* 刷新按钮 */
 .refresh-btn { background: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
@@ -78,25 +77,25 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 .section-title::before { content: '📋'; }
 
 .footer { text-align: center; padding: 24px; font-size: 12px; color: #475569; border-top: 1px solid #1e293b; margin-top: 32px; }
-</style>
+.navtab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+  </style>
 </head>
 <body>
 
 <header class="header">
   <h1>OpenClaw 管控台</h1>
   <div>
-    <span class="updated">最后更新: <span id="lastUpdated">2026/4/30 06:00:16</span></span>
+    <span class="updated">最后更新: <span id="lastUpdated">2026/4/28 19:08:38</span></span>
     <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
   </div>
 </header>
 
-<nav class="nav">
-  <button class="active" onclick="switchTab('overview')">总览</button>
-  <button onclick="switchTab('cron')">定时任务 (14)</button>
-  <button onclick="switchTab('skills')">技能 (97)</button>
-  <button onclick="switchTab('scripts')">脚本 (37)</button>
-  <button onclick="switchTab('projects')">项目 (20)</button>
-  <button onclick="switchTab('agents')">Agent (9)</button>
+<nav class="nav" style="display:flex;gap:4px;border-bottom:1px solid #334155;">
+  <a href="#tab-overview" class="navtab active" onclick="switchTab(\'overview\', this)">总览</a>
+  <a href="#tab-cron" class="navtab" onclick="switchTab(\'cron\', this)">定时任务 (17)</a>
+  <a href="#tab-skills" class="navtab" onclick="switchTab(\'skills\', this)">技能 (97)</a>
+  <a href="#tab-scripts" class="navtab" onclick="switchTab(\'scripts\', this)">脚本 (36)</a>
+  <a href="#tab-projects" class="navtab" onclick="switchTab(\'projects\', this)">项目 (20)</a>
 </nav>
 
 <div class="container">
@@ -105,12 +104,12 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <div id="tab-overview" class="tab-content active">
     <div class="stats">
       <div class="stat-card">
-        <div class="num ok">13</div>
+        <div class="num ok">14</div>
         <div class="label">正常运行</div>
-        <div class="sub">共 14 个任务</div>
+        <div class="sub">共 17 个任务</div>
       </div>
       <div class="stat-card">
-        <div class="num error">1</div>
+        <div class="num error">3</div>
         <div class="label">异常任务</div>
         <div class="sub">需要关注</div>
       </div>
@@ -120,7 +119,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
         <div class="sub">系统 53 + 工作区 44</div>
       </div>
       <div class="stat-card">
-        <div class="num">37</div>
+        <div class="num">36</div>
         <div class="label">脚本</div>
         <div class="sub">自动化脚本</div>
       </div>
@@ -134,15 +133,25 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     
     <div class="panel" style="margin-bottom: 20px; border-color: #ef444444;">
       <div class="panel-header">
-        <h2>🔴 异常任务 (1)</h2>
+        <h2>🔴 异常任务 (3)</h2>
       </div>
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>Agent</th><th>状态</th></tr></thead>
         <tbody>
           <tr>
-            <td><code>buer-dai...</code></td>
-            <td></td>
-            <td><span class="tag agent-tag">system</span></td>
+            <td><code>7363e5ef...</code></td>
+            <td>CEO健康检查</td>
+            <td><span class="tag agent-tag">ceo</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>ba65cf47...</code></td>
+            <td>晨间简报</td>
+            <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>c2c2e3db...</code></td>
+            <td>CEO周检</td>
+            <td><span class="tag agent-tag">ceo</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
           </tr>
         </tbody>
@@ -158,6 +167,36 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>调度</th><th>Agent</th><th>状态</th></tr></thead>
         <tbody><tr>
+      <td><code>b906d1d9...</code></td>
+      <td>副业项目推送-晚</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>7987d5f7...</code></td>
+      <td>晚间复盘提醒</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>buer-dai...</code></td>
+      <td></td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">system</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>6b375240...</code></td>
+      <td>每日反思发布</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">main</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>7363e5ef...</code></td>
+      <td>CEO健康检查</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">ceo</span></td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
+    </tr><tr>
       <td><code>129338e0...</code></td>
       <td>每日天气推送</td>
       <td><span class="tag">undefined</span></td>
@@ -166,6 +205,12 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td><code>ba65cf47...</code></td>
       <td>晨间简报</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
+    </tr><tr>
+      <td><code>f5a5e051...</code></td>
+      <td>副业项目推送-早</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
@@ -218,29 +263,11 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
-      <td><code>7987d5f7...</code></td>
-      <td>晚间复盘提醒</td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
-      <td><code>buer-dai...</code></td>
-      <td></td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">system</span></td>
-      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
-    </tr><tr>
-      <td><code>6b375240...</code></td>
-      <td>每日反思发布</td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">main</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
-      <td><code>7363e5ef...</code></td>
-      <td>CEO健康检查</td>
+      <td><code>c2c2e3db...</code></td>
+      <td>CEO周检</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">ceo</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr></tbody>
       </table>
     </div>
@@ -263,7 +290,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 
   <!-- 脚本 -->
   <div id="tab-scripts" class="tab-content">
-    <h2 class="section-title">脚本 (37)</h2>
+    <h2 class="section-title">脚本 (36)</h2>
     <div class="panel">
       <table>
         <thead><tr><th>文件名</th><th>描述</th><th>大小</th><th>修改时间</th></tr></thead>
@@ -282,11 +309,6 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td class="desc">!/usr/bin/env node</td>
       <td>9.3KB</td>
       <td>2026/4/25</td>
-    </tr><tr>
-      <td>buer-daily-updater.js</td>
-      <td class="desc">!/usr/bin/env node</td>
-      <td>9.0KB</td>
-      <td>2026/4/29</td>
     </tr><tr>
       <td>buer-diary-generator.js</td>
       <td class="desc">!/usr/bin/env node</td>
@@ -435,8 +457,8 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td>task-queue-worker.js</td>
       <td class="desc">!/usr/bin/env node</td>
-      <td>13.3KB</td>
-      <td>2026/4/29</td>
+      <td>12.4KB</td>
+      <td>2026/4/5</td>
     </tr><tr>
       <td>xiguazhu_orders.py</td>
       <td class="desc">!/usr/bin/env python3</td>
@@ -546,15 +568,6 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr></tbody>
       </table>
     </div>
-  <!-- Agent -->
-  <div id="tab-agents" class="tab-content">
-    <h2 class="section-title">子Agent (9)</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <span style="font-size:20px;">🏠</span>
-            <span style="font-weight:600;font-size:16px;color:#f8fafc;">main</span>
-            <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">(default)</span>
           </div>
           <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
             <div>📁 memory文件: <span style="color:#38bdf8;">0个</span></div>
@@ -613,9 +626,9 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <span style="font-size:11px;background:#0f172a;padding:2px 8px;border-radius:4px;color:#64748b;">/root/.openclaw/workspace-jinhua</span>
           </div>
           <div style="font-size:12px;color:#94a3b8;line-height:1.8;">
-            <div>📁 memory文件: <span style="color:#38bdf8;">14个</span></div>
+            <div>📁 memory文件: <span style="color:#38bdf8;">13个</span></div>
             <div>🛠️ 技能: <span style="color:#38bdf8;">4个</span></div>
-            <div>📅 最近活动: <span style="color:#38bdf8;">4/29 09:45</span></div>
+            <div>📅 最近活动: <span style="color:#38bdf8;">4/28 09:32</span></div>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
             <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> </div>
@@ -632,7 +645,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <div>📅 最近活动: <span style="color:#38bdf8;">4/27 23:04</span></div>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
-            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">10正常</span> </div>
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">11正常</span> <span style="color:#ef4444;">1异常</span></div>
           </div>
         </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -674,7 +687,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
-            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">1正常</span> </div>
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> <span style="color:#ef4444;">2异常</span></div>
           </div>
         </div>
     </div>
@@ -683,15 +696,24 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </div>
 
 <footer class="footer">
-  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/30 06:00:16
+  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/4/28 19:08:38
 </footer>
 
 <script>
-function switchTab(id) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  event.target.classList.add('active');
+function switchTab(id, el) {
+  var tabs = document.querySelectorAll(".tab-content");
+  for (var i = 0; i < tabs.length; i++) { tabs[i].style.display = "none"; }
+  var btns = document.querySelectorAll(".navtab");
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); btns[j].style.color = "#94a3b8"; btns[j].style.borderBottom = "2px solid transparent"; }
+  if (el) { el.classList.add("active"); el.style.color = "#38bdf8"; el.style.borderBottom = "2px solid #38bdf8"; }
+  var target = document.getElementById("tab-" + id);
+  if (target) { target.style.display = "block"; }
+}
+  var btns = document.querySelectorAll(".navtab");
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); btns[j].style.borderBottom = "2px solid transparent"; btns[j].style.color = "#94a3b8"; btns[j].style.borderBottom = "2px solid transparent"; }
+  for (var k = 0; k < btns.length; k++) { if (btns[k].getAttribute("onclick").indexOf(id) > -1) { btns[k].classList.add("active"); btns[k].style.borderBottom = "2px solid #38bdf8"; btns[k].style.color = "#38bdf8"; break; } }
+  var target = document.getElementById("tab-" + id);
+  if (target) { target.style.display = "block"; target.style.visibility = "visible"; target.style.minHeight = "600px"; }
 }
 </script>
 
