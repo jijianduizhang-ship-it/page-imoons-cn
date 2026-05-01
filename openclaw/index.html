@@ -85,7 +85,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 <header class="header">
   <h1>OpenClaw 管控台</h1>
   <div>
-    <span class="updated">最后更新: <span id="lastUpdated">2026/5/1 06:00:06</span></span>
+    <span class="updated">最后更新: <span id="lastUpdated">2026/5/2 06:00:05</span></span>
     <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
   </div>
 </header>
@@ -94,7 +94,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <button class="active" onclick="switchTab('overview')">总览</button>
   <button onclick="switchTab('cron')">定时任务 (14)</button>
   <button onclick="switchTab('skills')">技能 (97)</button>
-  <button onclick="switchTab('scripts')">脚本 (37)</button>
+  <button onclick="switchTab('scripts')">脚本 (38)</button>
   <button onclick="switchTab('projects')">项目 (20)</button>
   <button onclick="switchTab('agents')">Agent (9)</button>
 </nav>
@@ -105,12 +105,12 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <div id="tab-overview" class="tab-content active">
     <div class="stats">
       <div class="stat-card">
-        <div class="num ok">11</div>
+        <div class="num ok">10</div>
         <div class="label">正常运行</div>
         <div class="sub">共 14 个任务</div>
       </div>
       <div class="stat-card">
-        <div class="num error">3</div>
+        <div class="num error">4</div>
         <div class="label">异常任务</div>
         <div class="sub">需要关注</div>
       </div>
@@ -120,7 +120,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
         <div class="sub">系统 53 + 工作区 44</div>
       </div>
       <div class="stat-card">
-        <div class="num">37</div>
+        <div class="num">38</div>
         <div class="label">脚本</div>
         <div class="sub">自动化脚本</div>
       </div>
@@ -134,7 +134,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     
     <div class="panel" style="margin-bottom: 20px; border-color: #ef444444;">
       <div class="panel-header">
-        <h2>🔴 异常任务 (3)</h2>
+        <h2>🔴 异常任务 (4)</h2>
       </div>
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>Agent</th><th>状态</th></tr></thead>
@@ -154,6 +154,11 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <td>西瓜猪订单推送-下午</td>
             <td><span class="tag agent-tag">jiaoyi</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>dddcba4a...</code></td>
+            <td>基金操作提醒</td>
+            <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
           </tr>
         </tbody>
       </table>
@@ -170,12 +175,6 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
         <tbody><tr>
       <td><code>129338e0...</code></td>
       <td>每日天气推送</td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
-      <td><code>ba65cf47...</code></td>
-      <td>晨间简报</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
@@ -204,12 +203,6 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
-      <td><code>dddcba4a...</code></td>
-      <td>基金操作提醒</td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
       <td><code>9eb8f619...</code></td>
       <td>旧衣回收订单-0 15 * * *</td>
       <td><span class="tag">undefined</span></td>
@@ -228,12 +221,6 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
-      <td><code>7987d5f7...</code></td>
-      <td>晚间复盘提醒</td>
-      <td><span class="tag">undefined</span></td>
-      <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
-    </tr><tr>
       <td><code>buer-dai...</code></td>
       <td></td>
       <td><span class="tag">undefined</span></td>
@@ -250,6 +237,24 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td>CEO健康检查</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">ceo</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>ba65cf47...</code></td>
+      <td>晨间简报</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+    </tr><tr>
+      <td><code>dddcba4a...</code></td>
+      <td>基金操作提醒</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
+    </tr><tr>
+      <td><code>7987d5f7...</code></td>
+      <td>晚间复盘提醒</td>
+      <td><span class="tag">undefined</span></td>
+      <td><span class="tag agent-tag">jiaoyi</span></td>
       <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr></tbody>
       </table>
@@ -273,7 +278,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 
   <!-- 脚本 -->
   <div id="tab-scripts" class="tab-content">
-    <h2 class="section-title">脚本 (37)</h2>
+    <h2 class="section-title">脚本 (38)</h2>
     <div class="panel">
       <table>
         <thead><tr><th>文件名</th><th>描述</th><th>大小</th><th>修改时间</th></tr></thead>
@@ -400,8 +405,8 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     </tr><tr>
       <td>sujh-orders-cron.js</td>
       <td class="desc">!/usr/bin/env node</td>
-      <td>7.2KB</td>
-      <td>2026/4/22</td>
+      <td>11.4KB</td>
+      <td>2026/5/1</td>
     </tr><tr>
       <td>sujh-orders-cron.py</td>
       <td class="desc">!/usr/bin/env python3</td>
@@ -412,6 +417,11 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td class="desc">!/bin/bash</td>
       <td>0.4KB</td>
       <td>2026/4/16</td>
+    </tr><tr>
+      <td>sujh-orders-to-json.js</td>
+      <td class="desc">!/usr/bin/env node</td>
+      <td>5.0KB</td>
+      <td>2026/5/1</td>
     </tr><tr>
       <td>sujh-orders-worker.js</td>
       <td class="desc">!/usr/bin/env node</td>
@@ -642,7 +652,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <div>📅 最近活动: <span style="color:#38bdf8;">4/27 23:04</span></div>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
-            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">7正常</span> <span style="color:#ef4444;">3异常</span></div>
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">6正常</span> <span style="color:#ef4444;">4异常</span></div>
           </div>
         </div><div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -693,7 +703,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </div>
 
 <footer class="footer">
-  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/5/1 06:00:06
+  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/5/2 06:00:05
 </footer>
 
 <script>
