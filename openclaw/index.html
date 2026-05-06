@@ -85,7 +85,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 <header class="header">
   <h1>OpenClaw 管控台</h1>
   <div>
-    <span class="updated">最后更新: <span id="lastUpdated">2026/5/6 06:00:04</span></span>
+    <span class="updated">最后更新: <span id="lastUpdated">2026/5/7 06:00:04</span></span>
     <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
   </div>
 </header>
@@ -105,12 +105,12 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
   <div id="tab-overview" class="tab-content active">
     <div class="stats">
       <div class="stat-card">
-        <div class="num ok">11</div>
+        <div class="num ok">9</div>
         <div class="label">正常运行</div>
         <div class="sub">共 14 个任务</div>
       </div>
       <div class="stat-card">
-        <div class="num error">3</div>
+        <div class="num error">5</div>
         <div class="label">异常任务</div>
         <div class="sub">需要关注</div>
       </div>
@@ -134,25 +134,35 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
     
     <div class="panel" style="margin-bottom: 20px; border-color: #ef444444;">
       <div class="panel-header">
-        <h2>🔴 异常任务 (3)</h2>
+        <h2>🔴 异常任务 (5)</h2>
       </div>
       <table>
         <thead><tr><th>ID</th><th>任务名</th><th>Agent</th><th>状态</th></tr></thead>
         <tbody>
           <tr>
-            <td><code>f61ba5d8...</code></td>
-            <td>西瓜猪订单推送-上午</td>
-            <td><span class="tag agent-tag">jiaoyi</span></td>
-            <td><span style="color:#ef4444">🔴 error</span></td>
-          </tr><tr>
-            <td><code>f70364b0...</code></td>
-            <td>旧衣回收订单-0 11 * * *</td>
-            <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><code>fe166eb3...</code></td>
+            <td>学习计划每日提醒</td>
+            <td><span class="tag agent-tag">system</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
           </tr><tr>
             <td><code>dddcba4a...</code></td>
             <td>基金操作提醒</td>
             <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>f16dc359...</code></td>
+            <td>西瓜猪订单推送-下午</td>
+            <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>7987d5f7...</code></td>
+            <td>晚间复盘提醒</td>
+            <td><span class="tag agent-tag">jiaoyi</span></td>
+            <td><span style="color:#ef4444">🔴 error</span></td>
+          </tr><tr>
+            <td><code>7363e5ef...</code></td>
+            <td>CEO健康检查</td>
+            <td><span class="tag agent-tag">ceo</span></td>
             <td><span style="color:#ef4444">🔴 error</span></td>
           </tr>
         </tbody>
@@ -190,19 +200,19 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td>学习计划每日提醒</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">system</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
       <td><code>f61ba5d8...</code></td>
       <td>西瓜猪订单推送-上午</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>f70364b0...</code></td>
       <td>旧衣回收订单-0 11 * * *</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
+      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
     </tr><tr>
       <td><code>dddcba4a...</code></td>
       <td>基金操作提醒</td>
@@ -226,13 +236,13 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td>西瓜猪订单推送-下午</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
       <td><code>7987d5f7...</code></td>
       <td>晚间复盘提醒</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">jiaoyi</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr><tr>
       <td><code>buer-dai...</code></td>
       <td></td>
@@ -250,7 +260,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
       <td>CEO健康检查</td>
       <td><span class="tag">undefined</span></td>
       <td><span class="tag agent-tag">ceo</span></td>
-      <td><span class="status-dot" style="background:#22c55e"></span>ok</td>
+      <td><span class="status-dot" style="background:#ef4444"></span>error</td>
     </tr></tbody>
       </table>
     </div>
@@ -689,7 +699,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
             <div>📅 最近活动: <span style="color:#38bdf8;">无</span></div>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:12px;">
-            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">1正常</span> </div>
+            <div style="color:#64748b;">Cron任务: <span style="color:#22c55e;">0正常</span> <span style="color:#ef4444;">1异常</span></div>
           </div>
         </div>
     </div>
@@ -698,7 +708,7 @@ code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background:
 </div>
 
 <footer class="footer">
-  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/5/6 06:00:04
+  OpenClaw 管控台 · 数据来源: openclaw cron list · 生成于 2026/5/7 06:00:04
 </footer>
 
 <script>
